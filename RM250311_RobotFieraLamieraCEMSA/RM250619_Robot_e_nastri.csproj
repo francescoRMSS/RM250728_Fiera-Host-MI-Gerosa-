@@ -7,7 +7,7 @@
     <ProjectGuid>{C4A1B633-37DE-4557-B8D4-80B14DDCC1AD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>RM</RootNamespace>
-    <AssemblyName>RM250311_RobotFieraLamieraCEMSA</AssemblyName>
+    <AssemblyName>RM250619_Robot_e_nastri</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -125,127 +125,127 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\RM250311\Classes\Configuration.cs" />
-    <Compile Include="src\RM250311\Classes\ConfigurationSettings.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\Applications\ApplicationConfig.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\Applications\Application\ApplicationPositions.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\Applications\Application\GunSettings.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\Applications\Application\RobotApplication.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\Applications\ObservableApplicationsDictionary.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\DAO\SQLite\RobotDAOSqlite.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\Jog\JogMovement.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\Jog\JogRobotProperties.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\PointPosition.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\PositionChecker.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\RobotDictionaryChangedEventArgs.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\RobotManager.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\RobotProperties.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\RobotSpeed.cs" />
-    <Compile Include="src\RM250311\Classes\FR20\SpeedMode.cs" />
-    <Compile Include="src\RM250311\Classes\Global.cs" />
-    <Compile Include="src\RM250311\Classes\PLC\PLCTagName.cs" />
-    <Compile Include="src\RM250311\Classes\Program.cs" />
+    <Compile Include="src\RM250619\Classes\Configuration.cs" />
+    <Compile Include="src\RM250619\Classes\ConfigurationSettings.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\Applications\ApplicationConfig.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\Applications\Application\ApplicationPositions.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\Applications\Application\GunSettings.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\Applications\Application\RobotApplication.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\Applications\ObservableApplicationsDictionary.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\DAO\SQLite\RobotDAOSqlite.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\Jog\JogMovement.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\Jog\JogRobotProperties.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\PointPosition.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\PositionChecker.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\RobotDictionaryChangedEventArgs.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\RobotManager.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\RobotProperties.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\RobotSpeed.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\SpeedMode.cs" />
+    <Compile Include="src\RM250619\Classes\Global.cs" />
+    <Compile Include="src\RM250619\Classes\PLC\PLCTagName.cs" />
+    <Compile Include="src\RM250619\Classes\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\RM250311\Forms\Plant\DragMode\FormDebugSettings.cs">
+    <Compile Include="src\RM250619\Forms\Plant\DragMode\FormDebugSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\DragMode\FormDebugSettings.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\DragMode\FormDebugSettings.Designer.cs">
       <DependentUpon>FormDebugSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\DragMode\FormDebugTools.cs">
+    <Compile Include="src\RM250619\Forms\Plant\DragMode\FormDebugTools.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\DragMode\FormDebugTools.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\DragMode\FormDebugTools.Designer.cs">
       <DependentUpon>FormDebugTools.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\DragMode\UC_FullDragModePage.cs">
+    <Compile Include="src\RM250619\Forms\Plant\DragMode\UC_FullDragModePage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\DragMode\UC_FullDragModePage.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\DragMode\UC_FullDragModePage.Designer.cs">
       <DependentUpon>UC_FullDragModePage.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_weldingParameters.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_weldingParameters.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_weldingParameters.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_weldingParameters.Designer.cs">
       <DependentUpon>UC_weldingParameters.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\FormDiagnostics.cs">
+    <Compile Include="src\RM250619\Forms\Plant\FormDiagnostics.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\FormDiagnostics.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\FormDiagnostics.Designer.cs">
       <DependentUpon>FormDiagnostics.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\FormHomePage.cs">
+    <Compile Include="src\RM250619\Forms\Plant\FormHomePage.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\FormHomePage.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\FormHomePage.Designer.cs">
       <DependentUpon>FormHomePage.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\FormInfoRobot.cs">
+    <Compile Include="src\RM250619\Forms\Plant\FormInfoRobot.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\FormInfoRobot.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\FormInfoRobot.Designer.cs">
       <DependentUpon>FormInfoRobot.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\FormLanguageSelection.cs">
+    <Compile Include="src\RM250619\Forms\Plant\FormLanguageSelection.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\FormLanguageSelection.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\FormLanguageSelection.Designer.cs">
       <DependentUpon>FormLanguageSelection.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\FormLoading.cs">
+    <Compile Include="src\RM250619\Forms\FormLoading.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\FormLoading.Designer.cs">
+    <Compile Include="src\RM250619\Forms\FormLoading.Designer.cs">
       <DependentUpon>FormLoading.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_ApplicationPage.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_ApplicationPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_ApplicationPage.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_ApplicationPage.Designer.cs">
       <DependentUpon>UC_ApplicationPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_configuration.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_configuration.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_configuration.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_configuration.Designer.cs">
       <DependentUpon>UC_configuration.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_HomePage.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_HomePage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_HomePage.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_HomePage.Designer.cs">
       <DependentUpon>UC_HomePage.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_parameters.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_parameters.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_parameters.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_parameters.Designer.cs">
       <DependentUpon>UC_parameters.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_permissions.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_permissions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_permissions.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_permissions.Designer.cs">
       <DependentUpon>UC_permissions.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_positions.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_positions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\Plant\UC_positions.Designer.cs">
+    <Compile Include="src\RM250619\Forms\Plant\UC_positions.Designer.cs">
       <DependentUpon>UC_positions.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\ScreenSaver\ScreenSaverManager.cs">
+    <Compile Include="src\RM250619\Forms\ScreenSaver\ScreenSaverManager.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\ScreenSaver\ScreenSaverManager.Designer.cs">
+    <Compile Include="src\RM250619\Forms\ScreenSaver\ScreenSaverManager.Designer.cs">
       <DependentUpon>ScreenSaverManager.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\RM250311\Forms\ScreenSaver\VideoPlayer.cs">
+    <Compile Include="src\RM250619\Forms\ScreenSaver\VideoPlayer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\RM250311\Forms\ScreenSaver\VideoPlayer.Designer.cs">
+    <Compile Include="src\RM250619\Forms\ScreenSaver\VideoPlayer.Designer.cs">
       <DependentUpon>VideoPlayer.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -258,55 +258,55 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\DragMode\FormDebugSettings.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\DragMode\FormDebugSettings.resx">
       <DependentUpon>FormDebugSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\DragMode\FormDebugTools.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\DragMode\FormDebugTools.resx">
       <DependentUpon>FormDebugTools.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\DragMode\UC_FullDragModePage.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\DragMode\UC_FullDragModePage.resx">
       <DependentUpon>UC_FullDragModePage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\UC_weldingParameters.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\UC_weldingParameters.resx">
       <DependentUpon>UC_weldingParameters.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\FormDiagnostics.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\FormDiagnostics.resx">
       <DependentUpon>FormDiagnostics.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\FormHomePage.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\FormHomePage.resx">
       <DependentUpon>FormHomePage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\FormInfoRobot.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\FormInfoRobot.resx">
       <DependentUpon>FormInfoRobot.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\FormLanguageSelection.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\FormLanguageSelection.resx">
       <DependentUpon>FormLanguageSelection.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\FormLoading.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\FormLoading.resx">
       <DependentUpon>FormLoading.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\UC_ApplicationPage.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\UC_ApplicationPage.resx">
       <DependentUpon>UC_ApplicationPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\UC_configuration.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\UC_configuration.resx">
       <DependentUpon>UC_configuration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\UC_HomePage.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\UC_HomePage.resx">
       <DependentUpon>UC_HomePage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\UC_parameters.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\UC_parameters.resx">
       <DependentUpon>UC_parameters.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\UC_permissions.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\UC_permissions.resx">
       <DependentUpon>UC_permissions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\Plant\UC_positions.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\Plant\UC_positions.resx">
       <DependentUpon>UC_positions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\ScreenSaver\ScreenSaverManager.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\ScreenSaver\ScreenSaverManager.resx">
       <DependentUpon>ScreenSaverManager.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\RM250311\Forms\ScreenSaver\VideoPlayer.resx">
+    <EmbeddedResource Include="src\RM250619\Forms\ScreenSaver\VideoPlayer.resx">
       <DependentUpon>VideoPlayer.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />

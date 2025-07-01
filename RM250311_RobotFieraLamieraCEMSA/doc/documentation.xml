@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>RM250311_RobotFieraLamieraCEMSA</name>
+        <name>RM250619_Robot_e_nastri</name>
     </assembly>
     <members>
         <member name="T:RM.src.RM250311.Configuration">
