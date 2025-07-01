@@ -68,10 +68,10 @@
             this.btn_restoreSCreenSaverManager = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.pnl_status = new System.Windows.Forms.Panel();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.pnl_pinzeStatus = new System.Windows.Forms.Panel();
             this.pnl_homeStatus = new System.Windows.Forms.Panel();
+            this.pnl_pinzeStatus = new System.Windows.Forms.Panel();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.pnl_status.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -132,7 +132,7 @@
             this.lb_applicationToExecute.Name = "lb_applicationToExecute";
             this.lb_applicationToExecute.Size = new System.Drawing.Size(1024, 32);
             this.lb_applicationToExecute.TabIndex = 265;
-            this.lb_applicationToExecute.Text = "Applicazione demo CEMSA";
+            this.lb_applicationToExecute.Text = "Palletizzatore automatico";
             this.lb_applicationToExecute.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btn_VAT
@@ -589,15 +589,21 @@
             this.pnl_status.Size = new System.Drawing.Size(64, 45);
             this.pnl_status.TabIndex = 291;
             // 
-            // label11
+            // pnl_homeStatus
             // 
-            this.label11.AutoSize = true;
-            this.label11.ForeColor = System.Drawing.Color.White;
-            this.label11.Location = new System.Drawing.Point(3, 3);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(33, 13);
-            this.label11.TabIndex = 0;
-            this.label11.Text = "Pinze";
+            this.pnl_homeStatus.BackColor = System.Drawing.Color.White;
+            this.pnl_homeStatus.Location = new System.Drawing.Point(42, 26);
+            this.pnl_homeStatus.Name = "pnl_homeStatus";
+            this.pnl_homeStatus.Size = new System.Drawing.Size(15, 15);
+            this.pnl_homeStatus.TabIndex = 293;
+            // 
+            // pnl_pinzeStatus
+            // 
+            this.pnl_pinzeStatus.BackColor = System.Drawing.Color.White;
+            this.pnl_pinzeStatus.Location = new System.Drawing.Point(42, 3);
+            this.pnl_pinzeStatus.Name = "pnl_pinzeStatus";
+            this.pnl_pinzeStatus.Size = new System.Drawing.Size(15, 15);
+            this.pnl_pinzeStatus.TabIndex = 292;
             // 
             // label13
             // 
@@ -609,21 +615,15 @@
             this.label13.TabIndex = 1;
             this.label13.Text = "Home";
             // 
-            // pnl_pinzeStatus
+            // label11
             // 
-            this.pnl_pinzeStatus.BackColor = System.Drawing.Color.White;
-            this.pnl_pinzeStatus.Location = new System.Drawing.Point(42, 3);
-            this.pnl_pinzeStatus.Name = "pnl_pinzeStatus";
-            this.pnl_pinzeStatus.Size = new System.Drawing.Size(15, 15);
-            this.pnl_pinzeStatus.TabIndex = 292;
-            // 
-            // pnl_homeStatus
-            // 
-            this.pnl_homeStatus.BackColor = System.Drawing.Color.White;
-            this.pnl_homeStatus.Location = new System.Drawing.Point(42, 26);
-            this.pnl_homeStatus.Name = "pnl_homeStatus";
-            this.pnl_homeStatus.Size = new System.Drawing.Size(15, 15);
-            this.pnl_homeStatus.TabIndex = 293;
+            this.label11.AutoSize = true;
+            this.label11.ForeColor = System.Drawing.Color.White;
+            this.label11.Location = new System.Drawing.Point(3, 3);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(33, 13);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Pinze";
             // 
             // UC_HomePage
             // 
