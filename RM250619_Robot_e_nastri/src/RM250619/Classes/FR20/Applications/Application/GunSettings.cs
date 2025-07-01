@@ -1,4 +1,4 @@
-﻿namespace RM.src.RM250311.Classes.FR20.Applications.Application
+﻿namespace RM.src.RM250619.Classes.FR20.Applications.Application
 {
     /// <summary>
     /// Contiene la struttura delle impostazioni della pistola relative ad ogni posizione di un'applicazione Robot

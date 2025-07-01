@@ -1,5 +1,5 @@
 ﻿using RM.Properties;
-using RM.src.RM250311.Forms.DragMode;
+using RM.src.RM250619.Forms.DragMode;
 using RMLib.DataAccess;
 using RMLib.Keyboards;
 using RMLib.Logger;
@@ -14,7 +14,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Raccoglie le applicazione disponibili da caricare

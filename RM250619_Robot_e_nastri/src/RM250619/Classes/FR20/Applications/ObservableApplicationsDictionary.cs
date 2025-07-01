@@ -1,11 +1,11 @@
 ﻿using fairino;
-using RM.src.RM250311.Classes.FR20.Applications.Application;
+using RM.src.RM250619.Classes.FR20.Applications.Application;
 using RMLib.Logger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Gestisce il dizionario delle applicazioni del robot e gli eventi ad esse correlati

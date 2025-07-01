@@ -1,11 +1,11 @@
-﻿using RM.src.RM250311.Classes.FR20.Applications.Application;
+﻿using RM.src.RM250619.Classes.FR20.Applications.Application;
 using RMLib.DataAccess;
 using RMLib.Logger;
 using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Gestisce la applicazioni del robot e anche gli eventi che sono ad esse correlati

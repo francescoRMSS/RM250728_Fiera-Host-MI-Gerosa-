@@ -6,7 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311.Forms.ScreenSaver
+namespace RM.src.RM250619.Forms.ScreenSaver
 {
     /// <summary>
     /// Gestisce la visualizzazione di una form che controlla lo screen saver. Per usare lo screen saver è necessaria la libreria 

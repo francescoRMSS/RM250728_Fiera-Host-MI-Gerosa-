@@ -1,4 +1,4 @@
-﻿namespace RM.src.RM250311.Forms.ScreenSaver
+﻿namespace RM.src.RM250619.Forms.ScreenSaver
 {
     partial class VideoPlayer
     {

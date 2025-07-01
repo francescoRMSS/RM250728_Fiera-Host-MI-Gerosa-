@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using RMLib.MessageBox;
 using RMLib.VATView;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Definisce la struttura ed il comportamento della Form di loading / Splash screen

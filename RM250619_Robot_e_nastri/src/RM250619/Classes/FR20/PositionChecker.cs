@@ -1,7 +1,7 @@
 ﻿using fairino;
 using System;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Classe necessario per individuare zone di ingombro, zone di sicurezza e in position

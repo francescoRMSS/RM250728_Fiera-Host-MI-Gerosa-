@@ -1,11 +1,11 @@
-﻿using RM.src.RM250311.Classes.PLC;
+﻿using RM.src.RM250619.Classes.PLC;
 using RMLib.Alarms;
 using RMLib.PLC;
 using System;
 using System.Threading;
 using System.Web.UI;
 
-namespace RM.src.RM250311.Classes.FR20.Jog
+namespace RM.src.RM250619.Classes.FR20.Jog
 {
     /// <summary>
     /// Gestisce movimento del Robot in Jog

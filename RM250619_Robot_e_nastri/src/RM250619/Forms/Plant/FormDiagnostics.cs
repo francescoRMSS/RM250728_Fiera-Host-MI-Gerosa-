@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311.Forms.Plant
+namespace RM.src.RM250619.Forms.Plant
 {
     public partial class FormDiagnostics : Form
     {

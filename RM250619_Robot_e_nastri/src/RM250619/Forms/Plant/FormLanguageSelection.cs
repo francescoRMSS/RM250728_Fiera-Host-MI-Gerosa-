@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311.Forms.Plant
+namespace RM.src.RM250619.Forms.Plant
 {
     /// <summary>
     /// Rappresenta una form per la selezione delle lingue per cambiare la traduzione degli elementi della UI.

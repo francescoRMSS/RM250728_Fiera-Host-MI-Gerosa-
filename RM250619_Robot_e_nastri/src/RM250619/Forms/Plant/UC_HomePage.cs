@@ -10,21 +10,21 @@ using RMLib.Keyboards;
 using RMLib.MessageBox;
 using RMLib.PLC;
 using RMLib.Security;
-using RM.src.RM250311.Forms.Plant;
+using RM.src.RM250619.Forms.Plant;
 using RM.Properties;
 using System.Drawing;
 using RMLib.VATView;
-using RM.src.RM250311.Forms.DragMode;
+using RM.src.RM250619.Forms.DragMode;
 using fairino;
-using RM.src.RM250311.Classes.FR20.Jog;
+using RM.src.RM250619.Classes.FR20.Jog;
 using System.Data;
-using RM.src.RM250311.Classes.PLC;
-using RM.src.RM250311.Classes.FR20.Applications.Application;
+using RM.src.RM250619.Classes.PLC;
+using RM.src.RM250619.Classes.FR20.Applications.Application;
 using System.Drawing.Drawing2D;
-using RM.src.RM250311.Forms.Plant.DragMode;
-using RM.src.RM250311.Forms.ScreenSaver;
+using RM.src.RM250619.Forms.Plant.DragMode;
+using RM.src.RM250619.Forms.ScreenSaver;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Definisce la struttura, il comportamento e la UI della home page del software, da usare come pannello preimpostato.

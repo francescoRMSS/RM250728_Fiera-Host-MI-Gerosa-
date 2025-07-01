@@ -1,4 +1,4 @@
-﻿namespace RM.src.RM250311.Forms.Plant.DragMode
+﻿namespace RM.src.RM250619.Forms.Plant.DragMode
 {
     partial class FormDebugSettings
     {

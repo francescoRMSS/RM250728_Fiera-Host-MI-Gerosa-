@@ -1,7 +1,7 @@
 ﻿using fairino;
-using RM.src.RM250311.Classes.FR20.Applications.Application;
+using RM.src.RM250619.Classes.FR20.Applications.Application;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Definisce una posizione di un punto con il relativo timestamp, 

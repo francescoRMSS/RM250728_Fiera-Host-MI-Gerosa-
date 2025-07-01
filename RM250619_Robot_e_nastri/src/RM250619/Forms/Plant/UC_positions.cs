@@ -1,5 +1,5 @@
 ﻿using fairino;
-using RM.src.RM250311.Forms.ScreenSaver;
+using RM.src.RM250619.Forms.ScreenSaver;
 using RMLib.DataAccess;
 using RMLib.Keyboards;
 using RMLib.Logger;
@@ -13,7 +13,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Pagina dedicata alla lista di posizioni RM

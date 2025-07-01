@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Le informazioni generali relative a un assembly sono controllate dal seguente 
 // set di attributi. Modificare i valori di questi attributi per modificare le informazioni
 // associate a un assembly.
-[assembly: AssemblyTitle("RM250311_RobotFieraLamieraCEMSA")]
+[assembly: AssemblyTitle("RM250619_RobotFieraLamieraCEMSA")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RM250311_RobotFieraLamieraCEMSA")]
+[assembly: AssemblyProduct("RM250619_RobotFieraLamieraCEMSA")]
 [assembly: AssemblyCopyright("Copyright ©  2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

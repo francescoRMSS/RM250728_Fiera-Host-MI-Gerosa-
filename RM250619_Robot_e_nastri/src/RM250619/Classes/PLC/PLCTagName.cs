@@ -1,5 +1,5 @@
 ﻿
-namespace RM.src.RM250311.Classes.PLC
+namespace RM.src.RM250619.Classes.PLC
 {
     /// <summary>
     /// Contiene i tag degli indirizzi PLC

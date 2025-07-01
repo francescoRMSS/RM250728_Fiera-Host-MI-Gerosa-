@@ -1,4 +1,4 @@
-﻿namespace RM.src.RM250311.Classes.FR20
+﻿namespace RM.src.RM250619.Classes.FR20
 {
     /// <summary>
     /// Contiene le diverse modalità di speed. La modalità scala ulteriormente la velocità impostata.

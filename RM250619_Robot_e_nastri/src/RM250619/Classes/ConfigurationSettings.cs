@@ -1,6 +1,6 @@
-﻿using RM.src.RM250311.Classes.FR20.Jog;
-using RM.src.RM250311.Classes.PLC;
-using RM.src.RM250311.Forms.ScreenSaver;
+﻿using RM.src.RM250619.Classes.FR20.Jog;
+using RM.src.RM250619.Classes.PLC;
+using RM.src.RM250619.Forms.ScreenSaver;
 using RMLib.Alarms;
 using RMLib.DataAccess;
 using RMLib.Environment;
@@ -17,7 +17,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Classe che gestisce la FormLoading

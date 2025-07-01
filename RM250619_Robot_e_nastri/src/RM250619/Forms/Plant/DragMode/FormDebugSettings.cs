@@ -3,7 +3,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311.Forms.Plant.DragMode
+namespace RM.src.RM250619.Forms.Plant.DragMode
 {
     /// <summary>
     /// Form contente i controlli per modificare velocemente i parametri del robot senza cmabiare pagina tornando indietro

@@ -1,4 +1,4 @@
-﻿using RM.src.RM250311.Forms.ScreenSaver;
+﻿using RM.src.RM250619.Forms.ScreenSaver;
 using RMLib.DataAccess;
 using RMLib.Keyboards;
 using RMLib.MessageBox;
@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311.Forms.Plant
+namespace RM.src.RM250619.Forms.Plant
 {
     /// <summary>
     /// Contiene i parametri di movimento del Robot

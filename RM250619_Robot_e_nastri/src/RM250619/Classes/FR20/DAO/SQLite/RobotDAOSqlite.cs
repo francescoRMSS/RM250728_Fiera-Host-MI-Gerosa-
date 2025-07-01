@@ -1,6 +1,6 @@
 ﻿using fairino;
-using RM.src.RM250311.Classes.FR20.Applications.Application;
-using RM.src.RM250311.Forms.DragMode;
+using RM.src.RM250619.Classes.FR20.Applications.Application;
+using RM.src.RM250619.Forms.DragMode;
 using RMLib.Logger;
 using RMLib.MessageBox;
 using System;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Contiene procedure relative al funzionamento del Robot

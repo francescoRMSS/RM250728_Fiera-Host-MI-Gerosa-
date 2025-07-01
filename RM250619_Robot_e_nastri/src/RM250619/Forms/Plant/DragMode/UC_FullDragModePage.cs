@@ -11,13 +11,13 @@ using RMLib.Logger;
 using RMLib.Utils;
 using RMLib.MessageBox;
 using RMLib.Translations;
-using RM.src.RM250311.Forms.Plant.DragMode;
+using RM.src.RM250619.Forms.Plant.DragMode;
 using RMLib.Alarms;
 using RM.Properties;
-using RM.src.RM250311.Classes.FR20.Applications.Application;
+using RM.src.RM250619.Classes.FR20.Applications.Application;
 using System.Linq;
 
-namespace RM.src.RM250311.Forms.DragMode
+namespace RM.src.RM250619.Forms.DragMode
 {
     /// <summary>
     /// Pagina dedicata alla modalità di drag, utile per acquisire nuovi punti, visualizzarli e salvarli sul database per una specifica 

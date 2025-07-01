@@ -15,9 +15,9 @@ using RMLib.VATView;
 using RMLib.View;
 using RMLib.Security;
 using System.Collections.Generic;
-using RM.src.RM250311.Forms.ScreenSaver;
+using RM.src.RM250619.Forms.ScreenSaver;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Definisce la struttura, il comportamento e la UI della form principale da cui si può arrivare a tutte le altre funzionalità. Non va mai chiusa
@@ -279,7 +279,7 @@ namespace RM.src.RM250311
         {
             Dictionary<string, string> versions = new Dictionary<string, string>
             {
-                { "Project", "RM250311 - Robot fiera lamiera CEMSA" },
+                { "Project", "RM250619 - Robot fiera lamiera CEMSA" },
                 //{ "Hmi", "2024/12/05 - V1.0" },
                 { "Software", "2025/01/29 - V0.1 - DEMO" },
                 { "Alarms", AlarmManager.Version },

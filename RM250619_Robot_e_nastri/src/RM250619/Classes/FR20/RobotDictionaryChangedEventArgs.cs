@@ -1,7 +1,7 @@
 ﻿using RMLib.Recipes;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Definisce tipologia evento

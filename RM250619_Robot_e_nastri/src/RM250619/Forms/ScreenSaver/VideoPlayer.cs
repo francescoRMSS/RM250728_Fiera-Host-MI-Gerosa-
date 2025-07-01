@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311.Forms.ScreenSaver
+namespace RM.src.RM250619.Forms.ScreenSaver
 {
     /// <summary>
     /// Form contenente il media player per mostrare lo screen saver

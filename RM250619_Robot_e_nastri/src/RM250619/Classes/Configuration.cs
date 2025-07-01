@@ -3,7 +3,7 @@ using RMLib.MessageBox;
 using System;
 using System.IO;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Gestisce la configurazione di sistema per l'avvio corretto del programma in base alla riga di comando passata. 

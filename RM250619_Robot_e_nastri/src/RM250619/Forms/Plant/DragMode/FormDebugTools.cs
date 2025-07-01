@@ -3,7 +3,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311.Forms.Plant.DragMode
+namespace RM.src.RM250619.Forms.Plant.DragMode
 {
     /// <summary>
     /// Form contenente dei controlli per spostarsi tra i punti presi durante la fase di drag mode

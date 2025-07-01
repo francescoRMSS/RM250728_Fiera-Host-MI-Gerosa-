@@ -1,11 +1,11 @@
-﻿using RM.src.RM250311.Forms.ScreenSaver;
+﻿using RM.src.RM250619.Forms.ScreenSaver;
 using RMLib.Utils;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace RM.src.RM250311.Forms.Plant.DragMode
+namespace RM.src.RM250619.Forms.Plant.DragMode
 {
     /// <summary>
     /// Pagina contenente i controlli per modificare e visualizzare i parametri per la macchina saldatrice

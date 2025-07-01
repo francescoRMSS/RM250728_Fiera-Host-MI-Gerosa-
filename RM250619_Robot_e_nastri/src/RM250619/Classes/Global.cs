@@ -1,4 +1,4 @@
-﻿namespace RM.src.RM250311
+﻿namespace RM.src.RM250619
 {
     /// <summary>
     /// Struttura contenente variabili statiche comuni per tutto il progetto

@@ -1,4 +1,4 @@
-﻿namespace RM.src.RM250311.Forms.DragMode
+﻿namespace RM.src.RM250619.Forms.DragMode
 {
     partial class UC_FullDragModePage
     {

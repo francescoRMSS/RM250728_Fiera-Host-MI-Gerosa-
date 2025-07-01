@@ -10,19 +10,19 @@ using RMLib.DataAccess;
 using RMLib.PLC;
 using RMLib.Alarms;
 using System.Net.NetworkInformation;
-using RM.src.RM250311.Forms.Plant;
+using RM.src.RM250619.Forms.Plant;
 using RM.Properties;
 using RMLib.MessageBox;
-using RM.src.RM250311.Classes.FR20.Applications.Application;
-using RM.src.RM250311.Forms.DragMode;
-using RM.src.RM250311.Classes.PLC;
-using RM.src.RM250311.Classes.FR20.Jog;
+using RM.src.RM250619.Classes.FR20.Applications.Application;
+using RM.src.RM250619.Forms.DragMode;
+using RM.src.RM250619.Classes.PLC;
+using RM.src.RM250619.Classes.FR20.Jog;
 using System.Reflection;
 using System.Windows.Forms;
 using CookComputing.XmlRpc;
 using System.Web;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Gestisce il robot in tutte le sue funzioni, la classe contiene solo riferimenti statici poichè il robot è unico 

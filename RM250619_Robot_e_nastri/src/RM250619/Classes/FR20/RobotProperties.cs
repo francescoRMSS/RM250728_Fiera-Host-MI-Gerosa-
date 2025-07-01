@@ -1,4 +1,4 @@
-﻿namespace RM.src.RM250311
+﻿namespace RM.src.RM250619
 {
     /// <summary>
     /// Oggetto che contiene tutte le proprietà del Robot editabili dall'utente. 

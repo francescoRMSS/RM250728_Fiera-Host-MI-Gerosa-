@@ -1,6 +1,6 @@
-﻿using RM.src.RM250311.Classes.FR20.Applications.Application;
+﻿using RM.src.RM250619.Classes.FR20.Applications.Application;
 
-namespace RM.src.RM250311
+namespace RM.src.RM250619
 {
     /// <summary>
     /// Contiene la struttura di una posizione all'interno di un'applicazione robot
