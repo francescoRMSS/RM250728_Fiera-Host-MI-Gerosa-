@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM250619_Robot_e_nastri", "RM250311_RobotFieraLamieraCEMSA\RM250619_Robot_e_nastri.csproj", "{C4A1B633-37DE-4557-B8D4-80B14DDCC1AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM250619_Robot_e_nastri", "RM250619_Robot_e_nastri\RM250619_Robot_e_nastri.csproj", "{C4A1B633-37DE-4557-B8D4-80B14DDCC1AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
