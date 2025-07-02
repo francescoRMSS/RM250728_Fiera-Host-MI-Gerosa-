@@ -2458,8 +2458,8 @@ namespace RM.src.RM250619
 
             #endregion
 
-            var approachPick = ApplicationConfig.applicationsManager.GetPosition("pAvvicinamentoPick", "RM");
-            DescPose descPosApproachPickPoint = new DescPose(approachPick.x, approachPick.y, approachPick.z,
+            var approachPick = ApplicationConfig.applicationsManager.GetPosition("pPick", "RM");
+            DescPose descPosApproachPickPoint = new DescPose(approachPick.x, approachPick.y, approachPick.z + 100,
                 approachPick.rx, approachPick.ry, approachPick.rz);
 
             #endregion
@@ -3930,7 +3930,7 @@ namespace RM.src.RM250619
         /// </summary>
         public static void GoToHomePosition()
         {
-            SetHomeRoutineSpeed();
+            
 
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
@@ -3938,14 +3938,12 @@ namespace RM.src.RM250619
 
             GetRobotMovementCode(result);
 
-            ResetHomeRoutineSpeed();
-
         }
 
         /// <summary>
         /// Imposta la velocità predefinita per eseguire la home routine
         /// </summary>
-        private static void SetHomeRoutineSpeed()
+        public static void SetHomeRoutineSpeed()
         {
             robot.SetSpeed(homeRoutineSpeed);
             vel = homeRoutineVel;
@@ -3955,7 +3953,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Resetta la velocità utilizzata per la home routine
         /// </summary>
-        private static void ResetHomeRoutineSpeed()
+        public static void ResetHomeRoutineSpeed()
         {
             robot.SetSpeed(robotProperties.Speed);
             vel = robotProperties.Velocity;

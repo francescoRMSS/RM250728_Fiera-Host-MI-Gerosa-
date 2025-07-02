@@ -1161,6 +1161,7 @@ namespace RM.src.RM250619
                 return;
             }
 
+            /*
             int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
         
             if (gripperStatus != 1)
@@ -1169,6 +1170,7 @@ namespace RM.src.RM250619
                 log.Error("Tentativo di avvio applicazione con pinza chiusa");
                 return;
             }
+            */
 
             if (!string.IsNullOrEmpty(application)) // Se l'applicazione è stata selezionata
             {
@@ -1324,6 +1326,7 @@ namespace RM.src.RM250619
                                 btn_stopApp.BackgroundImage = null;
 
                                 RobotManager.ClearRobotQueue();
+                                RobotManager.SetHomeRoutineSpeed();
                                 await Task.Delay(1000);
 
                                 stepHomeRoutine = 10;
@@ -1354,6 +1357,7 @@ namespace RM.src.RM250619
 
                             case 30:
                                 #region Termine ciclo e riattivazione tasti applicazione e tasto home 
+                                RobotManager.ResetHomeRoutineSpeed();
 
                                 homeRoutineStarted = false;
 
