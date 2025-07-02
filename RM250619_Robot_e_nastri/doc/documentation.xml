@@ -3113,6 +3113,21 @@
             Variabile per memorizzare lo stato precedente di isInHomePosition
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.RobotManager.homeRoutineSpeed">
+            <summary>
+            Speed utilizzata in home routine
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.homeRoutineVel">
+            <summary>
+            Velocity utilizzata in home routine
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.homeRoutineAcc">
+            <summary>
+            Acceleration utilizzata in home routine
+            </summary>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.TriggerRobotVelocityChangedEvent(System.Int32)">
             <summary>
             Invoca metodo relativo al cambio di velocità del robot
@@ -3549,6 +3564,16 @@
         <member name="M:RM.src.RM250619.RobotManager.GoToHomePosition">
             <summary>
             Metodo che porta il Robot in HomePosition
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.SetHomeRoutineSpeed">
+            <summary>
+            Imposta la velocità predefinita per eseguire la home routine
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.ResetHomeRoutineSpeed">
+            <summary>
+            Resetta la velocità utilizzata per la home routine
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.MoveRobotToSafePosition">

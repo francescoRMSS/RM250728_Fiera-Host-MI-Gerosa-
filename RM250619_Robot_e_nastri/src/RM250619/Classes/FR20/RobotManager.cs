@@ -546,6 +546,19 @@ namespace RM.src.RM250619
 
         private static bool? previousGripperStatus = null;
 
+        /// <summary>
+        /// Speed utilizzata in home routine
+        /// </summary>
+        private static int homeRoutineSpeed = 2;
+        /// <summary>
+        /// Velocity utilizzata in home routine
+        /// </summary>
+        private static int homeRoutineVel = 100;
+        /// <summary>
+        /// Acceleration utilizzata in home routine
+        /// </summary>
+        private static int homeRoutineAcc = 100;
+
         #endregion
 
         #region Metodi della classe RobotManager
@@ -3917,12 +3930,36 @@ namespace RM.src.RM250619
         /// </summary>
         public static void GoToHomePosition()
         {
+            SetHomeRoutineSpeed();
 
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
             int result = robot.MoveCart(pHome, tool, user, vel, acc, ovl, blendT, config);
 
             GetRobotMovementCode(result);
+
+            ResetHomeRoutineSpeed();
+
+        }
+
+        /// <summary>
+        /// Imposta la velocità predefinita per eseguire la home routine
+        /// </summary>
+        private static void SetHomeRoutineSpeed()
+        {
+            robot.SetSpeed(homeRoutineSpeed);
+            vel = homeRoutineVel;
+            acc = homeRoutineAcc;
+        }
+
+        /// <summary>
+        /// Resetta la velocità utilizzata per la home routine
+        /// </summary>
+        private static void ResetHomeRoutineSpeed()
+        {
+            robot.SetSpeed(robotProperties.Speed);
+            vel = robotProperties.Velocity;
+            acc = robotProperties.Acceleration;
         }
 
         /// <summary>
