@@ -2580,7 +2580,7 @@ namespace RM.src.RM250619
                                 ovl, blendT, config); // Invio punto di avvicinamento Pick
                             GetRobotMovementCode(movementResult);
 
-                            movementResult = robot.MoveCart(descPosPick, tool, user, weldingVel, weldingAcc,
+                            movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc,
                                 ovl, blendT, config); // Invio punto di Pick
                             GetRobotMovementCode(movementResult);
 
@@ -2621,7 +2621,7 @@ namespace RM.src.RM250619
 
                             gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
 
-                            if (gripperStatus == 0)
+                           // if (gripperStatus == 0)
                             {
                                 //Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
                                 step = 30;
@@ -2641,7 +2641,7 @@ namespace RM.src.RM250619
                                 ovl, blendT, config); // Invio punto di avvicinamento Pick
                             GetRobotMovementCode(movementResult);*/
                             
-                            movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, weldingVel, weldingAcc,
+                            movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, vel, acc,
                                 ovl, blendT, config); // Invio punto di avvicinamento Pick
                             GetRobotMovementCode(movementResult);
 
