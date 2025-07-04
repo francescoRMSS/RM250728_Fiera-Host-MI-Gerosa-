@@ -66,7 +66,7 @@
             this.btn_openGripper = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.btn_restoreSCreenSaverManager = new System.Windows.Forms.Button();
-            this.label9 = new System.Windows.Forms.Label();
+            this.lbl_restoreScreenSaverManager = new System.Windows.Forms.Label();
             this.pnl_status = new System.Windows.Forms.Panel();
             this.pnl_homeStatus = new System.Windows.Forms.Panel();
             this.pnl_pinzeStatus = new System.Windows.Forms.Panel();
@@ -566,17 +566,17 @@
             this.btn_restoreSCreenSaverManager.UseVisualStyleBackColor = false;
             this.btn_restoreSCreenSaverManager.Click += new System.EventHandler(this.ClickEvent_restoreScreenSaverManager);
             // 
-            // label9
+            // lbl_restoreScreenSaverManager
             // 
-            this.label9.BackColor = System.Drawing.Color.Transparent;
-            this.label9.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.ForeColor = System.Drawing.SystemColors.Control;
-            this.label9.Location = new System.Drawing.Point(592, 637);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(70, 15);
-            this.label9.TabIndex = 289;
-            this.label9.Text = "ScrnSvr MGr";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lbl_restoreScreenSaverManager.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_restoreScreenSaverManager.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_restoreScreenSaverManager.ForeColor = System.Drawing.SystemColors.Control;
+            this.lbl_restoreScreenSaverManager.Location = new System.Drawing.Point(592, 637);
+            this.lbl_restoreScreenSaverManager.Name = "lbl_restoreScreenSaverManager";
+            this.lbl_restoreScreenSaverManager.Size = new System.Drawing.Size(70, 15);
+            this.lbl_restoreScreenSaverManager.TabIndex = 289;
+            this.lbl_restoreScreenSaverManager.Text = "ScrnSvr MGr";
+            this.lbl_restoreScreenSaverManager.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pnl_status
             // 
@@ -634,7 +634,7 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.Controls.Add(this.pnl_status);
             this.Controls.Add(this.btn_restoreSCreenSaverManager);
-            this.Controls.Add(this.label9);
+            this.Controls.Add(this.lbl_restoreScreenSaverManager);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.btn_openGripper);
             this.Controls.Add(this.btn_pauseApp);
@@ -723,7 +723,7 @@
         private System.Windows.Forms.Button btn_openGripper;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button btn_restoreSCreenSaverManager;
-        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label lbl_restoreScreenSaverManager;
         private System.Windows.Forms.Panel pnl_status;
         private System.Windows.Forms.Panel pnl_homeStatus;
         private System.Windows.Forms.Panel pnl_pinzeStatus;

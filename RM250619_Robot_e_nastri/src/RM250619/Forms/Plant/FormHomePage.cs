@@ -257,7 +257,7 @@ namespace RM.src.RM250619
             AlarmManager.isFormReady = true;
 
             //Configurazione screen saver manager - 5m
-            screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4");
+            screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4", false);
         }
 
         /// <summary>
@@ -279,9 +279,9 @@ namespace RM.src.RM250619
         {
             Dictionary<string, string> versions = new Dictionary<string, string>
             {
-                { "Project", "RM250619 - Robot fiera lamiera CEMSA" },
+                { "Project", "RM250619 - Robot pallettizzatore" },
                 //{ "Hmi", "2024/12/05 - V1.0" },
-                { "Software", "2025/01/29 - V0.1 - DEMO" },
+                { "Software", "2025/07/04 - V0.1 - DEMO" },
                 { "Alarms", AlarmManager.Version },
                 { "DataAccess", RMLib.DataAccess.SqlConnectionConfiguration.DataAccessManager.Version },
                 { "Environment", RMLib.Environment.Environment.Version },

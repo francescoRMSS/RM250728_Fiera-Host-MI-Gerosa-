@@ -85,6 +85,10 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         /// La coordinata x da sommare per nascondere la form del manager
         /// </summary>
         private const int hiddenControlsXCoordOffset = 3000;
+        /// <summary>
+        /// Specifica se usare o meno lo screen saver per l'app
+        /// </summary>
+        public static bool useScreenSaver = false;
 
         #endregion
 
@@ -106,16 +110,22 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         /// </summary>
         /// <param name="delayMs"></param>
         /// <param name="fileName"></param>
-        public ScreenSaverManager(int delayMs, string fileName)
+        /// <param name="useScreenSaver"></param>
+        public ScreenSaverManager(int delayMs, string fileName, bool useScreenSaver)
         {
             delay = delayMs;
             videoFileName = fileName;
+            ScreenSaverManager.useScreenSaver = useScreenSaver;
 
             InitializeComponent();
-            InitView(); // inizializzo timer, eventi, form video player, file path
-            Show(); // mostro per la prima volta la form
-            StartTimer(); // faccio partire direttamente il timer
-            HideControls(); // nascondo la form a destra
+
+            if(useScreenSaver)
+            {
+                InitView(); // inizializzo timer, eventi, form video player, file path
+                Show(); // mostro per la prima volta la form
+                StartTimer(); // faccio partire direttamente il timer
+                HideControls(); // nascondo la form a destra
+            }
         }
 
         #endregion
@@ -308,14 +318,21 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         /// <param name="form"></param>
         public static void AutoAddClickEvents(Form form)
         {
-            log.Info("Richiesta aggiunta automatica degli eventi click per screen saver da: " + form.Name);
-            foreach (Control control in form.Controls)
+            if(useScreenSaver)
             {
-                control.Click += (sender, e) => ResetTimer();
-                foreach (Control childControl in control.Controls)
+                log.Info("Richiesta aggiunta automatica degli eventi click per screen saver da: " + form.Name);
+                foreach (Control control in form.Controls)
                 {
-                    childControl.Click += (sender, e) => ResetTimer();
+                    control.Click += (sender, e) => ResetTimer();
+                    foreach (Control childControl in control.Controls)
+                    {
+                        childControl.Click += (sender, e) => ResetTimer();
+                    }
                 }
+            }
+            else
+            {
+                log.Warn("Richiesta aggiunta automatica degli eventi click per screen saver da: " + form.Name + " annullata");
             }
         }
 
@@ -325,14 +342,21 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         /// <param name="UC"></param>
         public static void AutoAddClickEvents(UserControl UC)
         {
-            log.Info("Richiesta aggiunta automatica degli eventi click per screen saver da: " + UC.Name);
-            foreach (Control control in UC.Controls)
+            if (useScreenSaver)
             {
-                control.Click += (sender, e) => ResetTimer();
-                foreach (Control childControl in control.Controls)
+                log.Info("Richiesta aggiunta automatica degli eventi click per screen saver da: " + UC.Name);
+                foreach (Control control in UC.Controls)
                 {
-                    childControl.Click += (sender, e) => ResetTimer();
+                    control.Click += (sender, e) => ResetTimer();
+                    foreach (Control childControl in control.Controls)
+                    {
+                        childControl.Click += (sender, e) => ResetTimer();
+                    }
                 }
+            }
+            else
+            {
+                log.Warn("Richiesta aggiunta automatica degli eventi click per screen saver da: " + UC.Name + " annullata");
             }
         }
 
@@ -342,15 +366,22 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         /// <param name="form"></param>
         public static void AutoRemoveClickEvents(Form form)
         {
-            log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + form.Name);
-            foreach (Control control in form.Controls)
+            if(useScreenSaver)
             {
-                control.Click -= (sender, e) => ResetTimer();
-                foreach (Control childControl in control.Controls)
+                log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + form.Name);
+                foreach (Control control in form.Controls)
                 {
-                    childControl.Click -= (sender, e) => ResetTimer();
+                    control.Click -= (sender, e) => ResetTimer();
+                    foreach (Control childControl in control.Controls)
+                    {
+                        childControl.Click -= (sender, e) => ResetTimer();
+                    }
                 }
             }
+            else
+            {
+                log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + form.Name + " annullata");
+            } 
         }
 
         /// <summary>
@@ -359,14 +390,21 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         /// <param name="uc"></param>
         public static void AutoRemoveClickEvents(UserControl uc)
         {
-            log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + uc.Name);
-            foreach (Control control in uc.Controls)
+            if(useScreenSaver)
             {
-                control.Click -= (sender, e) => ResetTimer();
-                foreach (Control childControl in control.Controls)
+                log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + uc.Name);
+                foreach (Control control in uc.Controls)
                 {
-                    childControl.Click -= (sender, e) => ResetTimer();
+                    control.Click -= (sender, e) => ResetTimer();
+                    foreach (Control childControl in control.Controls)
+                    {
+                        childControl.Click -= (sender, e) => ResetTimer();
+                    }
                 }
+            }
+            else
+            {
+                log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + uc.Name + " annullata");
             }
         }
 

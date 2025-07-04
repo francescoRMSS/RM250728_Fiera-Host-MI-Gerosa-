@@ -783,6 +783,11 @@ namespace RM.src.RM250619
                 btn_VAT.Visible = true;
                 lbl_buttonVAT.Visible = true;
             }
+            if(!ScreenSaverManager.useScreenSaver)
+            {
+                btn_restoreSCreenSaverManager.Visible = false;
+                lbl_restoreScreenSaverManager.Visible = false;
+            }
         }
 
         /// <summary>
