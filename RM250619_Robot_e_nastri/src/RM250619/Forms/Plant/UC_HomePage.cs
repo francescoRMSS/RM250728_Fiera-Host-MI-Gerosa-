@@ -1342,7 +1342,7 @@ namespace RM.src.RM250619
                             case 10:
                                 #region Movimento a punto di home
 
-                                // RobotManager.MoveRobotToSafePosition();
+                                RobotManager.MoveRobotToSafePosition();
                                 RobotManager.GoToHomePosition();
                                 RobotManager.endingPoint = pHome;
 

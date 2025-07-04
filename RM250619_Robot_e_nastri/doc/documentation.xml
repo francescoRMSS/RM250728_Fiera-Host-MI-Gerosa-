@@ -5089,17 +5089,23 @@
             La coordinata x da sommare per nascondere la form del manager
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.Forms.ScreenSaver.ScreenSaverManager.useScreenSaver">
+            <summary>
+            Specifica se usare o meno lo screen saver per l'app
+            </summary>
+        </member>
         <member name="M:RM.src.RM250619.Forms.ScreenSaver.ScreenSaverManager.#ctor">
             <summary>
             Costruttore vuoto che usa i valori di default
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.Forms.ScreenSaver.ScreenSaverManager.#ctor(System.Int32,System.String)">
+        <member name="M:RM.src.RM250619.Forms.ScreenSaver.ScreenSaverManager.#ctor(System.Int32,System.String,System.Boolean)">
             <summary>
             Costruttore per usare valori arbitrari
             </summary>
             <param name="delayMs"></param>
             <param name="fileName"></param>
+            <param name="useScreenSaver"></param>
         </member>
         <member name="M:RM.src.RM250619.Forms.ScreenSaver.ScreenSaverManager.InitView">
             <summary>

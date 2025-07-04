@@ -1670,7 +1670,7 @@ namespace RM.src.RM250619
         /// Metodo che alza il robot in una posizione sicura per evitare ostacoli.
         /// </summary>
         /// <param name="z">Quota sicura a cui alzare il robot.</param>
-        public static void RetractRobotToSafePosition(double z)
+        public static void RetractRobotToSafePosition(double zOffset)
         {
             try
             {
@@ -1685,13 +1685,13 @@ namespace RM.src.RM250619
                     {
                         x = currentPose.tran.x,
                         y = currentPose.tran.y,
-                        z = z
+                        z = currentPose.tran.z + zOffset
                     },
                     rpy = currentPose.rpy // Mantiene gli stessi valori di rotazione
                 };
 
                 // Muove il robot alla nuova posizione sicura
-                int result = robot.MoveCart(safePose, tool, user, 5, 5, ovl, blendT, config);
+                int result = robot.MoveCart(safePose, tool, user, vel, acc, ovl, blendT, config);
 
                 GetRobotMovementCode(result);
 
@@ -2484,17 +2484,7 @@ namespace RM.src.RM250619
 
             int gripperStatus = -1; // Dichiarazione stato della pinza
 
-            // Vengono specificate vel/acc di rotazione e vel/acc di movimentoLibero oltre alla velocità e accelerazione
-            // standard siccome durante il ciclo c'è la necessità che i movimenti vengano eseguiti con velocità differenti
-            float velRotazione = 0; // Dichiarazione velRotazione
-            float accRotazione = 0; // Dichiarazione accRotazione
-            // Per 'MovimentoLibero' si intende il movimento eseguito lontano dalla saldatura, come il 
-            // ritorno in Home, pick e place
-            float velMovimentoLibero = vel;
-            float accMovimentoLibero = acc;
-
-            float weldingVel = vel;
-            float weldingAcc = acc;
+            bool prendidaNastro = true;
 
             // Segnalo al PLC che il robot sta lavorando in modalità automatica
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
@@ -2507,11 +2497,6 @@ namespace RM.src.RM250619
                 // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
                 while (!stopCycleRoutine && !AlarmManager.blockingAlarm) 
                 {
-                    weldingVel = vel > 0 ? float.Parse(Math.Round(vel / 10, 0).ToString()) : 0;
-                    weldingAcc = acc > 0 ? float.Parse(Math.Round(acc / 10, 0).ToString()) : 0;
-                    velRotazione = weldingVel * 2 < 100 ? weldingVel * 2 : 100; // Assegnazione velocità rotazione rapportato a velocità lineare
-                    accRotazione = weldingAcc * 2 < 100 ? weldingAcc * 2 : 100; // Assegnazione accelerazione rotazione rapportato ad accelerazione lineare
-
                     switch (step)
                     {
                         case 0:
@@ -2565,28 +2550,26 @@ namespace RM.src.RM250619
                         case 10:
                             #region Movimento a punto di Pick
 
-                            inPosition = false; // Reset inPosition
+                            if (prendidaNastro)
+                            {
+                                inPosition = false; // Reset inPosition
 
-                            movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
-                                ovl, blendT, config); // Invio punto di Home
-                            GetRobotMovementCode(movementResult);
+                                movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
+                                    ovl, blendT, config); // Invio punto di Home
+                                GetRobotMovementCode(movementResult);
 
-                            /*
-                            movementResult = robot.MoveCart(descPosApproachPick, tool, user, velMovimentoLibero, accMovimentoLibero,
-                                ovl, blendT, config); // Invio punto di avvicinamento Pick
-                            GetRobotMovementCode(movementResult);*/
+                                movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, vel, acc,
+                                    ovl, blendT, config); // Invio punto di avvicinamento Pick
+                                GetRobotMovementCode(movementResult);
 
-                            movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, vel, acc,
-                                ovl, blendT, config); // Invio punto di avvicinamento Pick
-                            GetRobotMovementCode(movementResult);
+                                movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc,
+                                    ovl, blendT, config); // Invio punto di Pick
+                                GetRobotMovementCode(movementResult);
 
-                            movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc,
-                                ovl, blendT, config); // Invio punto di Pick
-                            GetRobotMovementCode(movementResult);
+                                endingPoint = descPosPick; // Assegnazione endingPoint
 
-                            endingPoint = descPosPick; // Assegnazione endingPoint
-
-                            step = 11; //20
+                                step = 11; //20
+                            }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 10 - Movimento a punto di Pick");
                             break;
@@ -2687,7 +2670,7 @@ namespace RM.src.RM250619
 
                                     inPosition = false; // Reset inPosition
                                     
-                                    movementResult = robot.MoveCart(descPosStart, tool, user, weldingVel, weldingAcc,
+                                    movementResult = robot.MoveCart(descPosStart, tool, user, vel, acc,
                                         ovl, blendT, config); // Invio movimento al punto di start
                                     GetRobotMovementCode(movementResult);
 
@@ -2721,12 +2704,12 @@ namespace RM.src.RM250619
 
                                     inPosition = false; // Reset inPosition
 
-                                    movementResult = robot.MoveCart(descPosMiddleLato1Point, tool, user, weldingVel, weldingAcc,
+                                    movementResult = robot.MoveCart(descPosMiddleLato1Point, tool, user, vel, acc,
                                        ovl, blendT, config);
 
                                     GetRobotMovementCode(movementResult);
 
-                                    movementResult = robot.MoveCart(descPosStartAngolo2, tool, user, weldingVel, weldingAcc,
+                                    movementResult = robot.MoveCart(descPosStartAngolo2, tool, user, vel, acc,
                                         ovl, blendT, config); // Invio movimento al punto di start di angolo2
 
                                     /*
@@ -2752,8 +2735,8 @@ namespace RM.src.RM250619
                                     _ = Task.Run(() =>
                                     {
                                         movementResult = robot.MoveC(
-                                            jointIntAngolo2, descPosIntAngolo2, tool, user, velRotazione, accRotazione, epos, offsetFlag, offset,
-                                            jointEndAngolo2, descPosEndAngolo2, tool, user, velRotazione, accRotazione, epos, offsetFlag, offset,
+                                            jointIntAngolo2, descPosIntAngolo2, tool, user, vel, acc, epos, offsetFlag, offset,
+                                            jointEndAngolo2, descPosEndAngolo2, tool, user, vel, acc, epos, offsetFlag, offset,
                                             ovl, blendT
                                         ); // Invio del movimento circolare attorno l'angolo2
                                         GetRobotMovementCode(movementResult);
@@ -2769,11 +2752,11 @@ namespace RM.src.RM250619
                                 case 130:
                                     #region Movimento al punto di Start Angolo3
 
-                                    movementResult = robot.MoveCart(descPosMiddleLato2Point, tool, user, weldingVel, weldingAcc,
+                                    movementResult = robot.MoveCart(descPosMiddleLato2Point, tool, user, vel, acc,
                                        ovl, blendT, config);
                                     GetRobotMovementCode(movementResult);
 
-                                    movementResult = robot.MoveCart(descPosStartAngolo3, tool, user, weldingVel, weldingAcc,
+                                    movementResult = robot.MoveCart(descPosStartAngolo3, tool, user, vel, acc,
                                         ovl, blendT, config); // Invio movimento al punto di start di angolo3
                                     GetRobotMovementCode(movementResult);
 
@@ -2791,8 +2774,8 @@ namespace RM.src.RM250619
                                     _ = Task.Run(() =>
                                     {
                                         movementResult = robot.MoveC(
-                                            jointIntAngolo3, descPosIntAngolo3, tool, user, velRotazione, accRotazione, epos, offsetFlag, offset,
-                                            jointEndAngolo3, descPosEndAngolo3, tool, user, velRotazione, accRotazione, epos, offsetFlag, offset,
+                                            jointIntAngolo3, descPosIntAngolo3, tool, user, vel, acc, epos, offsetFlag, offset,
+                                            jointEndAngolo3, descPosEndAngolo3, tool, user, vel, acc, epos, offsetFlag, offset,
                                             ovl, blendT
                                         ); // Invio del movimento circolare attorno l'angolo3
                                         GetRobotMovementCode(movementResult);
@@ -2808,11 +2791,11 @@ namespace RM.src.RM250619
                                 case 150:
                                     #region Movimento al punto di start Angolo4
 
-                                    movementResult = robot.MoveCart(descPosMiddleLato3Point, tool, user, weldingVel, weldingAcc,
+                                    movementResult = robot.MoveCart(descPosMiddleLato3Point, tool, user, vel, acc,
                                        ovl, blendT, config);
                                     GetRobotMovementCode(movementResult);
 
-                                    movementResult = robot.MoveCart(descPosStartAngolo4, tool, user, weldingVel, weldingAcc,
+                                    movementResult = robot.MoveCart(descPosStartAngolo4, tool, user, vel, acc,
                                         ovl, blendT, config); // Invio movimento al punto di start di angolo4
                                     GetRobotMovementCode(movementResult);
 
@@ -2830,8 +2813,8 @@ namespace RM.src.RM250619
                                     _ = Task.Run(() =>
                                     {
                                         movementResult = robot.MoveC(
-                                            jointIntAngolo4, descPosIntAngolo4, tool, user, velRotazione, accRotazione, epos, offsetFlag, offset,
-                                            jointEndAngolo4, descPosEndAngolo4, tool, user, velRotazione, accRotazione, epos, offsetFlag, offset,
+                                            jointIntAngolo4, descPosIntAngolo4, tool, user, vel, acc, epos, offsetFlag, offset,
+                                            jointEndAngolo4, descPosEndAngolo4, tool, user, vel, acc, epos, offsetFlag, offset,
                                             ovl, blendT
                                         ); // Invio del movimento circolare attorno l'angolo4
                                         GetRobotMovementCode(movementResult);
@@ -2849,11 +2832,11 @@ namespace RM.src.RM250619
 
                                     inPosition = false; // Reset inPosition
 
-                                    movementResult = robot.MoveCart(descPosMiddleLato4Point, tool, user, weldingVel, weldingAcc,
+                                    movementResult = robot.MoveCart(descPosMiddleLato4Point, tool, user, vel, acc,
                                        ovl, blendT, config);
                                     GetRobotMovementCode(movementResult);
 
-                                    movementResult = robot.MoveCart(descPosEnd, tool, user, weldingVel, weldingAcc,
+                                    movementResult = robot.MoveCart(descPosEnd, tool, user, vel, acc,
                                         ovl, blendT, config); // Invio movimento a punto di End
                                     GetRobotMovementCode(movementResult);
 
@@ -2892,7 +2875,7 @@ namespace RM.src.RM250619
                             break;
 
                         case 45:
-                            movementResult = robot.MoveCart(descPosMoveAwayWelding, tool, user, weldingVel, weldingAcc,
+                            movementResult = robot.MoveCart(descPosMoveAwayWelding, tool, user, vel, acc,
                                     ovl, blendT, config); // Invio movimento punto di allontanamento saldatura
                             GetRobotMovementCode(movementResult);
 
@@ -2943,7 +2926,7 @@ namespace RM.src.RM250619
                                 ovl, blendT, config); // Invio punto di avvicinamento Pick
                             GetRobotMovementCode(movementResult);
 
-                            movementResult = robot.MoveCart(descPosPlace, tool, user, weldingVel, weldingAcc, 
+                            movementResult = robot.MoveCart(descPosPlace, tool, user, vel, acc, 
                                 ovl, blendT, config); // Invio movimento a punto di Home
                             GetRobotMovementCode(movementResult);
 
@@ -2997,7 +2980,7 @@ namespace RM.src.RM250619
                                 ovl, blendT, config); // Invio punto di avvicinamento Place
                                 GetRobotMovementCode(movementResult);*/
 
-                                movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, weldingVel, weldingAcc,
+                                movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, vel, acc,
                                 ovl, blendT, config); // Invio punto di avvicinamento Pick
                                 GetRobotMovementCode(movementResult);
 
@@ -3930,14 +3913,11 @@ namespace RM.src.RM250619
         /// </summary>
         public static void GoToHomePosition()
         {
-            
-
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
             int result = robot.MoveCart(pHome, tool, user, vel, acc, ovl, blendT, config);
 
             GetRobotMovementCode(result);
-
         }
 
         /// <summary>
@@ -3967,12 +3947,12 @@ namespace RM.src.RM250619
         {
             if (isInPositionPick)
             {
-                RetractRobotToSafePosition(384.0f); // Mi alzo a quota fissa di 230.0f 
+                RetractRobotToSafePosition(200.0f); // Mi alzo dal punto in cui mi trovo di 200mm
             }
             else
             if (isInPositionPlace)
             {
-                RetractRobotToSafePosition(384.0f); // Mi alzo a quota fissa di 230.0f 
+                RetractRobotToSafePosition(200.0f); // Mi alzo dal punto in cui mi trovo di 200mm
             }
             if (isInPositionWelding)
             {
