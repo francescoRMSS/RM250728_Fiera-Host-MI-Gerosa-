@@ -72,6 +72,8 @@
             this.pnl_pinzeStatus = new System.Windows.Forms.Panel();
             this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
+            this.btn_stopRobot = new System.Windows.Forms.Button();
+            this.btn_rallentaRobot = new System.Windows.Forms.Button();
             this.pnl_status.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -625,6 +627,26 @@
             this.label11.TabIndex = 0;
             this.label11.Text = "Pinze";
             // 
+            // btn_stopRobot
+            // 
+            this.btn_stopRobot.Location = new System.Drawing.Point(24, 206);
+            this.btn_stopRobot.Name = "btn_stopRobot";
+            this.btn_stopRobot.Size = new System.Drawing.Size(96, 48);
+            this.btn_stopRobot.TabIndex = 292;
+            this.btn_stopRobot.Text = "Stop Robot";
+            this.btn_stopRobot.UseVisualStyleBackColor = true;
+            this.btn_stopRobot.Click += new System.EventHandler(this.ClickEvent_stopRobot);
+            // 
+            // btn_rallentaRobot
+            // 
+            this.btn_rallentaRobot.Location = new System.Drawing.Point(24, 258);
+            this.btn_rallentaRobot.Name = "btn_rallentaRobot";
+            this.btn_rallentaRobot.Size = new System.Drawing.Size(96, 50);
+            this.btn_rallentaRobot.TabIndex = 293;
+            this.btn_rallentaRobot.Text = "Rallenta robot";
+            this.btn_rallentaRobot.UseVisualStyleBackColor = true;
+            this.btn_rallentaRobot.Click += new System.EventHandler(this.ClickEvent_rallentaRobot);
+            // 
             // UC_HomePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -632,6 +654,8 @@
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = global::RM.Properties.Resources.UC_homePage;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.Controls.Add(this.btn_rallentaRobot);
+            this.Controls.Add(this.btn_stopRobot);
             this.Controls.Add(this.pnl_status);
             this.Controls.Add(this.btn_restoreSCreenSaverManager);
             this.Controls.Add(this.lbl_restoreScreenSaverManager);
@@ -729,5 +753,7 @@
         private System.Windows.Forms.Panel pnl_pinzeStatus;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button btn_stopRobot;
+        private System.Windows.Forms.Button btn_rallentaRobot;
     }
 }

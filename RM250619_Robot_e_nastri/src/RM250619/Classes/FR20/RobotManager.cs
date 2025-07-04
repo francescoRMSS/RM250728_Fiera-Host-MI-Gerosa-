@@ -2307,6 +2307,8 @@ namespace RM.src.RM250619
         {
             #region Dichiarazione punti routine
 
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+
             #region Punto home
 
             var home = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
@@ -2316,27 +2318,35 @@ namespace RM.src.RM250619
 
             #region Punto di pick
 
+            JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
             var pick = ApplicationConfig.applicationsManager.GetPosition("pPick", "RM");
             DescPose descPosPick = new DescPose(pick.x, pick.y, pick.z, pick.rx, pick.ry, pick.rz);
+            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
 
             #endregion
 
             #region Punto avvicinamento pick
 
+            JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPick = new DescPose(pick.x, pick.y, pick.z + 200, pick.rx, pick.ry, pick.rz);
+            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
 
             #endregion
 
             #region Punto di place
 
+            JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
             var place = ApplicationConfig.applicationsManager.GetPosition("pPlace", "RM");
             DescPose descPosPlace = new DescPose(place.x, place.y, place.z, place.rx, place.ry, place.rz);
+            RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
 
             #endregion
 
             #region Punto avvicinamento place
 
+            JointPos jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPlace = new DescPose(place.x, place.y, place.z + 200, place.rx, place.ry, place.rz);
+            RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
 
             #endregion
 
@@ -2345,7 +2355,6 @@ namespace RM.src.RM250619
             #region Parametri movimento
 
             ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
-            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
             byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
 
             #endregion
@@ -2447,9 +2456,17 @@ namespace RM.src.RM250619
                                     ovl, blendT, config); // Invio punto di avvicinamento Pick
                                 GetRobotMovementCode(movementResult);
 
+                                // Movimento lineare
+                                movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc,
+                                    ovl, blendT, epos, 0, offsetFlag, offset
+                                    );
+
+                                /* 
+                                // Movimento cartesiano
                                 movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc,
                                     ovl, blendT, config); // Invio punto di Pick
                                 GetRobotMovementCode(movementResult);
+                                */
 
                                 endingPoint = descPosPick; // Assegnazione endingPoint
 
@@ -2504,11 +2521,18 @@ namespace RM.src.RM250619
 
                         case 50:
                             #region Movimento a punto di Home
-                            
+
+                            // Movimento lineare
+                            movementResult = robot.MoveL(jointPosApproachPick, descPosApproachPick, tool, user, vel, acc,
+                                ovl, blendT, epos, 0, offsetFlag, offset
+                                );
+
+                            /*
+                            // Movimento cartesiano
                             movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc,
                                 ovl, blendT, config); // Invio punto di avvicinamento Pick
                             GetRobotMovementCode(movementResult);
-
+                            */
                             movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
                                 ovl, blendT, config); // Invio punto di Home
                             GetRobotMovementCode(movementResult);
@@ -2531,9 +2555,17 @@ namespace RM.src.RM250619
                                     ovl, blendT, config); // Invio punto di avvicinamento place
                                 GetRobotMovementCode(movementResult);
 
+                                // Movimento lineare
+                                movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc,
+                                    ovl, blendT, epos, 0, offsetFlag, offset
+                                    );
+
+                                /*
+                                // Movimento cartesiano
                                 movementResult = robot.MoveCart(descPosPlace, tool, user, vel, acc,
                                     ovl, blendT, config); // Invio punto di place
                                 GetRobotMovementCode(movementResult);
+                                */
 
                                 endingPoint = descPosPlace; // Assegnazione endingPoint
 
@@ -2588,9 +2620,16 @@ namespace RM.src.RM250619
                         case 100:
                             #region Movimento a punto di Home e riavvio ciclo
 
+                            // Movimento lineare
+                            movementResult = robot.MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc,
+                                ovl, blendT, epos, 0, offsetFlag, offset
+                                );
+                            /*
+                            // Movimento cartesiano
                             movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc,
                                 ovl, blendT, config); // Invio punto di avvicinamento place
                             GetRobotMovementCode(movementResult);
+                            */
 
                             movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
                                 ovl, blendT, config); // Invio punto di Home

@@ -1974,5 +1974,28 @@ namespace RM.src.RM250619
         {
             FormHomePage.Instance.ScreenSaverManagerForm.RestoreLocation();
         }
+
+        private void ClickEvent_stopRobot(object sender, EventArgs e)
+        {
+            RobotManager.stopCycleRoutine = true; // Alzo richiesta per fermare thread di riproduzione ciclo
+                                                  // Imposto a 0 (false) Automatic_Start che resetta anche il contatore dello spostamento della catena
+            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+
+            // Imposto a 1 (true) Auto_Cycle_End che segnala che il ciclo automatico è terminato
+            RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
+
+            EnableCycleButton(0);
+
+            RobotManager.currentIndex = -1; // Reset dell'indice corrente della posizione che riproduce il Robot
+
+            RobotManager.robot.PauseMotion(); // Invio comando di pausa al robot
+            Thread.Sleep(200); // Leggero ritardo per stabilizzare il robot
+            RobotManager.robot.StopMotion(); // Stop Robot con conseguente cancellazione di coda di punti
+        }
+
+        private void ClickEvent_rallentaRobot(object sender, EventArgs e)
+        {
+
+        }
     }
 }
