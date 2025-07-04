@@ -2303,126 +2303,14 @@ namespace RM.src.RM250619
         /// <summary>
         /// Esegue ciclo saldatura
         /// </summary>
-        public static async void StartWelding()
+        public static async void PickAndPlaceFocaccia()
         {
             #region Dichiarazione punti routine
-
-            #region Punto start
-
-            JointPos jointStart = new JointPos(0, 0, 0, 0, 0, 0);
-            var start = ApplicationConfig.applicationsManager.GetPosition("Start", "RM");
-            DescPose descPosStart = new DescPose(start.x, start.y, start.z, start.rx, start.ry, start.rz);
-            RobotManager.robot.GetInverseKin(0, descPosStart, -1, ref jointStart);
-
-            #endregion
-
-            #region Punto avvicinamento saldatura
-
-            DescPose descPosApporachWelding = new DescPose(start.x, start.y - 20, start.z, start.rx, start.ry, start.rz);
-
-            #endregion
-
-            var middleLato1 = ApplicationConfig.applicationsManager.GetPosition("pMiddleLato1", "RM");
-            DescPose descPosMiddleLato1Point = new DescPose(middleLato1.x, middleLato1.y, middleLato1.z,
-                middleLato1.rx, middleLato1.ry, middleLato1.rz);
-
-            #region Angolo2
-
-            // ----- Punto StartAngolo2  -----
-            JointPos jointStartAngolo2 = new JointPos(0, 0, 0, 0, 0, 0);
-            var startAngolo2 = ApplicationConfig.applicationsManager.GetPosition("StartAngolo2", "RM");
-            DescPose descPosStartAngolo2 = new DescPose(startAngolo2.x, startAngolo2.y, startAngolo2.z, startAngolo2.rx, startAngolo2.ry, startAngolo2.rz);
-            RobotManager.robot.GetInverseKin(0, descPosStartAngolo2, -1, ref jointStartAngolo2);
-
-            // ----- Punto IntAngolo2  -----
-            JointPos jointIntAngolo2 = new JointPos(0, 0, 0, 0, 0, 0);
-            var IntAngolo2 = ApplicationConfig.applicationsManager.GetPosition("IntAngolo2", "RM");
-            DescPose descPosIntAngolo2 = new DescPose(IntAngolo2.x, IntAngolo2.y, IntAngolo2.z, IntAngolo2.rx, IntAngolo2.ry, IntAngolo2.rz);
-            RobotManager.robot.GetInverseKin(0, descPosIntAngolo2, -1, ref jointIntAngolo2);
-
-            // ----- Punto EndAngolo2  -----
-            JointPos jointEndAngolo2 = new JointPos(0, 0, 0, 0, 0, 0);
-            var endAngolo2 = ApplicationConfig.applicationsManager.GetPosition("EndAngolo2", "RM");
-            DescPose descPosEndAngolo2 = new DescPose(endAngolo2.x, endAngolo2.y, endAngolo2.z, endAngolo2.rx, endAngolo2.ry, endAngolo2.rz);
-            RobotManager.robot.GetInverseKin(0, descPosEndAngolo2, -1, ref jointEndAngolo2);
-
-            #endregion
-
-            var middleLato2 = ApplicationConfig.applicationsManager.GetPosition("pMiddleLato2", "RM");
-            DescPose descPosMiddleLato2Point = new DescPose(middleLato2.x, middleLato2.y, middleLato2.z,
-                middleLato2.rx, middleLato2.ry, middleLato2.rz);
-
-            #region Angolo3
-
-            // ----- Punto StartAngolo3  -----
-            JointPos jointStartAngolo3 = new JointPos(0, 0, 0, 0, 0, 0);
-            var startAngolo3 = ApplicationConfig.applicationsManager.GetPosition("StartAngolo3", "RM");
-            DescPose descPosStartAngolo3 = new DescPose(startAngolo3.x, startAngolo3.y, startAngolo3.z, startAngolo3.rx, startAngolo3.ry, startAngolo3.rz);
-            RobotManager.robot.GetInverseKin(0, descPosStartAngolo3, -1, ref jointStartAngolo3);
-
-            // ----- Punto IntAngolo3  -----
-            JointPos jointIntAngolo3 = new JointPos(0, 0, 0, 0, 0, 0);
-            var IntAngolo3 = ApplicationConfig.applicationsManager.GetPosition("IntAngolo3", "RM");
-            DescPose descPosIntAngolo3 = new DescPose(IntAngolo3.x, IntAngolo3.y, IntAngolo3.z, IntAngolo3.rx, IntAngolo3.ry, IntAngolo3.rz);
-            RobotManager.robot.GetInverseKin(0, descPosIntAngolo3, -1, ref jointIntAngolo3);
-
-            // ----- Punto EndAngolo3  -----
-            JointPos jointEndAngolo3 = new JointPos(0, 0, 0, 0, 0, 0);
-            var endAngolo3 = ApplicationConfig.applicationsManager.GetPosition("EndAngolo3", "RM");
-            DescPose descPosEndAngolo3 = new DescPose(endAngolo3.x, endAngolo3.y, endAngolo3.z, endAngolo3.rx, endAngolo3.ry, endAngolo3.rz);
-            RobotManager.robot.GetInverseKin(0, descPosEndAngolo3, -1, ref jointEndAngolo3);
-
-            #endregion
-
-            var middleLato3 = ApplicationConfig.applicationsManager.GetPosition("pMiddleLato3", "RM");
-            DescPose descPosMiddleLato3Point = new DescPose(middleLato3.x, middleLato3.y, middleLato3.z,
-                middleLato3.rx, middleLato3.ry, middleLato3.rz);
-
-            #region Angolo4
-
-            // ----- Punto StartAngolo4  -----
-            JointPos jointStartAngolo4 = new JointPos(0, 0, 0, 0, 0, 0);
-            var startAngolo4 = ApplicationConfig.applicationsManager.GetPosition("StartAngolo4", "RM");
-            DescPose descPosStartAngolo4 = new DescPose(startAngolo4.x, startAngolo4.y, startAngolo4.z, startAngolo4.rx, startAngolo4.ry, startAngolo4.rz);
-            RobotManager.robot.GetInverseKin(0, descPosStartAngolo4, -1, ref jointStartAngolo4);
-
-            // ----- Punto IntAngolo4  -----
-            JointPos jointIntAngolo4 = new JointPos(0, 0, 0, 0, 0, 0);
-            var IntAngolo4 = ApplicationConfig.applicationsManager.GetPosition("IntAngolo4", "RM");
-            DescPose descPosIntAngolo4 = new DescPose(IntAngolo4.x, IntAngolo4.y, IntAngolo4.z, IntAngolo4.rx, IntAngolo4.ry, IntAngolo4.rz);
-            RobotManager.robot.GetInverseKin(0, descPosIntAngolo4, -1, ref jointIntAngolo4);
-
-            // ----- Punto EndAngolo4  -----
-            JointPos jointEndAngolo4 = new JointPos(0, 0, 0, 0, 0, 0);
-            var endAngolo4 = ApplicationConfig.applicationsManager.GetPosition("EndAngolo4", "RM");
-            DescPose descPosEndAngolo4 = new DescPose(endAngolo4.x, endAngolo4.y, endAngolo4.z, endAngolo4.rx, endAngolo4.ry, endAngolo4.rz);
-            RobotManager.robot.GetInverseKin(0, descPosEndAngolo4, -1, ref jointEndAngolo4);
-
-            #endregion
-
-            var middleLato4 = ApplicationConfig.applicationsManager.GetPosition("pMiddleLato4", "RM");
-            DescPose descPosMiddleLato4Point = new DescPose(middleLato4.x, middleLato4.y, middleLato4.z,
-                middleLato4.rx, middleLato4.ry, middleLato4.rz);
-
-            #region Punto end
-
-            JointPos jointEnd = new JointPos(0, 0, 0, 0, 0, 0);
-            var end = ApplicationConfig.applicationsManager.GetPosition("End", "RM");
-            DescPose descPosEnd = new DescPose(end.x, end.y, end.z, end.rx, end.ry, end.rz);
-            RobotManager.robot.GetInverseKin(0, descPosEnd, -1, ref jointEnd);
-
-            #endregion
 
             #region Punto home
 
             var home = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
-
-            #endregion
-
-            #region Punto pre home
-
-            DescPose descPosPreHome = new DescPose(end.x, end.y - 300, end.z, end.rx, end.ry, end.rz);
 
             #endregion
 
@@ -2452,16 +2340,6 @@ namespace RM.src.RM250619
 
             #endregion
 
-            #region Punto allontanamento saldatura
-
-            DescPose descPosMoveAwayWelding = new DescPose(end.x, end.y - 50, end.z, end.rx, end.ry, end.rz);
-
-            #endregion
-
-            var approachPick = ApplicationConfig.applicationsManager.GetPosition("pPick", "RM");
-            DescPose descPosApproachPickPoint = new DescPose(approachPick.x, approachPick.y, approachPick.z + 100,
-                approachPick.rx, approachPick.ry, approachPick.rz);
-
             #endregion
 
             #region Parametri movimento
@@ -2472,19 +2350,26 @@ namespace RM.src.RM250619
 
             #endregion
 
-            int movementResult = -1; // Indica il codice risultante del movimento del Robot
+            // Indica il codice risultante del movimento del Robot
+            int movementResult = -1;
 
-            int weldingMovement = 100; // Identifica il movimento che deve fare il Robot
+            // Reset condizione di stop ciclo
+            stopCycleRoutine = false;
 
-            stopCycleRoutine = false; // Reset condizione di stop ciclo
+            // Reset richiesta di stop ciclo
+            stopCycleRequested = false;
 
-            stopCycleRequested = false; // Reset richiesta di stop ciclo
+            // Reset step routine
+            step = 0;
 
-            step = 0; // Reset step routine
+            // Dichiarazione stato della pinza
+            int gripperStatus = -1; 
 
-            int gripperStatus = -1; // Dichiarazione stato della pinza
-
+            // Segnale di pick
             bool prendidaNastro = true;
+
+            // Segnale di place
+            bool appoggiaSuScatola = true;
 
             // Segnalo al PLC che il robot sta lavorando in modalità automatica
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
@@ -2558,7 +2443,7 @@ namespace RM.src.RM250619
                                     ovl, blendT, config); // Invio punto di Home
                                 GetRobotMovementCode(movementResult);
 
-                                movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, vel, acc,
+                                movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc,
                                     ovl, blendT, config); // Invio punto di avvicinamento Pick
                                 GetRobotMovementCode(movementResult);
 
@@ -2568,7 +2453,7 @@ namespace RM.src.RM250619
 
                                 endingPoint = descPosPick; // Assegnazione endingPoint
 
-                                step = 11; //20
+                                step = 20;
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 10 - Movimento a punto di Pick");
@@ -2576,55 +2461,51 @@ namespace RM.src.RM250619
 
                         #endregion
 
-                        case 11:
-                            #region Delay per calcolo in position
+                        case 20:
+                            #region Delay per calcolo in position punto di pick
+
                             Thread.Sleep(500);
-                            step = 20;
-                            formDiagnostics.UpdateRobotStepDescription("STEP 11 -  Delay calcolo in position");
+                            step = 30;
+                            formDiagnostics.UpdateRobotStepDescription("STEP 20 -  Delay calcolo in position punto di pick");
                             break;
+
                         #endregion
 
-                        case 20:
+                        case 30:
                             #region Attesa inPosition punto di Pick
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
                                 // Chiudo la pinza
                                 RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
-                                step = 25;
+                                step = 40;
                             }
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 20 - Attesa inPosition punto di Pick");
+                            formDiagnostics.UpdateRobotStepDescription("STEP 30 - Attesa inPosition punto di Pick");
                             break;
 
                         #endregion
 
-                        case 25:
-                            #region Presa pinza
+                        case 40:
+                            #region Presa focaccia
 
                             gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
 
                            // if (gripperStatus == 0)
                             {
-                                //Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
-                                step = 30;
+                                Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
+                                step = 50;
                             }
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 25 - Presa pinza");
+                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Presa focaccia");
                             break;
 
                         #endregion
 
-                        case 30:
-                            #region Movimento a punto di Home e avvicinamento saldatura
-
-                            inPosition = false;
-                            /*
-                            movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc,
-                                ovl, blendT, config); // Invio punto di avvicinamento Pick
-                            GetRobotMovementCode(movementResult);*/
+                        case 50:
+                            #region Movimento a punto di Home
                             
-                            movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, vel, acc,
+                            movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc,
                                 ovl, blendT, config); // Invio punto di avvicinamento Pick
                             GetRobotMovementCode(movementResult);
 
@@ -2632,283 +2513,9 @@ namespace RM.src.RM250619
                                 ovl, blendT, config); // Invio punto di Home
                             GetRobotMovementCode(movementResult);
 
-                            movementResult = robot.MoveCart(descPosApporachWelding, tool, user, vel, acc, ovl, 
-                                blendT, config); // Invio punto di avvicinamento saldatura
-                            GetRobotMovementCode(movementResult);
-
-                            endingPoint = descPosApporachWelding;
-
-                            step = 35;
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 30 - Movimento a punto di Home e avvicinamento saldatura");
-                            break;
-
-                        #endregion
-
-                        case 35:
-                            #region Attesa inPosition del punto di avvicinamento saldatura
-
-                            if (inPosition)
-                            {
-                                WaitForRobotToFinish();
-                                
-                                step = 40; ////
-                            }
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 35 - Attesa inPosition del punto di avvicinamento saldatura");
-                            break;
-
-                        #endregion
-
-                        case 40:
-                            #region Switch in base al movimento da inviare al Robot per la saldatura
-
-                            switch (weldingMovement) 
-                            {
-                                case 100:
-                                    #region Movimento al punto di Start
-
-                                    inPosition = false; // Reset inPosition
-                                    
-                                    movementResult = robot.MoveCart(descPosStart, tool, user, vel, acc,
-                                        ovl, blendT, config); // Invio movimento al punto di start
-                                    GetRobotMovementCode(movementResult);
-
-                                    endingPoint = descPosStart; // Assegnazione endingPoint
-
-                                    weldingMovement = 101;
-
-                                    formDiagnostics.UpdateRobotStepDescription("STEP 100 - Switch in base al movimento da inviare al Robot per la saldatura");
-
-                                    break;
-
-                                #endregion
-
-                                case 101:
-                                    #region Attesa inPosition del punto di Start
-
-                                    if (inPosition)
-                                    {
-                                        Thread.Sleep(1000);
-                                        weldingMovement = 110;
-                                    }
-
-                                    formDiagnostics.UpdateRobotStepDescription("STEP 101 - Attesa inPosition del punto di Start");
-
-                                    break;
-
-                                #endregion
-
-                                case 110:
-                                    #region Movimento al punto di Start Angolo2
-
-                                    inPosition = false; // Reset inPosition
-
-                                    movementResult = robot.MoveCart(descPosMiddleLato1Point, tool, user, vel, acc,
-                                       ovl, blendT, config);
-
-                                    GetRobotMovementCode(movementResult);
-
-                                    movementResult = robot.MoveCart(descPosStartAngolo2, tool, user, vel, acc,
-                                        ovl, blendT, config); // Invio movimento al punto di start di angolo2
-
-                                    /*
-                                    movementResult = robot.MoveL(jointStartAngolo2, descPosStartAngolo2, tool, user, vel, acc,
-                                        ovl, blendT, new ExaxisPos(), 0, 0, new DescPose()); // Invio movimento al punto di start di angolo2
-                                    */
-
-                                    GetRobotMovementCode(movementResult);
-
-                                    endingPoint = descPosStartAngolo2; // Assegnazione endingPoint
-
-                                    weldingMovement = 120;
-
-                                    formDiagnostics.UpdateRobotStepDescription("STEP 110 - Movimento al punto di Start Angolo2");
-                                    break;
-
-                                #endregion
-
-                                case 120:
-                                    #region Movimento attorno angolo2
-
-                                    // Invio dei punti in un thread separato ma senza necessità di conservare il risultato (_)
-                                    _ = Task.Run(() =>
-                                    {
-                                        movementResult = robot.MoveC(
-                                            jointIntAngolo2, descPosIntAngolo2, tool, user, vel, acc, epos, offsetFlag, offset,
-                                            jointEndAngolo2, descPosEndAngolo2, tool, user, vel, acc, epos, offsetFlag, offset,
-                                            ovl, blendT
-                                        ); // Invio del movimento circolare attorno l'angolo2
-                                        GetRobotMovementCode(movementResult);
-                                    });
-                                   
-                                    weldingMovement = 130;
-
-                                    formDiagnostics.UpdateRobotStepDescription("STEP 120 - Movimento attorno angolo2");
-                                    break;
-
-                                #endregion
-
-                                case 130:
-                                    #region Movimento al punto di Start Angolo3
-
-                                    movementResult = robot.MoveCart(descPosMiddleLato2Point, tool, user, vel, acc,
-                                       ovl, blendT, config);
-                                    GetRobotMovementCode(movementResult);
-
-                                    movementResult = robot.MoveCart(descPosStartAngolo3, tool, user, vel, acc,
-                                        ovl, blendT, config); // Invio movimento al punto di start di angolo3
-                                    GetRobotMovementCode(movementResult);
-
-                                    weldingMovement = 140;
-
-                                    formDiagnostics.UpdateRobotStepDescription("STEP 130 - Movimento al punto di Start Angolo3");
-                                    break;
-
-                                #endregion
-
-                                case 140:
-                                    #region Movimento attorno angolo3
-
-                                    // Invio dei punti in un thread separato ma senza necessità di conservare il risultato (_)
-                                    _ = Task.Run(() =>
-                                    {
-                                        movementResult = robot.MoveC(
-                                            jointIntAngolo3, descPosIntAngolo3, tool, user, vel, acc, epos, offsetFlag, offset,
-                                            jointEndAngolo3, descPosEndAngolo3, tool, user, vel, acc, epos, offsetFlag, offset,
-                                            ovl, blendT
-                                        ); // Invio del movimento circolare attorno l'angolo3
-                                        GetRobotMovementCode(movementResult);
-                                    });
-
-                                    weldingMovement = 150;
-
-                                    formDiagnostics.UpdateRobotStepDescription("STEP 140 - Movimento attorno angolo3");
-                                    break;
-
-                                #endregion
-
-                                case 150:
-                                    #region Movimento al punto di start Angolo4
-
-                                    movementResult = robot.MoveCart(descPosMiddleLato3Point, tool, user, vel, acc,
-                                       ovl, blendT, config);
-                                    GetRobotMovementCode(movementResult);
-
-                                    movementResult = robot.MoveCart(descPosStartAngolo4, tool, user, vel, acc,
-                                        ovl, blendT, config); // Invio movimento al punto di start di angolo4
-                                    GetRobotMovementCode(movementResult);
-
-                                    weldingMovement = 160;
-
-                                    formDiagnostics.UpdateRobotStepDescription("STEP 150 - Movimento al punto di start Angolo4");
-                                    break;
-
-                                #endregion
-
-                                case 160:
-                                    #region Movimento attorno angolo4
-
-                                    // Invio dei punti in un thread separato ma senza necessità di conservare il risultato (_)
-                                    _ = Task.Run(() =>
-                                    {
-                                        movementResult = robot.MoveC(
-                                            jointIntAngolo4, descPosIntAngolo4, tool, user, vel, acc, epos, offsetFlag, offset,
-                                            jointEndAngolo4, descPosEndAngolo4, tool, user, vel, acc, epos, offsetFlag, offset,
-                                            ovl, blendT
-                                        ); // Invio del movimento circolare attorno l'angolo4
-                                        GetRobotMovementCode(movementResult);
-                                    });
-
-                                    weldingMovement = 170;
-                                    formDiagnostics.UpdateRobotStepDescription("STEP 160 - Movimento attorno angolo4");
-
-                                    break;
-
-                                #endregion
-
-                                case 170:
-                                    #region Movimento al punto di End
-
-                                    inPosition = false; // Reset inPosition
-
-                                    movementResult = robot.MoveCart(descPosMiddleLato4Point, tool, user, vel, acc,
-                                       ovl, blendT, config);
-                                    GetRobotMovementCode(movementResult);
-
-                                    movementResult = robot.MoveCart(descPosEnd, tool, user, vel, acc,
-                                        ovl, blendT, config); // Invio movimento a punto di End
-                                    GetRobotMovementCode(movementResult);
-
-                                    endingPoint = descPosEnd; // Assegnazione EndingPoint
-           
-                                    step = 43; // 45
-
-                                    formDiagnostics.UpdateRobotStepDescription("STEP 170 - Movimento al punto di End");
-                                    break;
-
-                                    #endregion
-                            }
-
-                        break;
-
-                        #endregion
-
-                        case 43:
-                            #region Attesa inPosition ultimo punto di saldatura
-
-                            if (inPosition)
-                            {
-                                inPosition = false; // Reset inPosition
-                                step = 44;
-                            }
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 45 - Attesa inPosition ultimo punto di saldatura");
-                            break;
-
-                        #endregion
-
-                        case 44:
-                            Thread.Sleep(500);
-                            step = 45;
-                            formDiagnostics.UpdateRobotStepDescription("STEP 44 -  Delay calcolo in position");
-                            break;
-
-                        case 45:
-                            movementResult = robot.MoveCart(descPosMoveAwayWelding, tool, user, vel, acc,
-                                    ovl, blendT, config); // Invio movimento punto di allontanamento saldatura
-                            GetRobotMovementCode(movementResult);
-
-                            endingPoint = descPosMoveAwayWelding; // Assegnazione EndingPoint
-
-                            step = 46;
-                            formDiagnostics.UpdateRobotStepDescription("STEP 45 -  Invio punto di allontanamento saldatura");
-                            break;
-
-                        case 46:
-                            #region Attesa inPosition punto di allontanamento saldatura
-
-                            if (inPosition)
-                            {
-                                step = 50;
-                                inPosition = false;
-                            }
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 46 -  Attesa inPosition punto di allontanamento saldatura");
-                            break;
-                            
-                        #endregion
-
-                        case 50:
-                            #region Movimento a punto di Home
-
-                            movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
-                                ovl, blendT, config); // Invio movimento a punto di Home
-                            GetRobotMovementCode(movementResult);
+                            formDiagnostics.UpdateRobotStepDescription("STEP 50 - Movimento a punto di Home");
 
                             step = 60;
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 50 -  Movimento a punto di Home");
                             break;
 
                         #endregion
@@ -2916,109 +2523,84 @@ namespace RM.src.RM250619
                         case 60:
                             #region Movimento a punto di place
 
-                            inPosition = false; // Reset inPosition
-                            /*
-                            movementResult = robot.MoveCart(descPosApproachPlace, tool, user, velMovimentoLibero, accMovimentoLibero,
-                                ovl, blendT, config); // Invio movimento a punto di avvicinamento Place
-                            GetRobotMovementCode(movementResult);*/
-
-                            movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, vel, acc,
-                                ovl, blendT, config); // Invio punto di avvicinamento Pick
-                            GetRobotMovementCode(movementResult);
-
-                            movementResult = robot.MoveCart(descPosPlace, tool, user, vel, acc, 
-                                ovl, blendT, config); // Invio movimento a punto di Home
-                            GetRobotMovementCode(movementResult);
-
-                            endingPoint = descPosPlace; // Assegnazione endingPoint
-
-                            step = 61; // 70
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 60 -  Movimento a punto di place");
-                            break;
-
-                        #endregion
-
-                        case 61:
-                            Thread.Sleep(500);
-                            step = 70;
-                            formDiagnostics.UpdateRobotStepDescription("STEP 61 -  Delay calcolo in position");
-                            break;
-
-                        case 70:
-                            #region Attesa InPosition punto di place
-
-                            if (inPosition)
+                            if (appoggiaSuScatola)
                             {
-                                // Apro la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
+                                inPosition = false; // Reset inPosition
 
-                                step = 71;
+                                movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc,
+                                    ovl, blendT, config); // Invio punto di avvicinamento place
+                                GetRobotMovementCode(movementResult);
+
+                                movementResult = robot.MoveCart(descPosPlace, tool, user, vel, acc,
+                                    ovl, blendT, config); // Invio punto di place
+                                GetRobotMovementCode(movementResult);
+
+                                endingPoint = descPosPlace; // Assegnazione endingPoint
+
+                                step = 70;
                             }
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 70 -  Attesa InPosition punto di place");
+                            formDiagnostics.UpdateRobotStepDescription("STEP 60 - Movimento a punto di place");
                             break;
+
                         #endregion
 
-                        case 71:
-                            #region Attesa delay calcolo in position
+                        case 70:
+                            #region Delay per calcolo in position punto di place
+
                             Thread.Sleep(500);
                             step = 80;
-                            formDiagnostics.UpdateRobotStepDescription("STEP 71 -  Delay calcolo in position");
+                            formDiagnostics.UpdateRobotStepDescription("STEP 70 -  Delay calcolo in position punto di place");
                             break;
+
                         #endregion
 
                         case 80:
+                            #region Attesa inPosition punto di Place
 
-                            #region Apertura pinza e invio punto home finale
-
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
-                            if (gripperStatus == 1)
+                            if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
-                                //Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
-                                /*movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc,
-                                ovl, blendT, config); // Invio punto di avvicinamento Place
-                                GetRobotMovementCode(movementResult);*/
-
-                                movementResult = robot.MoveCart(descPosApproachPickPoint, tool, user, vel, acc,
-                                ovl, blendT, config); // Invio punto di avvicinamento Pick
-                                GetRobotMovementCode(movementResult);
-
-                                movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
-                                ovl, blendT, config); // Invio punto di Home
-                                GetRobotMovementCode(movementResult);
-
-                                inPosition = false; // Resetto in position
-                                endingPoint = descPosHome; // Assegno ending point
-
-                                step = 81;
+                                // Chiudo la pinza
+                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                                step = 90;
                             }
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 80 -  Apertura pinza");
-                            break;
-
-                        #endregion
-
-                        case 81:
-                            #region Delay calcolo in position
-                            Thread.Sleep(500);
-                            step = 90;
-                            formDiagnostics.UpdateRobotStepDescription("STEP 81 -  Delay calcolo in position");
+                            formDiagnostics.UpdateRobotStepDescription("STEP 80 - Attesa inPosition punto di place");
                             break;
                         #endregion
 
                         case 90:
-                            #region Attesa in position punto home e attesa delay prima di reset
-                            if(inPosition)
+                            #region Rilascio focaccia
+
+                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
+
+                            // if (gripperStatus == 0)
                             {
-                                Thread.Sleep(5000);
-                                step = 0; // reset step routine
-                                weldingMovement = 100; // reset step saldatura
-                                inPosition = false; // Resetto in position
+                                Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
+                                step = 100;
                             }
-                            formDiagnostics.UpdateRobotStepDescription("STEP 90 -  Attesa InPosition punto di avvicinamento place");
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 90 - Rilascio focaccia");
                             break;
+
                         #endregion
+
+                        case 100:
+                            #region Movimento a punto di Home e riavvio ciclo
+
+                            movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc,
+                                ovl, blendT, config); // Invio punto di avvicinamento place
+                            GetRobotMovementCode(movementResult);
+
+                            movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
+                                ovl, blendT, config); // Invio punto di Home
+                            GetRobotMovementCode(movementResult);
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 100 - Movimento a punto di Home e riavvio ciclo");
+
+                            step = 0;
+                            break;
+                            #endregion
 
                     }
 
