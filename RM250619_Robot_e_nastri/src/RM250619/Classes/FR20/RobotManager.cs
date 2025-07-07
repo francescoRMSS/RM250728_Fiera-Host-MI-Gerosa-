@@ -2327,6 +2327,22 @@ namespace RM.src.RM250619
             return points;
         }
 
+        static void CalcolaPosizioneFocacce(double larghezzaFocaccia, double profonditaFocaccia,
+                                     double larghezzaPallet, double profonditaPallet)
+        {
+            // Calcola quante focacce possono entrare in larghezza e profondità
+            int numeroFocacceLungoPalletX = (int)(larghezzaPallet / larghezzaFocaccia);
+            int numeroFocacceLungoPalletY = (int)(profonditaPallet / profonditaFocaccia);
+
+            // Calcola il numero totale di focacce che possono essere posizionate sulla superficie del pallet
+            int numeroTotaleFocacce = numeroFocacceLungoPalletX * numeroFocacceLungoPalletY;
+
+            // Stampa i risultati
+            Console.WriteLine($"Numero di focacce in larghezza: {numeroFocacceLungoPalletX}");
+            Console.WriteLine($"Numero di focacce in profondità: {numeroFocacceLungoPalletY}");
+            Console.WriteLine($"Numero totale di focacce che puoi mettere sul pallet: {numeroTotaleFocacce}");
+        }
+
 
         /// <summary>
         /// Esegue ciclo saldatura
@@ -2415,9 +2431,16 @@ namespace RM.src.RM250619
             int riga = 0;
             int colonna = 0;
             int strato = 0;
-            int larghezzaFocaccia = 250;
-            int profonditaFocaccia = 200;
+            int larghezzaFocaccia = 300;
+            int profonditaFocaccia = 300;
             int altezzaStrato = 100;
+            int larghezzaPallet = 800;
+            int profonditaPallet = 600;
+            int numeroRighe = (int)(larghezzaPallet / larghezzaFocaccia);
+            int numeroColonne = (int)(profonditaPallet / profonditaFocaccia);
+
+            // CalcolaPosizioneFocacce(larghezzaFocaccia,profonditaFocaccia,larghezzaPallet,profonditaPallet);
+
             DescPose originePallet = descPosPlace;
             JointPos jointPosPlaceCalculated = new JointPos(0, 0, 0, 0, 0, 0);
 
@@ -2634,13 +2657,13 @@ namespace RM.src.RM250619
                                     );
 
 
-                                if (colonna < 1)
+                                if (colonna < numeroColonne - 1)
                                 {
                                     colonna++;
                                 }
                                 else
                                 {
-                                    if (riga < 2)
+                                    if (riga < numeroRighe - 1)
                                     {
                                         riga++;
                                         colonna = 0;
