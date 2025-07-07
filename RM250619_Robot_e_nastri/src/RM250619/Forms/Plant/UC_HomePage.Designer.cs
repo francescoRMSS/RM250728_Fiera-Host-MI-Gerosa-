@@ -73,7 +73,8 @@
             this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.btn_stopRobot = new System.Windows.Forms.Button();
-            this.btn_rallentaRobot = new System.Windows.Forms.Button();
+            this.btn_pauseRobot = new System.Windows.Forms.Button();
+            this.btn_resumeRobot = new System.Windows.Forms.Button();
             this.pnl_status.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -629,7 +630,7 @@
             // 
             // btn_stopRobot
             // 
-            this.btn_stopRobot.Location = new System.Drawing.Point(24, 206);
+            this.btn_stopRobot.Location = new System.Drawing.Point(921, 332);
             this.btn_stopRobot.Name = "btn_stopRobot";
             this.btn_stopRobot.Size = new System.Drawing.Size(96, 48);
             this.btn_stopRobot.TabIndex = 292;
@@ -637,15 +638,29 @@
             this.btn_stopRobot.UseVisualStyleBackColor = true;
             this.btn_stopRobot.Click += new System.EventHandler(this.ClickEvent_stopRobot);
             // 
-            // btn_rallentaRobot
+            // btn_pauseRobot
             // 
-            this.btn_rallentaRobot.Location = new System.Drawing.Point(24, 258);
-            this.btn_rallentaRobot.Name = "btn_rallentaRobot";
-            this.btn_rallentaRobot.Size = new System.Drawing.Size(96, 50);
-            this.btn_rallentaRobot.TabIndex = 293;
-            this.btn_rallentaRobot.Text = "Rallenta robot";
-            this.btn_rallentaRobot.UseVisualStyleBackColor = true;
-            this.btn_rallentaRobot.Click += new System.EventHandler(this.ClickEvent_rallentaRobot);
+            this.btn_pauseRobot.BackColor = System.Drawing.Color.Red;
+            this.btn_pauseRobot.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.btn_pauseRobot.Location = new System.Drawing.Point(921, 386);
+            this.btn_pauseRobot.Name = "btn_pauseRobot";
+            this.btn_pauseRobot.Size = new System.Drawing.Size(96, 48);
+            this.btn_pauseRobot.TabIndex = 294;
+            this.btn_pauseRobot.Text = "Barriera attivata";
+            this.btn_pauseRobot.UseVisualStyleBackColor = false;
+            this.btn_pauseRobot.Click += new System.EventHandler(this.btn_pauseRobot_Click);
+            // 
+            // btn_resumeRobot
+            // 
+            this.btn_resumeRobot.BackColor = System.Drawing.Color.Lime;
+            this.btn_resumeRobot.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.btn_resumeRobot.Location = new System.Drawing.Point(921, 440);
+            this.btn_resumeRobot.Name = "btn_resumeRobot";
+            this.btn_resumeRobot.Size = new System.Drawing.Size(96, 48);
+            this.btn_resumeRobot.TabIndex = 295;
+            this.btn_resumeRobot.Text = "Barriera disattivata";
+            this.btn_resumeRobot.UseVisualStyleBackColor = false;
+            this.btn_resumeRobot.Click += new System.EventHandler(this.btn_resumeRobot_Click);
             // 
             // UC_HomePage
             // 
@@ -654,7 +669,8 @@
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = global::RM.Properties.Resources.UC_homePage;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.Controls.Add(this.btn_rallentaRobot);
+            this.Controls.Add(this.btn_resumeRobot);
+            this.Controls.Add(this.btn_pauseRobot);
             this.Controls.Add(this.btn_stopRobot);
             this.Controls.Add(this.pnl_status);
             this.Controls.Add(this.btn_restoreSCreenSaverManager);
@@ -754,6 +770,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button btn_stopRobot;
-        private System.Windows.Forms.Button btn_rallentaRobot;
+        private System.Windows.Forms.Button btn_pauseRobot;
+        private System.Windows.Forms.Button btn_resumeRobot;
     }
 }

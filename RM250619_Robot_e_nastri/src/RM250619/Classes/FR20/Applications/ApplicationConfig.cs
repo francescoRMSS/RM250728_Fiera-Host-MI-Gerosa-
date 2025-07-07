@@ -74,7 +74,7 @@ namespace RM.src.RM250619
                 return false;
 
             //RobotManager.applicationName = ApplicationConfig.applicationsManager.GetApplicationName();
-            RobotManager.applicationName = "Applicazione demo fiera CEMSA"; ////////////////
+            RobotManager.applicationName = "Applicazione RM250619 Robot e nastri";
 
             log.Info("Applications loaded");
 

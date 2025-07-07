@@ -3128,6 +3128,11 @@
             Acceleration utilizzata in home routine
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.RobotManager.robotIsPaused">
+            <summary>
+            A true quando il robot viene messo in pausa
+            </summary>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.TriggerRobotVelocityChangedEvent(System.Int32)">
             <summary>
             Invoca metodo relativo al cambio di velocità del robot

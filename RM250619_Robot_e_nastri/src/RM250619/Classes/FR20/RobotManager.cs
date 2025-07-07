@@ -559,6 +559,11 @@ namespace RM.src.RM250619
         /// </summary>
         private static int homeRoutineAcc = 100;
 
+        /// <summary>
+        /// A true quando il robot viene messo in pausa
+        /// </summary>
+        public static bool robotIsPaused = false;
+
         #endregion
 
         #region Metodi della classe RobotManager
@@ -2300,6 +2305,28 @@ namespace RM.src.RM250619
             }
         }
 
+       static  List<DescPose> InterpolateLinear(DescPose p1, DescPose p2, int steps)
+        {
+            List<DescPose> points = new List<DescPose>();
+            for (int i = 1; i < steps; i++) // salta p1 (già incluso), evita p2 (lo invii a parte)
+            {
+                double t = (double)i / steps;
+                DescPose pt = new DescPose
+                (
+                    p1.tran.x + (p2.tran.x - p1.tran.x) * t,
+                    p1.tran.y + (p2.tran.y - p1.tran.y) * t,
+                    p1.tran.z + (p2.tran.z - p1.tran.z) * t,
+                    p1.rpy.rx + (p2.rpy.rx - p1.rpy.rx) * t,
+                    p1.rpy.ry + (p2.rpy.ry - p1.rpy.ry) * t,
+                    p1.rpy.rz + (p2.rpy.rz - p1.rpy.rz) * t
+                );
+
+                points.Add(pt);
+            }
+            return points;
+        }
+
+
         /// <summary>
         /// Esegue ciclo saldatura
         /// </summary>
@@ -2384,6 +2411,7 @@ namespace RM.src.RM250619
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
             RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
 
+
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
             await Task.Run(async () =>
@@ -2448,35 +2476,49 @@ namespace RM.src.RM250619
                             {
                                 inPosition = false; // Reset inPosition
 
+                                // STEP 1: Invio punto di Home
                                 movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
-                                    ovl, blendT, config); // Invio punto di Home
+                                    ovl, blendT, config);
                                 GetRobotMovementCode(movementResult);
 
+                                /*
+                                // STEP 2: Inserimento punti intermedi tra Home e ApproachPick
+                                int numSteps = 10; // Numero di punti interpolati (puoi regolare)
+                                List<DescPose> intermediatePoints = InterpolateLinear(descPosHome, descPosApproachPick, numSteps);
+
+                                foreach (var point in intermediatePoints)
+                                {
+                                    movementResult = robot.MoveCart(point, tool, user, vel, acc,
+                                        ovl, blendT, config);
+                                    GetRobotMovementCode(movementResult);
+                                }
+                                */
+
+                                // STEP 3: Invio punto di avvicinamento Pick
                                 movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc,
-                                    ovl, blendT, config); // Invio punto di avvicinamento Pick
+                                    ovl, blendT, config);
                                 GetRobotMovementCode(movementResult);
 
-                                // Movimento lineare
+                                // STEP 4: Movimento lineare finale
                                 movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc,
-                                    ovl, blendT, epos, 0, offsetFlag, offset
-                                    );
+                                    ovl, blendT, epos, 0, offsetFlag, offset);
+                                GetRobotMovementCode(movementResult);
 
-                                /* 
-                                // Movimento cartesiano
+                                // Optional: movimento cartesiano alternativo
+                                /*
                                 movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc,
-                                    ovl, blendT, config); // Invio punto di Pick
+                                    ovl, blendT, config);
                                 GetRobotMovementCode(movementResult);
                                 */
 
                                 endingPoint = descPosPick; // Assegnazione endingPoint
-
                                 step = 20;
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 10 - Movimento a punto di Pick");
                             break;
-
                         #endregion
+
 
                         case 20:
                             #region Delay per calcolo in position punto di pick

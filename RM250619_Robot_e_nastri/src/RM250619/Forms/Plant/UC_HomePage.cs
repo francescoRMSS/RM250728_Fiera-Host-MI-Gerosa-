@@ -1148,7 +1148,7 @@ namespace RM.src.RM250619
         }
 
         /// <summary>
-        /// Avvio dell'applicazione scelta
+        /// Avvio dell'applicazione
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1996,6 +1996,24 @@ namespace RM.src.RM250619
         private void ClickEvent_rallentaRobot(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_pauseRobot_Click(object sender, EventArgs e)
+        {
+            if (!RobotManager.robotIsPaused) // Se il robot non è già in pausa
+            {
+                RobotManager.robot.PauseMotion(); // Metto in pausa il robot
+                RobotManager.robotIsPaused = true; // Imposto a true il booleano che segnala che il robot è in pausa
+            }
+        }
+
+        private void btn_resumeRobot_Click(object sender, EventArgs e)
+        {
+            if (RobotManager.robotIsPaused) // Se il robot era in pausa
+            {
+                RobotManager.robot.ResumeMotion();
+                RobotManager.robotIsPaused = false; // Imposto a false il booleano che segnala che il robot è in pausa
+            }
         }
     }
 }
