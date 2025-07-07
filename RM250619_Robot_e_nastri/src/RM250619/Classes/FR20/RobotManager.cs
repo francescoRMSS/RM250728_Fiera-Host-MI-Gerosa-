@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using CookComputing.XmlRpc;
 using System.Web;
+using System.Drawing.Imaging;
 
 namespace RM.src.RM250619
 {
@@ -2411,6 +2412,14 @@ namespace RM.src.RM250619
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
             RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
 
+            int riga = 0;
+            int colonna = 0;
+            int strato = 0;
+            int larghezzaFocaccia = 250;
+            int profonditaFocaccia = 200;
+            int altezzaStrato = 100;
+            DescPose originePallet = descPosPlace;
+            JointPos jointPosPlaceCalculated = new JointPos(0, 0, 0, 0, 0, 0);
 
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
@@ -2593,15 +2602,56 @@ namespace RM.src.RM250619
                             {
                                 inPosition = false; // Reset inPosition
 
+                                DescPose puntoFocaccia = CalcolaPosizioneFocaccia(
+                                    riga,
+                                    colonna,
+                                    strato,
+                                    larghezzaFocaccia,
+                                    profonditaFocaccia,
+                                    altezzaStrato,
+                                    originePallet
+                                );
+
+                                RobotManager.robot.GetInverseKin(0, puntoFocaccia, -1, ref jointPosPlaceCalculated);
+                                
+                                descPosApproachPlace = new DescPose(
+                                    puntoFocaccia.tran.x,
+                                    puntoFocaccia.tran.y,
+                                    puntoFocaccia.tran.z + 200,
+                                    puntoFocaccia.rpy.rx,
+                                    puntoFocaccia.rpy.ry,
+                                    puntoFocaccia.rpy.rz);
+
+                                RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
+
                                 movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc,
-                                    ovl, blendT, config); // Invio punto di avvicinamento place
+                                  ovl, blendT, config); // Invio punto di avvicinamento place
                                 GetRobotMovementCode(movementResult);
 
                                 // Movimento lineare
-                                movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc,
+                                movementResult = robot.MoveL(jointPosPlaceCalculated, puntoFocaccia, tool, user, vel, acc,
                                     ovl, blendT, epos, 0, offsetFlag, offset
                                     );
 
+
+                                if (colonna < 1)
+                                {
+                                    colonna++;
+                                }
+                                else
+                                {
+                                    if (riga < 2)
+                                    {
+                                        riga++;
+                                        colonna = 0;
+                                    }
+                                    else
+                                    {
+                                        riga = 0;
+                                        colonna = 0;
+                                        strato++;
+                                    }
+                                }
                                 /*
                                 // Movimento cartesiano
                                 movementResult = robot.MoveCart(descPosPlace, tool, user, vel, acc,
@@ -2609,7 +2659,7 @@ namespace RM.src.RM250619
                                 GetRobotMovementCode(movementResult);
                                 */
 
-                                endingPoint = descPosPlace; // Assegnazione endingPoint
+                                endingPoint = puntoFocaccia; // Assegnazione endingPoint
 
                                 step = 70;
                             }
@@ -2691,6 +2741,27 @@ namespace RM.src.RM250619
 
 
         }
+
+        static DescPose CalcolaPosizioneFocaccia(
+    int riga,
+    int colonna,
+    int strato,
+    double larghezzaFocaccia,
+    double profonditaFocaccia,
+    double altezzaStrato,
+    DescPose originePallet)
+        {
+            double x = originePallet.tran.x + (colonna * larghezzaFocaccia) + (larghezzaFocaccia / 2.0);
+            double y = originePallet.tran.y + (riga * profonditaFocaccia) + (profonditaFocaccia / 2.0);
+            double z = originePallet.tran.z + (strato * altezzaStrato);
+
+            double rx = originePallet.rpy.rx;
+            double ry = originePallet.rpy.ry;
+            double rz = originePallet.rpy.rz;
+
+            return new DescPose(x, y, z, rx, ry, rz);
+        }
+
 
         /// <summary>
         /// A true quando il ciclo deve riprendere da un punto precedente

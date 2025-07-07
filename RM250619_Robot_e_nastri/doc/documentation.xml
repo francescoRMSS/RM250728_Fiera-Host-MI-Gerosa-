@@ -6253,7 +6253,7 @@
         </member>
         <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_startApp(System.Object,System.EventArgs)">
             <summary>
-            Avvio dell'applicazione scelta
+            Avvio dell'applicazione
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
