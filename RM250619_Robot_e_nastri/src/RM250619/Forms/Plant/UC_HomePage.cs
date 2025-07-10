@@ -1159,12 +1159,12 @@ namespace RM.src.RM250619
 
             // Se il Robot non si trova in home position e non stava riproducendo nessun punto
             // stampo un messaggio di errore per richiedere di portare il Robot in posizione di Home
-            if (!RobotManager.isInHomePosition && RobotManager.currentIndex < 0)
+           /* if (!RobotManager.isInHomePosition && RobotManager.currentIndex < 0)
             {
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Spostare il Robot nella posizione di Home", Resources.safeZone_yellow32);
                 log.Error("Tentativo di avvio applicazione con Robot fuori posizione di Home");
                 return;
-            }
+            }*/
 
             /*
             int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
@@ -1223,7 +1223,8 @@ namespace RM.src.RM250619
                     else // Se invece il ciclo deve iniziare dall'inizio, avvio normalmente
                     {
                        // RobotManager.StartApplication(application);
-                        RobotManager.PickAndPlaceFocaccia();
+                        // RobotManager.PickAndPlaceFocaccia();
+                        RobotManager.PickAndPlaceTeglia();
                         EnableCycleButton(1); // Disattiva stop, disattiva pause, attiva start
                     }
                 }

@@ -2765,6 +2765,430 @@ namespace RM.src.RM250619
 
         }
 
+        /// <summary>
+        /// Esegue ciclo saldatura
+        /// </summary>
+        public static async void PickAndPlaceTeglia()
+        {
+            #region Dichiarazione punti routine
+
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+
+            #region Punto home
+
+            var home = ApplicationConfig.applicationsManager.GetPosition("pHomeTeglia", "RM");
+            DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
+
+            #endregion
+
+            #region Punto di pick
+
+            JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
+            var pick = ApplicationConfig.applicationsManager.GetPosition("pPickTeglia", "RM");
+            DescPose descPosPick = new DescPose(pick.x, pick.y, pick.z, pick.rx, pick.ry, pick.rz);
+            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
+
+            #endregion
+
+            #region Punto avvicinamento pick
+
+            JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
+            DescPose descPosApproachPick = new DescPose(pick.x + 550, pick.y, pick.z - 40, pick.rx, pick.ry, pick.rz);
+            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
+
+            #endregion
+
+            #region Punto allontanamento post pick
+
+            JointPos jointPosAllontanamentoPick = new JointPos(0, 0, 0, 0, 0, 0);
+            DescPose descPosAllontanamentoPick = new DescPose(descPosApproachPick.tran.x, descPosApproachPick.tran.y,
+                descPosApproachPick.tran.z + 80, descPosApproachPick.rpy.rx, descPosApproachPick.rpy.ry, descPosApproachPick.rpy.rz);
+            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPick, -1, ref jointPosAllontanamentoPick);
+
+            #endregion
+
+            #region Punto post pick
+
+            JointPos jointPosPostPick = new JointPos(0, 0, 0, 0, 0, 0);
+            DescPose descPosPostPick = new DescPose(pick.x, pick.y, pick.z + 40, pick.rx, pick.ry, pick.rz);
+            RobotManager.robot.GetInverseKin(0, descPosPostPick, -1, ref jointPosPostPick);
+
+            #endregion
+
+            #region Punto di place
+
+            JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
+            var place = ApplicationConfig.applicationsManager.GetPosition("pPlaceTeglia", "RM");
+            DescPose descPosPlace = new DescPose(place.x, place.y, place.z, place.rx, place.ry, place.rz);
+            RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
+
+            #endregion
+
+            #region Punto avvicinamento place
+
+            JointPos jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
+            var approachplace = ApplicationConfig.applicationsManager.GetPosition("pAvvicinamentoPlaceTeglia", "RM");
+            DescPose descPosApproachPlace = new DescPose(place.x + 550, place.y, place.z + 40,
+                place.rx, place.ry, place.rz);
+            RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
+
+            #endregion
+
+            #region Punto allontanamento place
+
+            JointPos jointPosAllontanamentoPlace = new JointPos(0, 0, 0, 0, 0, 0);
+            DescPose descPosAllontanamentoPlace = new DescPose(place.x + 550, place.y, place.z - 40,
+                place.rx, place.ry, place.rz);
+            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPlace, -1, ref jointPosAllontanamentoPlace);
+
+            #endregion
+
+            #region Punto post place
+
+            JointPos jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
+            DescPose descPosPostPlace = new DescPose(place.x, place.y, place.z - 10,
+                place.rx, place.ry, place.rz);
+            RobotManager.robot.GetInverseKin(0, descPosPostPlace, -1, ref jointPosPostPlace);
+
+            #endregion
+
+          
+
+            #endregion
+
+            #region Parametri movimento
+
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
+            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
+
+            #endregion
+
+            // Indica il codice risultante del movimento del Robot
+            int movementResult = -1;
+
+            // Reset condizione di stop ciclo
+            stopCycleRoutine = false;
+
+            // Reset richiesta di stop ciclo
+            stopCycleRequested = false;
+
+            // Reset step routine
+            step = 0;
+
+            // Dichiarazione stato della pinza
+            int gripperStatus = -1;
+
+            // Segnale di pick
+            bool prendidaNastro = true;
+
+            // Segnale di place
+            bool appoggiaSuScatola = true;
+
+            // Segnalo al PLC che il robot sta lavorando in modalità automatica
+            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
+
+            int riga = 0;
+            int colonna = 0;
+            int strato = 0;
+            int larghezzaFocaccia = 300;
+            int profonditaFocaccia = 300;
+            int altezzaStrato = 100;
+            int larghezzaPallet = 800;
+            int profonditaPallet = 600;
+            int numeroRighe = (int)(larghezzaPallet / larghezzaFocaccia);
+            int numeroColonne = (int)(profonditaPallet / profonditaFocaccia);
+
+            // CalcolaPosizioneFocacce(larghezzaFocaccia,profonditaFocaccia,larghezzaPallet,profonditaPallet);
+
+            DescPose originePallet = descPosPlace;
+            JointPos jointPosPlaceCalculated = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Aspetto che il metodo termini, ma senza bloccare il thread principale
+            // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
+            await Task.Run(async () =>
+            {
+                // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
+                while (!stopCycleRoutine && !AlarmManager.blockingAlarm)
+                {
+                    switch (step)
+                    {
+                        case 0:
+                            #region Check richiesta interruzione ciclo
+
+                            if (!stopCycleRequested) // Se non è stata richiesta nessuna interruzione
+                            {
+                                step = 10;
+                            }
+                            else // Se è stata richiesta l'interruzione
+                            {
+                                // Ritorno del Robot a casa
+                                GoToHomePosition();
+
+                                // Reset inPosition
+                                inPosition = false;
+
+                                // Assegnazione del pHome come ending point
+                                endingPoint = descPosHome;
+
+                                step = 5;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 0 - Check richiesta interruzione ciclo");
+                            break;
+
+                        #endregion
+
+                        case 5:
+                            #region Termine routine
+
+                            if (inPosition) // Se il Robot è arrivato in HomePosition
+                            {
+                                // Abilito il tasto Start per avviare nuovamente la routine
+                                EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
+
+                                // Segnalo al PLC che il robot ha terminato il lavoro in modalità automatica
+                                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+                                RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
+
+                                // Imposto a false il booleano che fa terminare il thread della routine
+                                stopCycleRoutine = true;
+
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 5 - Termine routine");
+                            break;
+
+                        #endregion
+
+                        case 10:
+                            #region Movimento a punto di Pick
+
+                            if (prendidaNastro)
+                            {
+                                inPosition = false; // Reset inPosition
+
+                                // STEP 1: Invio punto di Home
+                                movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
+                                    ovl, blendT, config);
+                                GetRobotMovementCode(movementResult);
+
+                                /*
+                                // STEP 2: Inserimento punti intermedi tra Home e ApproachPick
+                                int numSteps = 10; // Numero di punti interpolati (puoi regolare)
+                                List<DescPose> intermediatePoints = InterpolateLinear(descPosHome, descPosApproachPick, numSteps);
+
+                                foreach (var point in intermediatePoints)
+                                {
+                                    movementResult = robot.MoveCart(point, tool, user, vel, acc,
+                                        ovl, blendT, config);
+                                    GetRobotMovementCode(movementResult);
+                                }
+                                */
+
+                                // STEP 3: Invio punto di avvicinamento Pick
+                                movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc,
+                                    ovl, blendT, config);
+                                GetRobotMovementCode(movementResult);
+
+                                // STEP 4: Movimento lineare finale
+                                movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc,
+                                    ovl, blendT, epos, 0, offsetFlag, offset);
+                                GetRobotMovementCode(movementResult);
+
+                                // Optional: movimento cartesiano alternativo
+                                /*
+                                movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc,
+                                    ovl, blendT, config);
+                                GetRobotMovementCode(movementResult);
+                                */
+
+                                endingPoint = descPosPick; // Assegnazione endingPoint
+                                step = 20;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 10 - Movimento a punto di Pick");
+                            break;
+                        #endregion
+
+
+                        case 20:
+                            #region Delay per calcolo in position punto di pick
+
+                            Thread.Sleep(500);
+                            step = 30;
+                            formDiagnostics.UpdateRobotStepDescription("STEP 20 -  Delay calcolo in position punto di pick");
+                            break;
+
+                        #endregion
+
+                        case 30:
+                            #region Attesa inPosition punto di Pick
+
+                            if (inPosition) // Se il Robot è arrivato in posizione di Pick
+                            {
+                                // Chiudo la pinza
+                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
+                                step = 40;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 30 - Attesa inPosition punto di Pick");
+                            break;
+
+                        #endregion
+
+                        case 40:
+                            #region Presa focaccia
+
+                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
+
+                            // if (gripperStatus == 0)
+                            {
+                                Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
+                                step = 50;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Presa focaccia");
+                            break;
+
+                        #endregion
+
+                        case 50:
+                            #region Movimento a punto di Home
+
+                            movementResult = robot.MoveL(jointPosPostPick, descPosPostPick, tool, user, vel, acc,
+                                   ovl, blendT, epos, 0, offsetFlag, offset);
+                            GetRobotMovementCode(movementResult);
+
+                            // Movimento lineare
+                            movementResult = robot.MoveL(jointPosAllontanamentoPick, descPosAllontanamentoPick, tool, user, vel, acc,
+                                ovl, blendT, epos, 0, offsetFlag, offset
+                                );
+
+                            /*
+                            // Movimento cartesiano
+                            movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc,
+                                ovl, blendT, config); // Invio punto di avvicinamento Pick
+                            GetRobotMovementCode(movementResult);
+                            */
+                            movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
+                                ovl, blendT, config); // Invio punto di Home
+                            GetRobotMovementCode(movementResult);
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 50 - Movimento a punto di Home");
+
+                            step = 60;
+                            break;
+
+                        #endregion
+
+                        case 60:
+                            #region Movimento a punto di place
+
+                            if (appoggiaSuScatola)
+                            {
+                                inPosition = false; // Reset inPosition
+
+                                movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc,
+                                  ovl, blendT, config); // Invio punto di avvicinamento place
+                                GetRobotMovementCode(movementResult);
+
+                                // Movimento lineare
+                                movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc,
+                                    ovl, blendT, epos, 0, offsetFlag, offset
+                                    );
+
+                                endingPoint = descPosPlace; // Assegnazione endingPoint
+
+                                step = 70;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 60 - Movimento a punto di place");
+                            break;
+
+                        #endregion
+
+                        case 70:
+                            #region Delay per calcolo in position punto di place
+
+                            Thread.Sleep(500);
+                            step = 80;
+                            formDiagnostics.UpdateRobotStepDescription("STEP 70 -  Delay calcolo in position punto di place");
+                            break;
+
+                        #endregion
+
+                        case 80:
+                            #region Attesa inPosition punto di Place
+
+                            if (inPosition) // Se il Robot è arrivato in posizione di place
+                            {
+                                // Chiudo la pinza
+                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                                step = 90;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 80 - Attesa inPosition punto di place");
+                            break;
+                        #endregion
+
+                        case 90:
+                            #region Rilascio focaccia
+
+                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
+
+                            // if (gripperStatus == 0)
+                            {
+                                Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
+                                step = 100;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 90 - Rilascio focaccia");
+                            break;
+
+                        #endregion
+
+                        case 100:
+                            #region Movimento a punto di Home e riavvio ciclo
+
+                            // Movimento lineare
+                            movementResult = robot.MoveL(jointPosPostPlace, descPosPostPlace, tool, user, vel, acc,
+                                ovl, blendT, epos, 0, offsetFlag, offset
+                                );
+
+
+                            // Movimento lineare
+                            movementResult = robot.MoveL(jointPosAllontanamentoPlace, descPosAllontanamentoPlace, tool, user, vel, acc,
+                                ovl, blendT, epos, 0, offsetFlag, offset
+                                );
+
+                          
+                            /*
+                            // Movimento cartesiano
+                            movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc,
+                                ovl, blendT, config); // Invio punto di avvicinamento place
+                            GetRobotMovementCode(movementResult);
+                            */
+
+                            movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc,
+                                ovl, blendT, config); // Invio punto di Home
+                            GetRobotMovementCode(movementResult);
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 100 - Movimento a punto di Home e riavvio ciclo");
+
+                            step = 0;
+                            break;
+                            #endregion
+
+                    }
+
+                    Thread.Sleep(10); // Delay routine
+                }
+            });
+
+
+        }
+
         static DescPose CalcolaPosizioneFocaccia(
     int riga,
     int colonna,

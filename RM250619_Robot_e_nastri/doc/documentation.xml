@@ -3463,6 +3463,11 @@
             Esegue ciclo saldatura
             </summary>
         </member>
+        <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceTeglia">
+            <summary>
+            Esegue ciclo saldatura
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.RobotManager.riprendiCiclo">
             <summary>
             A true quando il ciclo deve riprendere da un punto precedente
