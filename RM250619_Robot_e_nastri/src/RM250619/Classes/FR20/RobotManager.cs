@@ -2431,11 +2431,14 @@ namespace RM.src.RM250619
             int riga = 0;
             int colonna = 0;
             int strato = 0;
+
             int larghezzaFocaccia = 300;
             int profonditaFocaccia = 300;
             int altezzaStrato = 100;
+
             int larghezzaPallet = 800;
             int profonditaPallet = 600;
+
             int numeroRighe = (int)(larghezzaPallet / larghezzaFocaccia);
             int numeroColonne = (int)(profonditaPallet / profonditaFocaccia);
 
@@ -2513,19 +2516,6 @@ namespace RM.src.RM250619
                                     ovl, blendT, config);
                                 GetRobotMovementCode(movementResult);
 
-                                /*
-                                // STEP 2: Inserimento punti intermedi tra Home e ApproachPick
-                                int numSteps = 10; // Numero di punti interpolati (puoi regolare)
-                                List<DescPose> intermediatePoints = InterpolateLinear(descPosHome, descPosApproachPick, numSteps);
-
-                                foreach (var point in intermediatePoints)
-                                {
-                                    movementResult = robot.MoveCart(point, tool, user, vel, acc,
-                                        ovl, blendT, config);
-                                    GetRobotMovementCode(movementResult);
-                                }
-                                */
-
                                 // STEP 3: Invio punto di avvicinamento Pick
                                 movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc,
                                     ovl, blendT, config);
@@ -2535,13 +2525,6 @@ namespace RM.src.RM250619
                                 movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc,
                                     ovl, blendT, epos, 0, offsetFlag, offset);
                                 GetRobotMovementCode(movementResult);
-
-                                // Optional: movimento cartesiano alternativo
-                                /*
-                                movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc,
-                                    ovl, blendT, config);
-                                GetRobotMovementCode(movementResult);
-                                */
 
                                 endingPoint = descPosPick; // Assegnazione endingPoint
                                 step = 20;
