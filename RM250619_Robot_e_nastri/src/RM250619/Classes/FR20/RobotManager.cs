@@ -547,6 +547,8 @@ namespace RM.src.RM250619
 
         private static bool? previousGripperStatus = null;
 
+        private static bool? previousBarrierStatus = false;
+
         /// <summary>
         /// Speed utilizzata in home routine
         /// </summary>
@@ -868,6 +870,7 @@ namespace RM.src.RM250619
                 CheckRobotHasProgramInMemory();
                 CheckIsRobotInHomePosition(homePose);
                 CheckGripperStatus();
+                CheckBarrierStatus();
 
                 Thread.Sleep(auxiliaryThreadRefreshPeriod);
             }
@@ -890,6 +893,28 @@ namespace RM.src.RM250619
 
                 previousGripperStatus = gripperStatus > 0;
             }
+        }
+
+        private static void CheckBarrierStatus()
+        {
+            int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
+
+            if (Convert.ToBoolean(barrierStatus) != previousBarrierStatus)
+            {
+                if (barrierStatus == 1)
+                {
+                    robot.PauseMotion(); // Metto in pausa il robot
+                    robotIsPaused = true; // Imposto a true il booleano che segnala che il robot è in pausa
+                }
+                else
+                {
+                    robot.ResumeMotion(); // Faccio ripartire il movimento del robot
+                    robotIsPaused = false; // Imposto a false il booleano che segnala che il robot è in pausa
+                }
+
+                previousBarrierStatus = barrierStatus > 0;
+            }
+            
         }
 
         public static event EventHandler RobotInHomePosition;
@@ -2776,7 +2801,7 @@ namespace RM.src.RM250619
             #region Punto avvicinamento pick
 
             JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
-            DescPose descPosApproachPick = new DescPose(pick.x + 550, pick.y, pick.z - 40, pick.rx, pick.ry, pick.rz);
+            DescPose descPosApproachPick = new DescPose(pick.x, pick.y - 550, pick.z - 40, pick.rx, pick.ry, pick.rz);
             RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
 
             #endregion
@@ -2810,8 +2835,7 @@ namespace RM.src.RM250619
             #region Punto avvicinamento place
 
             JointPos jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
-            var approachplace = ApplicationConfig.applicationsManager.GetPosition("pAvvicinamentoPlaceTeglia", "RM");
-            DescPose descPosApproachPlace = new DescPose(place.x + 550, place.y, place.z + 40,
+            DescPose descPosApproachPlace = new DescPose(place.x, place.y - 550, place.z + 10,
                 place.rx, place.ry, place.rz);
             RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
 
@@ -2820,8 +2844,8 @@ namespace RM.src.RM250619
             #region Punto allontanamento place
 
             JointPos jointPosAllontanamentoPlace = new JointPos(0, 0, 0, 0, 0, 0);
-            DescPose descPosAllontanamentoPlace = new DescPose(place.x + 550, place.y, place.z - 40,
-                place.rx, place.ry, place.rz);
+            DescPose descPosAllontanamentoPlace = new DescPose(place.x, place.y - 550, place.z,
+                place.rx - 3, place.ry, place.rz);
             RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPlace, -1, ref jointPosAllontanamentoPlace);
 
             #endregion
@@ -2830,7 +2854,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPostPlace = new DescPose(place.x, place.y, place.z - 10,
-                place.rx, place.ry, place.rz);
+                place.rx - 3, place.ry, place.rz);
             RobotManager.robot.GetInverseKin(0, descPosPostPlace, -1, ref jointPosPostPlace);
 
             #endregion
@@ -3010,6 +3034,7 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
+                                Thread.Sleep(500);
                                 // Chiudo la pinza
                                 RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
                                 step = 40;
@@ -3106,6 +3131,7 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
+                                Thread.Sleep(500);
                                 // Chiudo la pinza
                                 RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
                                 step = 90;
