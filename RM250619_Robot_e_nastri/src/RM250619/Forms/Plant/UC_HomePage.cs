@@ -2001,6 +2001,15 @@ namespace RM.src.RM250619
 
         private void btn_pauseRobot_Click(object sender, EventArgs e)
         {
+            
+            ROBOT_STATE_PKG robotState = new ROBOT_STATE_PKG();
+
+            RobotManager.robot.GetRobotRealTimeState(ref robotState);
+            MessageBox.Show(robotState.robot_state.ToString());
+
+            return;
+            
+
             if (!RobotManager.robotIsPaused) // Se il robot non è già in pausa
             {
                 RobotManager.robot.PauseMotion(); // Metto in pausa il robot
