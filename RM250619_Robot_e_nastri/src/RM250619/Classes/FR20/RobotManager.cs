@@ -264,7 +264,6 @@ namespace RM.src.RM250619
         private static PositionChecker checker_pos;
         private static PositionChecker checker_safeZone;
 
-
         /// <summary>
         /// A true se robot in movimento
         /// </summary>
@@ -345,6 +344,11 @@ namespace RM.src.RM250619
         /// </summary>
         private static Thread lowPriorityThread;
         private static int lowPriorityRefreshPeriod = 100;
+
+        private static Thread hmiCommandsThrad;
+        private static int hmiCommandsThradRefreshPeriod = 200;
+        private static bool stopHmiCommandsThread = false;
+        private static bool hmiCommandsThreadStarted = false;
 
         /// <summary>
         /// True quando le pinze del roboto sono state chiuse
@@ -464,8 +468,6 @@ namespace RM.src.RM250619
         /// </summary>
         public static bool? prevIsInSafeZone = null;
 
-  
-
         /// <summary>
         /// A true quando si trova in posizione di home
         /// </summary>
@@ -540,14 +542,54 @@ namespace RM.src.RM250619
         /// </summary>
         public static bool stopCycleRequested = false;
 
+        #region Memorizzazione stati precedenti
+
         /// <summary>
         /// Variabile per memorizzare lo stato precedente di isInHomePosition
         /// </summary>
         private static bool? previousIsInHomePosition = null;
 
+        /// <summary>
+        /// Memorizza lo stato precedente della variabile open/close grippers dal PLC
+        /// </summary>
         private static bool? previousGripperStatus = null;
 
+        /// <summary>
+        /// Memorizza lo stato precedente della variabile on/off barrier status dal PLC
+        /// </summary>
         private static bool? previousBarrierStatus = false;
+
+        /// <summary>
+        /// Memorizza lo stato precedente della variabile start/stop ciclo dal PLC
+        /// </summary>
+        private static bool previousStartCommandStatus = false;
+
+        /// <summary>
+        /// Memorizza lo stato precedente della variabile go to home position dal PLC
+        /// </summary>
+        private static bool previousHomeCommandStatus = false;
+
+        /// <summary>
+        /// Memorizza lo stato della variabile selected pallet dal PLC
+        /// </summary>
+        private static int previousPalletCommandNumber = 0;
+
+        /// <summary>
+        /// Memorizza lo stato della variabile selected box format dal PLC
+        /// </summary>
+        private static int previousBoxFormatCommandNumber = 0;
+
+        /// <summary>
+        /// Memorizza lo stato precedente della variabile on/off jog nastro dal PLC
+        /// </summary>
+        private static bool previousJogNastroCommandStatus = false;
+
+        /// <summary>
+        /// Memorizza lo stato della variabile point to record dal PLC
+        /// </summary>
+        private static int previousRegisterPointCommandNumber = 0;
+
+        #endregion
 
         /// <summary>
         /// Speed utilizzata in home routine
@@ -671,7 +713,6 @@ namespace RM.src.RM250619
         {
             return allarmiSegnalati.ContainsKey(alarmKey) && allarmiSegnalati[alarmKey];
         }
-
 
         /// <summary>
         /// Imposta l'allarme come segnalato
@@ -840,6 +881,11 @@ namespace RM.src.RM250619
             lowPriorityThread.Priority = ThreadPriority.Lowest;
             lowPriorityThread.Start();
 
+            hmiCommandsThrad = new Thread(new ThreadStart(HmiCommandsChecker));
+            hmiCommandsThrad.IsBackground = true;
+            hmiCommandsThrad.Priority = ThreadPriority.Normal;
+            hmiCommandsThrad.Start();
+
 
             // InitRobotComponents();
 
@@ -850,6 +896,26 @@ namespace RM.src.RM250619
             robot.SetSpeed(robotProperties.Speed);
 
             return true;
+        }
+
+        private static void HmiCommandsChecker()
+        {
+            //Inizializzo lo start a 0
+            RefresherTask.AddUpdate(PLCTagName.Start_Auto_Robot, 0, "INT16");
+            //Aspetto che il valore cambi
+            Thread.Sleep(2000); // Valutare se tenere il delay o far dei controlli se ha scritto  0 davvero
+            while(true)
+            {
+                //Check Hmi commands
+                CheckHmiCommandStart();  
+                CheckHmiCommandGoToHome();
+                CheckHmiCommandGripper();
+                CheckHmiCommandJogNastro(); // Valutare se farlo qui o direttamente nel PLC
+                CheckHmiSelectedPallet(); // Valutare se farlo qui o direttamente nel PLC
+                CheckHmiSelectedBox(); // Valutare se farlo qui o direttamente nel PLC
+                CheckHmiCommandRecordPoint();
+                CheckHmiCommandResetAlarms();
+            }
         }
 
         /// <summary>
@@ -864,19 +930,86 @@ namespace RM.src.RM250619
 
             while (true)
             {
+                //Check Robot related status
                 CheckIsRobotEnable();
                 CheckRobotMode();
                 CheckIsRobotReadyToStart();
                 CheckRobotHasProgramInMemory();
                 CheckIsRobotInHomePosition(homePose);
-                CheckGripperStatus();
                 CheckBarrierStatus();
 
                 Thread.Sleep(auxiliaryThreadRefreshPeriod);
             }
         }
 
-        private static void CheckGripperStatus()
+        private static void CheckHmiCommandStart()
+        {
+            int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Start_Auto_Robot));
+
+            if(Convert.ToBoolean(startStatus) != previousStartCommandStatus)
+            {
+                if(startStatus == 1)
+                {
+                    // Start
+                    // Setto della velocità del Robot dalle sue proprietà memorizzate sul database
+                    if (robotProperties.Speed > 1)
+                    {
+                        int speed = robotProperties.Speed;
+                        robot.SetSpeed(speed);
+                        log.Info($"Velocità Robot: {speed}");
+                    }
+
+                    if (!AlarmManager.isRobotMoving) // Se il Robot non è in movimento 
+                    {
+                        // Quindi, se il ciclo era stato messo precedentemente in pausa, metto a true il booleano riprendiCiclo
+                        // che fa uscire dallo step di attesa il metodo che riproduce i punti dentro StartApplication
+                        if (pauseCycleRequested)
+                        {
+                            riprendiCiclo = true;
+                        }
+                        else // Se invece il ciclo deve iniziare dall'inizio, avvio normalmente
+                        {
+                            //RobotManager.StartApplication(application);
+                            PickAndPlaceFocaccia();
+                            //PickAndPlaceTeglia();
+                            EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
+                        }
+                    }
+                    else // Se il Robot è in movimento
+                    {
+                        log.Error("Impossibile inviare nuovi punti al Robot. Robot in movimento");
+                        CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Impossibile inviare nuovi punti al Robot");
+                    }
+                } 
+                else
+                {
+                    // Stop
+                    stopCycleRequested = true;
+                    EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
+                }
+
+                previousStartCommandStatus = startStatus > 0;
+            }
+        }
+
+        private static void CheckHmiCommandGoToHome()
+        {
+            int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.HomeCommandIn));
+
+            if (Convert.ToBoolean(homeStatus) != previousHomeCommandStatus)
+            {
+                if (homeStatus == 1)
+                {
+                    // Go to home
+
+                    
+                }
+
+                previousHomeCommandStatus = false; // reset status
+            }
+        }
+
+        private static void CheckHmiCommandGripper()
         {
             int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
             //if(stableMode == 2) 
@@ -917,6 +1050,95 @@ namespace RM.src.RM250619
             
         }
 
+        private static void CheckHmiCommandJogNastro()
+        {
+            int jogNastroStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.JogNastroCommandIn));
+
+            if (Convert.ToBoolean(jogNastroStatus) != previousJogNastroCommandStatus)
+            {
+                if (jogNastroStatus == 1)
+                {
+                    // Start jog nastro
+
+
+                }
+
+                previousJogNastroCommandStatus = false; // reset status
+            }
+        }
+
+        private static void CheckHmiSelectedPallet()
+        {
+            int palletNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPalletIn));
+
+            if (palletNumber >= 0 && palletNumber != previousPalletCommandNumber)
+            {
+                if (palletNumber == 1)
+                {
+
+                }
+                // ...
+
+                previousPalletCommandNumber = palletNumber; // reset status
+            }
+        }
+
+        private static void CheckHmiSelectedBox()
+        {
+            int boxNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedBoxIn));
+
+            if (boxNumber >= 0 && boxNumber != previousBoxFormatCommandNumber)
+            {
+                if (boxNumber == 1)
+                {
+
+                }
+                // ...
+
+                previousBoxFormatCommandNumber = boxNumber; // reset status
+            }
+        }
+
+        private static void CheckHmiCommandRecordPoint()
+        {
+            int recordPointCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPointRecordCommandIn));
+
+            if (recordPointCommand > 0)
+            {
+                // Registrazione punto 
+                
+                if(recordPointCommand == 1)
+                {
+
+                } else if (recordPointCommand == 2)
+                {
+
+                } else if (recordPointCommand == 3)
+                {
+
+                } else if (recordPointCommand == 4)
+                {
+
+                }
+
+                // Reset valore
+                RefresherTask.AddUpdate(PLCTagName.SelectedPointRecordCommandIn, 0, "INT16");
+            }
+        }
+
+        private static void CheckHmiCommandResetAlarms()
+        {
+            int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.ResetAlarmsCommandIn));
+
+            if (resetAlarmsCommand > 0)
+            {
+                // Reset allarme
+
+                // Reset valore
+                RefresherTask.AddUpdate(PLCTagName.ResetAlarmsCommandIn, 0, "INT16");
+            }
+        }
+
         public static event EventHandler RobotInHomePosition;
         public static event EventHandler RobotNotInHomePosition;
         public static event EventHandler GripperStatusON;
@@ -955,7 +1177,6 @@ namespace RM.src.RM250619
                 previousIsInHomePosition = isInHomePosition;
             }
         }
-
 
         /// <summary>
         /// Stato precedente di robotReadyToStart
@@ -1123,7 +1344,6 @@ namespace RM.src.RM250619
             }
         }
 
-
         /// <summary>
         /// Inizializza tutti gli elementi del robot all'avvio:
         /// <para>Teglie</para>
@@ -1238,8 +1458,6 @@ namespace RM.src.RM250619
         public static bool placeOnTape = false;
         public static bool goToTeglia2 = false;
         public static bool zucchera = false;
-
-
 
         /// <summary>
         /// Esegue reset del contatore degli step delle routine
@@ -1456,7 +1674,6 @@ namespace RM.src.RM250619
             }
 
         }
-
 
         /// <summary>
         /// Verifica se il punto corrente corrisponde ai punti di pick e/o place
@@ -1805,8 +2022,6 @@ namespace RM.src.RM250619
                 }
             }
         }
-
-        
 
         /// <summary>
         /// Funzione per aspettare che il robot abbia finito di muoversi
@@ -2314,7 +2529,6 @@ namespace RM.src.RM250619
             }
         }
 
-
         /// <summary>
         /// Aggiorna il contatore che indica lo spostamento della catena
         /// </summary>
@@ -2367,7 +2581,6 @@ namespace RM.src.RM250619
             Console.WriteLine($"Numero di focacce in profondità: {numeroFocacceLungoPalletY}");
             Console.WriteLine($"Numero totale di focacce che puoi mettere sul pallet: {numeroTotaleFocacce}");
         }
-
 
         /// <summary>
         /// Esegue ciclo saldatura
@@ -4139,7 +4352,6 @@ namespace RM.src.RM250619
             }
         }
 
-
         /// <summary>
         /// Invia posizioni al PLC in formato cartesiano e joint
         /// </summary>
@@ -4302,7 +4514,6 @@ namespace RM.src.RM250619
             robot.PauseMotion();
             robot.StopMotion();
         }
-
 
         /// <summary>
         /// Creazione di un allarme quando il robot si ferma
@@ -4491,7 +4702,6 @@ namespace RM.src.RM250619
 
         // Variabile per tracciare l'ultima posizione aggiornata nella ListView
         private static int? lastUpdatedKey = null;
-
 
         /// <summary>
         /// Esegue inPosition su una lista di posizioni continuamente aggiornata da CheckMonitoring

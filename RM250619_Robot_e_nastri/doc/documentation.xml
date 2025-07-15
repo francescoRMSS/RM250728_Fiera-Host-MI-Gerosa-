@@ -958,7 +958,37 @@
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.GripperStatusIn">
             <summary>
-            Stato pinza
+            Comando di apertura/chiusura pinza 1:Aperto|0:Chiuso
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.HomeCommandIn">
+            <summary>
+            Comando per andare in home position 1:GoToHome|0:Normal state
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.JogNastroCommandIn">
+            <summary>
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedPalletIn">
+            <summary>
+            Indica il pallet selezionato dall'hmi
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedBoxIn">
+            <summary>
+            Indica il box format selezionato dall'hmi
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedPointRecordCommandIn">
+            <summary>
+            Indica il punto che si sta cercando di registrare 0:Normal state|>0:Punto selezionato
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ResetAlarmsCommandIn">
+            <summary>
+            Comando per resettare gli allarmi robot e PLC
             </summary>
         </member>
         <member name="T:RM.src.RM250619.RobotApplication">
@@ -2231,6 +2261,46 @@
         <member name="F:RM.src.RM250619.RobotManager.previousIsInHomePosition">
             <summary>
             Variabile per memorizzare lo stato precedente di isInHomePosition
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousGripperStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile open/close grippers dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousBarrierStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile on/off barrier status dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousStartCommandStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile start/stop ciclo dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousHomeCommandStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile go to home position dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousPalletCommandNumber">
+            <summary>
+            Memorizza lo stato della variabile selected pallet dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousBoxFormatCommandNumber">
+            <summary>
+            Memorizza lo stato della variabile selected box format dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousJogNastroCommandStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile on/off jog nastro dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousRegisterPointCommandNumber">
+            <summary>
+            Memorizza lo stato della variabile point to record dal PLC
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.homeRoutineSpeed">

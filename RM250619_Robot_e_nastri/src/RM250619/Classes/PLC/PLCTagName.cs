@@ -387,9 +387,39 @@ namespace RM.src.RM250619.Classes.PLC
         public static string MobilePanel_CommError = "PLC1_" + "com_robot_234";
 
         /// <summary>
-        /// Stato pinza
+        /// Comando di apertura/chiusura pinza 1:Aperto|0:Chiuso
         /// </summary>
         public static string GripperStatusIn = "PLC1_" + "com_robot_235";
+
+        /// <summary>
+        /// Comando per andare in home position 1:GoToHome|0:Normal state
+        /// </summary>
+        public static string HomeCommandIn = "PLC1_" + "com_robot_4"; ///////
+
+        /// <summary>
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+        /// </summary>
+        public static string JogNastroCommandIn = "PLC1_" + "com_robot_4"; ///////
+
+        /// <summary>
+        /// Indica il pallet selezionato dall'hmi
+        /// </summary>
+        public static string SelectedPalletIn = "PLC1_" + "com_robot_4"; ///////
+
+        /// <summary>
+        /// Indica il box format selezionato dall'hmi
+        /// </summary>
+        public static string SelectedBoxIn = "PLC1_" + "com_robot_4"; ///////
+
+        /// <summary>
+        /// Indica il punto che si sta cercando di registrare 0:Normal state|>0:Punto selezionato
+        /// </summary>
+        public static string SelectedPointRecordCommandIn = "PLC1_" + "com_robot_4"; ///////
+
+        /// <summary>
+        /// Comando per resettare gli allarmi robot e PLC
+        /// </summary>
+        public static string ResetAlarmsCommandIn = "PLC1_" + "com_robot_4"; ///////
 
 
         #endregion
