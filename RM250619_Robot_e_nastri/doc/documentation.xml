@@ -526,6 +526,11 @@
             Numero di asse selezionato
             </summary>
         </member>
+        <member name="T:RM.src.RM250619.Classes.FR20.RobotPointRecordingEventArgs">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:RM.src.RM250619.Classes.FR20.RobotSpeed">
             <summary>
             Contiene le velocità già scalate
@@ -2223,9 +2228,24 @@
             Contatore spostamento catena
             </summary>
         </member>
+        <member name="E:RM.src.RM250619.RobotManager.EnableButtonHome">
+            <summary>
+            Evento invocato per disattivare/attivare il pulsante di go to home position in honme page
+            </summary>
+        </member>
+        <member name="E:RM.src.RM250619.RobotManager.EnableCycleButtons">
+            <summary>
+            Evento invocato per disattivare/attivare i pulsanti di start e stop ciclo in home page
+            </summary>
+        </member>
         <member name="E:RM.src.RM250619.RobotManager.EnableButtonCycleEvent">
             <summary>
             Evento invocato al termine della routine per riabilitare i tasti per riavvio della routine
+            </summary>
+        </member>
+        <member name="E:RM.src.RM250619.RobotManager.RecordPoint">
+            <summary>
+            Evento invocato quanto dall'hmi viene rischiesto di registrare uno specifico punto
             </summary>
         </member>
         <member name="E:RM.src.RM250619.RobotManager.EnableDragModeButtons">

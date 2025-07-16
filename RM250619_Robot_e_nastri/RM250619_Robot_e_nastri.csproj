@@ -139,6 +139,7 @@
     <Compile Include="src\RM250619\Classes\FR20\PositionChecker.cs" />
     <Compile Include="src\RM250619\Classes\FR20\RobotDictionaryChangedEventArgs.cs" />
     <Compile Include="src\RM250619\Classes\FR20\RobotManager.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\RobotPointRecordingEventArgs.cs" />
     <Compile Include="src\RM250619\Classes\FR20\RobotProperties.cs" />
     <Compile Include="src\RM250619\Classes\FR20\RobotSpeed.cs" />
     <Compile Include="src\RM250619\Classes\FR20\SpeedMode.cs" />

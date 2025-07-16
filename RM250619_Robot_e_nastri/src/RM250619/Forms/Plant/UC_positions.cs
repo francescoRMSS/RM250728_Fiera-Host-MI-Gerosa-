@@ -1,4 +1,5 @@
 ﻿using fairino;
+using RM.src.RM250619.Classes.FR20;
 using RM.src.RM250619.Forms.ScreenSaver;
 using RMLib.DataAccess;
 using RMLib.Keyboards;
@@ -64,6 +65,8 @@ namespace RM.src.RM250619
             Fill_LwPositions();
             //BuildAndFill_Dt_filtered();
 
+            RobotManager.RecordPoint += RobotManager_UpdatePoint;
+
             ScreenSaverManager.AutoAddClickEvents(this);
         }
 
@@ -107,6 +110,31 @@ namespace RM.src.RM250619
 
                 log.Info("Posizione eliminata correttamente");
             }
+        }
+
+        private void RobotManager_UpdatePoint(object sender, RobotPointRecordingEventArgs e)
+        {
+            ListViewItem selectedItem = lw_positions.Items[Convert.ToInt16(e)];
+            string positionName = selectedItem.SubItems[NAME_POSITION_COLUMN_INDEX].Text;
+
+            DateTime date = DateTime.Now;
+            string formattedTimeToDB = date.ToString("yyyy-MM-dd HH:mm:ss.fffffff"); // Formattazione per DB
+            string formattedTimeToLW = date.ToString("HH:mm:ss:ff"); // Formattazione per LW
+
+            int id = Convert.ToInt32(selectedItem.SubItems[ID_COLUMN_INDEX].Text);
+
+            // Aggiorna i campi della riga selezionata con i valori di newPoint
+            selectedItem.SubItems[3].Text = e.pose.tran.x.ToString();
+            selectedItem.SubItems[4].Text = e.pose.tran.y.ToString();
+            selectedItem.SubItems[5].Text = e.pose.tran.z.ToString();
+            selectedItem.SubItems[6].Text = e.pose.rpy.rx.ToString();
+            selectedItem.SubItems[7].Text = e.pose.rpy.ry.ToString();
+            selectedItem.SubItems[8].Text = e.pose.rpy.rz.ToString();
+
+            // Aggiorno il timestamp
+            selectedItem.SubItems[1].Text = formattedTimeToLW;
+
+            robotDAO.UpdatePositionCoord(ConnectionString, e.pose, formattedTimeToDB, id, positionName, "RM");
         }
 
         /// <summary>

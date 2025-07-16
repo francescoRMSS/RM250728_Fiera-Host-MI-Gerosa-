@@ -22,6 +22,8 @@ using System.Windows.Forms;
 using CookComputing.XmlRpc;
 using System.Web;
 using System.Drawing.Imaging;
+using System.Drawing;
+using RM.src.RM250619.Classes.FR20;
 
 namespace RM.src.RM250619
 {
@@ -504,9 +506,24 @@ namespace RM.src.RM250619
         public static int chainPos = 0;
 
         /// <summary>
+        /// Evento invocato per disattivare/attivare il pulsante di go to home position in honme page
+        /// </summary>
+        public static event EventHandler EnableButtonHome;
+
+        /// <summary>
+        /// Evento invocato per disattivare/attivare i pulsanti di start e stop ciclo in home page
+        /// </summary>
+        public static event EventHandler EnableCycleButtons;
+
+        /// <summary>
         /// Evento invocato al termine della routine per riabilitare i tasti per riavvio della routine
         /// </summary>
         public static event EventHandler EnableButtonCycleEvent;
+
+        /// <summary>
+        /// Evento invocato quanto dall'hmi viene rischiesto di registrare uno specifico punto
+        /// </summary>
+        public static event EventHandler<RobotPointRecordingEventArgs> RecordPoint;
 
         /// <summary>
         /// Evento invocato al termine della routine per riabilitare i tasti per riavvio della routine
@@ -909,6 +926,7 @@ namespace RM.src.RM250619
                 //Check Hmi commands
                 CheckHmiCommandStart();  
                 CheckHmiCommandGoToHome();
+                // Valutare se mettere anche la velocità e gli altri parametri del robot nell'hmi e leggerli qui
                 CheckHmiCommandGripper();
                 CheckHmiCommandJogNastro(); // Valutare se farlo qui o direttamente nel PLC
                 CheckHmiSelectedPallet(); // Valutare se farlo qui o direttamente nel PLC
@@ -948,9 +966,16 @@ namespace RM.src.RM250619
 
             if(Convert.ToBoolean(startStatus) != previousStartCommandStatus)
             {
-                if(startStatus == 1)
+                if(startStatus == 1) // Start
                 {
-                    // Start
+                    // Controllo che il robot sia in automatico
+                    if(!isAutomaticMode)
+                    {
+                        log.Warn("Tenativo di avvio ciclo con robot non in modalità automatica");
+                        CustomMessageBox.Show(MessageBoxTypeEnum.WARNING_OK ,"Mettere il robot in modalità automatica per avviare il ciclo");
+                        return;
+                    }
+                    
                     // Setto della velocità del Robot dalle sue proprietà memorizzate sul database
                     if (robotProperties.Speed > 1)
                     {
@@ -978,13 +1003,12 @@ namespace RM.src.RM250619
                     else // Se il Robot è in movimento
                     {
                         log.Error("Impossibile inviare nuovi punti al Robot. Robot in movimento");
-                        CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Impossibile inviare nuovi punti al Robot");
+                        CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Robot in movimento");
                     }
-                } 
-                else
+                }
+                else // Stop
                 {
-                    // Stop
-                    stopCycleRequested = true;
+                    stopCycleRequested = true;  // Valutare se alzare un bit o fermare subito il robot
                     EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
                 }
 
@@ -992,17 +1016,127 @@ namespace RM.src.RM250619
             }
         }
 
-        private static void CheckHmiCommandGoToHome()
+        private async static void CheckHmiCommandGoToHome() // Questo metodo non deve bloccare il thread
         {
             int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.HomeCommandIn));
 
             if (Convert.ToBoolean(homeStatus) != previousHomeCommandStatus)
             {
-                if (homeStatus == 1)
+                if (homeStatus == 1) // Go to home
                 {
-                    // Go to home
+                    if (UC_HomePage.homeRoutineStarted)
+                    {
+                        log.Warn("Tentativo di avvio home routine quando già in esecuzione");
+                        return;
+                    }
+                    if (isAutomaticMode)
+                    {
+                        log.Warn("Tenativo di avvio home routine in modalità automatica");
+                        CustomMessageBox.Show(MessageBoxTypeEnum.WARNING_OK, "Mettere il robot in modalità manuale per avviare la home routine");
+                        return;
+                    }
 
-                    
+                    if (!AlarmManager.isRobotMoving) // Se il Robot non è in movimento 
+                    {
+                        // Get del punto di home
+                        var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+                        DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
+
+                        bool stopHomeRoutine = false; // Reset della richiesta di stop HomeRoutine
+                        int stepHomeRoutine = 0; // Reset degli step della HomeRoutine
+
+                        ClearRobotQueue();
+
+                        robot.RobotEnable(1); // Abilito il Robot
+                        Thread.Sleep(2000); // Attesa di 2s per stabilizzare il Robot
+                        UC_HomePage.homeRoutineStarted = true; // Segnalo che la home routine è partita
+
+                        // Rendo il tasto per andare in HomePosition non cliccabile
+                        EnableButtonHome?.Invoke(0, EventArgs.Empty);
+
+                        // Avvia un task separato per il ciclo while
+                        await Task.Run(async () =>
+                        {
+                            while (!stopHomeRoutine) // Fino a quando non termino la home routine
+                            {
+                                // Se viene tolta la modalità manuale durante la home routine, questa viene bloccata immediatamente
+                                if (mode != 2)
+                                {
+                                    robot.PauseMotion(); // Pausa Robot
+                                    Thread.Sleep(200); // Leggero delay per stabilizzare il Robot
+                                    robot.StopMotion(); // Stop del Robot
+                                    UC_HomePage.homeRoutineStarted = false; // Reset variabile che indica l'avvio della home routine
+                                    stopHomeRoutine = true; // Alzo richiesta per terminare metodo che riproduce home routine
+                                }
+                                else // Altrimenti eseguo la home routine normalmente
+                                {
+                                    switch (stepHomeRoutine)
+                                    {
+                                        case 0:
+                                            #region Cancellazione coda Robot e disattivazione tasti applicazione
+
+                                            EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
+
+                                            ClearRobotQueue();
+                                            SetHomeRoutineSpeed();
+                                            await Task.Delay(1000);
+
+                                            stepHomeRoutine = 10;
+                                            break;
+
+                                        #endregion
+
+                                        case 10:
+                                            #region Movimento a punto di home
+
+                                            MoveRobotToSafePosition();
+                                            GoToHomePosition();
+                                            endingPoint = pHome;
+
+                                            stepHomeRoutine = 20;
+                                            break;
+
+                                        #endregion
+
+                                        case 20:
+                                            #region Attesa inPosition home
+
+                                            if (inPosition)
+                                                stepHomeRoutine = 30;
+                                            break;
+
+                                        #endregion
+
+                                        case 30:
+                                            #region Termine ciclo e riattivazione tasti applicazione e tasto home 
+                                            ResetHomeRoutineSpeed();
+
+                                            UC_HomePage.homeRoutineStarted = false;
+
+                                            EnableButtonHome?.Invoke(1, EventArgs.Empty);
+
+                                            stopHomeRoutine = true;
+
+                                            break;
+
+                                            #endregion
+                                    }
+                                }
+
+                                await Task.Delay(100); // Delay routine
+                            }
+                        });
+
+                        Thread.Sleep(2000); // Attesa di 2s per stabilizzare il Robot
+
+                        robot.RobotEnable(0); // Disattivo il Robot
+                    }
+                    else // Se il Robot è in movimento
+                    {
+                        log.Error("Impossibile inviare nuovi punti al Robot. Robot in movimento");
+                        CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Robot in movimento");
+                    }
+
                 }
 
                 previousHomeCommandStatus = false; // reset status
@@ -1012,7 +1146,7 @@ namespace RM.src.RM250619
         private static void CheckHmiCommandGripper()
         {
             int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
-            //if(stableMode == 2) 
+
             if(previousGripperStatus == null || Convert.ToBoolean(gripperStatus) != previousGripperStatus)
             {
                 if (gripperStatus == 1)
@@ -1106,11 +1240,16 @@ namespace RM.src.RM250619
             if (recordPointCommand > 0)
             {
                 // Registrazione punto 
-                
-                if(recordPointCommand == 1)
-                {
 
-                } else if (recordPointCommand == 2)
+                DescPose newPoint = RecPoint();
+                RecordPoint?.Invoke(null, new RobotPointRecordingEventArgs(recordPointCommand, newPoint));
+
+                //Scrivo sul PLC i nuovi valori
+                if (recordPointCommand == 1)
+                {
+                   
+                }
+                else if (recordPointCommand == 2)
                 {
 
                 } else if (recordPointCommand == 3)

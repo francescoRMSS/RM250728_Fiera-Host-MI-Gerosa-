@@ -159,6 +159,9 @@ namespace RM.src.RM250619
             RobotManager.GripperStatusOFF += GripperStatusOFFEvent;
             RobotManager.GripperStatusON += GripperStatusONEvent;
 
+            RobotManager.EnableButtonCycleEvent += RobotManager_EnableButtonCycleEvent;
+            RobotManager.EnableButtonHome += RobotManager_EnableButtonHome;
+
             // Traduce e inizializza i font
             Translate();
             InitFont();
@@ -424,6 +427,54 @@ namespace RM.src.RM250619
         private void RobotManager_RobotVelocityChanged(object sender, EventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void RobotManger_EnableButtonsCycle(object sender, EventArgs e)
+        {
+            if (Convert.ToInt16(sender) == 1)
+            {
+                btn_stopApp.Enabled = true;
+                btn_stopApp.BackColor = SystemColors.Control;
+                btn_stopApp.BackgroundImage = Resources.stop;
+
+                btn_pauseApp.Enabled = true;
+                btn_pauseApp.BackColor = SystemColors.Control;
+                btn_pauseApp.BackgroundImage = Resources.pausemonitoringRed_32;
+
+                btn_startApp.Enabled = false;
+                btn_startApp.BackColor = SystemColors.ControlDark;
+                btn_startApp.BackgroundImage = null;
+            }
+            else if (Convert.ToInt16(sender) == 0)
+            {
+                btn_startApp.Enabled = false;
+                btn_startApp.BackColor = SystemColors.ControlDark;
+                btn_startApp.BackgroundImage = null;
+
+                btn_pauseApp.Enabled = false;
+                btn_pauseApp.BackColor = SystemColors.ControlDark;
+                btn_pauseApp.BackgroundImage = null;
+
+                btn_stopApp.Enabled = false;
+                btn_stopApp.BackColor = SystemColors.ControlDark;
+                btn_stopApp.BackgroundImage = null;
+            }
+        }
+
+        private void RobotManager_EnableButtonHome(object sender, EventArgs e)
+        {
+            if (Convert.ToInt16(sender) == 1)
+            {
+                btn_homePosition.Enabled = true;
+                btn_homePosition.BackColor = SystemColors.Control;
+                btn_homePosition.BackgroundImage = Resources.home;
+            }
+            else if (Convert.ToInt16(sender) == 0)
+            {
+                btn_homePosition.Enabled = false;
+                btn_homePosition.BackColor = SystemColors.ControlDark;
+                btn_homePosition.BackgroundImage = null;
+            }
         }
 
         /// <summary>
