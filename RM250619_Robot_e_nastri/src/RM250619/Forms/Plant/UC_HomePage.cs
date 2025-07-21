@@ -1274,8 +1274,8 @@ namespace RM.src.RM250619
                     else // Se invece il ciclo deve iniziare dall'inizio, avvio normalmente
                     {
                        // RobotManager.StartApplication(application);
-                         //RobotManager.PickAndPlaceFocaccia();
-                         RobotManager.PickAndPlaceTeglia();
+                         RobotManager.PickAndPlaceScatola();
+                         //RobotManager.PickAndPlaceTeglia();
                         EnableCycleButton(1); // Disattiva stop, disattiva pause, attiva start
                     }
                 }

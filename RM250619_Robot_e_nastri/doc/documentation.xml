@@ -2318,9 +2318,49 @@
             Memorizza lo stato precedente della variabile on/off jog nastro dal PLC
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.RobotManager.previousRegisterPointCommandNumber">
+        <member name="F:RM.src.RM250619.RobotManager.riga">
             <summary>
-            Memorizza lo stato della variabile point to record dal PLC
+            Riga della matrice di carico del pallet
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.colonna">
+            <summary>
+            Colonna della matrice di carico del pallet
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.strato">
+            <summary>
+            Strato della matrice di carico del pallet
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.larghezzaScatola">
+            <summary>
+            Parametro larghezza della focaccia da HMI
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.lunghezzaScatola">
+            <summary>
+            Parametro profondità della focaccia da HMI
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.altezzaScatola">
+            <summary>
+            Altezza del pallet da HMI
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.larghezzaPallet">
+            <summary>
+            Larghezza del pallet da HMI
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.lunghezzaPallet">
+            <summary>
+             Lunghezza del pallet da HMI
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.altezzaPallet">
+            <summary>
+            Altezza del pallet da HMI
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.homeRoutineSpeed">
@@ -2668,15 +2708,34 @@
             Aggiorna il contatore che indica lo spostamento della catena
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceFocaccia">
+        <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceScatola">
             <summary>
-            Esegue ciclo saldatura
+            Esegue ciclo di pick di una scatola e place dentro al pallet in una determinata posizione
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceTeglia">
             <summary>
             Esegue ciclo saldatura
             </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CalcolaPosizioneScatola(System.Int32,System.Int32,System.Int32,System.Double,System.Double,System.Double,fairino.DescPose)">
+            <summary>
+            Calcola la  pose in cui mettere la scatola nel pallet. <br/>
+            Il calcolo si basa sulla divisione del pallet (messo per il lato lungo in basso) in una matrice di place in questa maniera: <br/>
+            /  (Larghezza) = Divisione in colonne <br/>
+            -- (Lunghezza) = Divisione in righe <br/>
+            I  (Altezza)   = Divisione in strati <br/>
+            Inoltre sono necessiarie le misure Larg,Lung,Alt della scatola <br/>
+            NB: le scatole devono essere necessariamente tutte grandi uguali nello stesso pallet <br/>
+            </summary>
+            <param name="riga">Riga che identifica il posto in cui mettere la nuova scatola</param>
+            <param name="colonna">Colonna che identifica il posto in cui mettere la nuova scatola</param>
+            <param name="strato">Strato in cui mettere la nuova scatola</param>
+            <param name="larghezzaScatola">Larghezza della scatola(mm)</param>
+            <param name="profonditaScatola">Lunghezza della scatola(mm)</param>
+            <param name="altezzaScatola">Altezza della scatola(mm)</param>
+            <param name="originePallet">Punto di origine del pallet, cioè il punto dell'angolo in alto a sinistra. Posizionare il TCP proprio sopra di esso.</param>
+            <returns></returns>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.riprendiCiclo">
             <summary>

@@ -601,12 +601,45 @@ namespace RM.src.RM250619
         /// </summary>
         private static bool previousJogNastroCommandStatus = false;
 
-        /// <summary>
-        /// Memorizza lo stato della variabile point to record dal PLC
-        /// </summary>
-        private static int previousRegisterPointCommandNumber = 0;
-
         #endregion
+        /// <summary>
+        /// Riga della matrice di carico del pallet
+        /// </summary>
+        public static int riga = 0;
+        /// <summary>
+        /// Colonna della matrice di carico del pallet
+        /// </summary>
+        public static int colonna = 0;
+        /// <summary>
+        /// Strato della matrice di carico del pallet
+        /// </summary>
+        public static int strato = 0;
+
+        /// <summary>
+        /// Parametro larghezza della focaccia da HMI
+        /// </summary>
+        public static int larghezzaScatola = 300;
+        /// <summary>
+        /// Parametro profondità della focaccia da HMI
+        /// </summary>
+        public static int lunghezzaScatola = 300;
+        /// <summary>
+        /// Altezza del pallet da HMI
+        /// </summary>
+        public static int altezzaScatola = 100;
+
+        /// <summary>
+        /// Larghezza del pallet da HMI
+        /// </summary>
+        public static int larghezzaPallet = 800;
+        /// <summary>
+        ///  Lunghezza del pallet da HMI
+        /// </summary>
+        public static int lunghezzaPallet = 600;
+        /// <summary>
+        /// Altezza del pallet da HMI
+        /// </summary>
+        public static int altezzaPallet = 140;
 
         /// <summary>
         /// Speed utilizzata in home routine
@@ -657,8 +690,14 @@ namespace RM.src.RM250619
         /// <param name="unixTimestamp"></param>
         /// <param name="dateTime"></param>
         /// <param name="formattedDate"></param>
-        private static void GetPLCErrorCode(Dictionary<string, object> alarmValues, Dictionary<string, string> alarmDescriptions,
-        DateTime now, long unixTimestamp, DateTime dateTime, string formattedDate)
+        private static void GetPLCErrorCode(
+            Dictionary<string, object> alarmValues,
+            Dictionary<string, string> alarmDescriptions,
+            DateTime now, 
+            long unixTimestamp, 
+            DateTime dateTime, 
+            string formattedDate
+            )
         {
             /*
             object alarmsPresent;
@@ -762,9 +801,20 @@ namespace RM.src.RM250619
         /// <param name="unixTimestamp"></param>
         /// <param name="dateTime"></param>
         /// <param name="formattedDate"></param>
-        private static void GetRobotErrorCode(List<(string key, bool value, string type)> updates, bool allarmeSegnalato,
-            DataRow robotAlarm, DateTime now, string id, string description, string timestamp, string device, string state, long unixTimestamp,
-            DateTime dateTime, string formattedDate)
+        private static void GetRobotErrorCode(
+            List<(string key, bool value, string type)> updates, 
+            bool allarmeSegnalato,
+            DataRow robotAlarm, 
+            DateTime now, 
+            string id, 
+            string description, 
+            string timestamp, 
+            string device,
+            string state, 
+            long unixTimestamp,
+            DateTime dateTime, 
+            string formattedDate
+            )
         {
             if (AlarmManager.isRobotConnected)
             {
@@ -901,7 +951,7 @@ namespace RM.src.RM250619
             hmiCommandsThrad = new Thread(new ThreadStart(HmiCommandsChecker));
             hmiCommandsThrad.IsBackground = true;
             hmiCommandsThrad.Priority = ThreadPriority.Normal;
-            hmiCommandsThrad.Start();
+            //hmiCommandsThrad.Start();
 
 
             // InitRobotComponents();
@@ -995,7 +1045,7 @@ namespace RM.src.RM250619
                         else // Se invece il ciclo deve iniziare dall'inizio, avvio normalmente
                         {
                             //RobotManager.StartApplication(application);
-                            PickAndPlaceFocaccia();
+                            PickAndPlaceScatola();
                             //PickAndPlaceTeglia();
                             EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
                         }
@@ -1205,13 +1255,46 @@ namespace RM.src.RM250619
         {
             int palletNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPalletIn));
 
-            if (palletNumber >= 0 && palletNumber != previousPalletCommandNumber)
+            if (palletNumber != previousPalletCommandNumber)
             {
-                if (palletNumber == 1)
+                // Lettura dimensioni lunghezza larghezza altezza box da PLC della scatola selezionata
+                switch (palletNumber)
                 {
-
+                    // Nessuna scatola selezionata
+                    case 0:
+                        larghezzaPallet = 0;
+                        lunghezzaPallet = 0;
+                        altezzaPallet = 0;
+                        break;
+                    // Scatola 1
+                    case 1:
+                        larghezzaPallet = 1200;
+                        lunghezzaPallet = 800;
+                        altezzaPallet = 144;
+                        break;
+                    // Scatola 2
+                    case 2:
+                        larghezzaPallet = 1200;
+                        lunghezzaPallet = 800;
+                        altezzaPallet = 144;
+                        break;
+                    // Scatola 3
+                    case 3:
+                        larghezzaPallet = 1200;
+                        lunghezzaPallet = 800;
+                        altezzaPallet = 144;
+                        break;
+                    // Scatola 4
+                    case 4:
+                        larghezzaPallet = 1200;
+                        lunghezzaPallet = 800;
+                        altezzaPallet = 144;
+                        break;
+                    // Altrimenti
+                    default:
+                        log.Error($"Tentativo di lettura dimensioni del pallet: {palletNumber} che però è inesistente, operazione annullata.");
+                        break;
                 }
-                // ...
 
                 previousPalletCommandNumber = palletNumber; // reset status
             }
@@ -1221,13 +1304,46 @@ namespace RM.src.RM250619
         {
             int boxNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedBoxIn));
 
-            if (boxNumber >= 0 && boxNumber != previousBoxFormatCommandNumber)
+            if (boxNumber != previousBoxFormatCommandNumber)
             {
-                if (boxNumber == 1)
+                // Lettura dimensioni lunghezza larghezza altezza box da PLC della scatola selezionata
+                switch (boxNumber)
                 {
-
+                    // Nessuna scatola selezionata
+                    case 0:
+                        larghezzaScatola = 0;
+                        lunghezzaScatola = 0;
+                        altezzaScatola = 0;
+                        break;
+                    // Scatola 1
+                    case 1:
+                        larghezzaScatola = 400;
+                        lunghezzaScatola = 600;
+                        altezzaScatola = 300;
+                        break;
+                    // Scatola 2
+                    case 2:
+                        larghezzaScatola = 400;
+                        lunghezzaScatola = 600;
+                        altezzaScatola = 300;
+                        break;
+                    // Scatola 3
+                    case 3:
+                        larghezzaScatola = 400;
+                        lunghezzaScatola = 600;
+                        altezzaScatola = 300;
+                        break;
+                    // Scatola 4
+                    case 4:
+                        larghezzaScatola = 400;
+                        lunghezzaScatola = 600;
+                        altezzaScatola = 300;
+                        break;
+                    // Altrimenti
+                    default:
+                        log.Error($"Tentativo di lettura dimensioni della scatola: {boxNumber} che però è inesistente, operazione annullata.");
+                        break;
                 }
-                // ...
 
                 previousBoxFormatCommandNumber = boxNumber; // reset status
             }
@@ -1245,19 +1361,24 @@ namespace RM.src.RM250619
                 RecordPoint?.Invoke(null, new RobotPointRecordingEventArgs(recordPointCommand, newPoint));
 
                 //Scrivo sul PLC i nuovi valori
-                if (recordPointCommand == 1)
+                switch(recordPointCommand)
                 {
-                   
-                }
-                else if (recordPointCommand == 2)
-                {
-
-                } else if (recordPointCommand == 3)
-                {
-
-                } else if (recordPointCommand == 4)
-                {
-
+                    // Punto 1
+                    case 1:
+                        break;
+                    // Punto 2
+                    case 2:
+                        break;
+                    // Punto 3
+                    case 3:
+                        break;
+                    // Punto 4
+                    case 4:
+                        break;
+                    // Altrimenti
+                    default:
+                        log.Warn($"Tentativo di sovrascrivere il punto: {recordPointCommand}, operazione annullata.");
+                        break;
                 }
 
                 // Reset valore
@@ -1272,6 +1393,7 @@ namespace RM.src.RM250619
             if (resetAlarmsCommand > 0)
             {
                 // Reset allarme
+                RMLib_AlarmsCleared(null, EventArgs.Empty);
 
                 // Reset valore
                 RefresherTask.AddUpdate(PLCTagName.ResetAlarmsCommandIn, 0, "INT16");
@@ -2705,8 +2827,12 @@ namespace RM.src.RM250619
             return points;
         }
 
-        static void CalcolaPosizioneFocacce(double larghezzaFocaccia, double profonditaFocaccia,
-                                     double larghezzaPallet, double profonditaPallet)
+        static void CalcolaPosizioneFocacce(
+            double larghezzaFocaccia, 
+            double profonditaFocaccia,     
+            double larghezzaPallet, 
+            double profonditaPallet
+            )
         {
             // Calcola quante focacce possono entrare in larghezza e profondità
             int numeroFocacceLungoPalletX = (int)(larghezzaPallet / larghezzaFocaccia);
@@ -2722,10 +2848,15 @@ namespace RM.src.RM250619
         }
 
         /// <summary>
-        /// Esegue ciclo saldatura
+        /// Esegue ciclo di pick di una scatola e place dentro al pallet in una determinata posizione
         /// </summary>
-        public static async void PickAndPlaceFocaccia()
+        public static async void PickAndPlaceScatola()
         {
+            /*if(larghezzaScatola == 0 || larghezzaPallet == 0) // controllare che non ci siano valori = 0 prima di iniziare
+            {
+                return;
+            }*/
+
             #region Dichiarazione punti routine
 
             DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
@@ -2799,25 +2930,29 @@ namespace RM.src.RM250619
             bool prendidaNastro = true;
 
             // Segnale di place
-            bool appoggiaSuScatola = true;
+            bool appoggiaSuPallet = true;
 
             // Segnalo al PLC che il robot sta lavorando in modalità automatica
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
             RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
 
+            /*
+            // Valori da leggere da PLC
             int riga = 0;
             int colonna = 0;
             int strato = 0;
 
+            // Valori da leggere da PLC
             int larghezzaFocaccia = 300;
             int profonditaFocaccia = 300;
             int altezzaStrato = 100;
 
+            // Valori da leggere da PLC
             int larghezzaPallet = 800;
-            int profonditaPallet = 600;
+            int profonditaPallet = 600;*/
 
-            int numeroRighe = (int)(larghezzaPallet / larghezzaFocaccia);
-            int numeroColonne = (int)(profonditaPallet / profonditaFocaccia);
+            int numeroRighe = (int)(larghezzaPallet / larghezzaScatola);
+            int numeroColonne = (int)(lunghezzaPallet / lunghezzaScatola);
 
             // CalcolaPosizioneFocacce(larghezzaFocaccia,profonditaFocaccia,larghezzaPallet,profonditaPallet);
 
@@ -2981,29 +3116,29 @@ namespace RM.src.RM250619
                         case 60:
                             #region Movimento a punto di place
 
-                            if (appoggiaSuScatola)
+                            if (appoggiaSuPallet)
                             {
                                 inPosition = false; // Reset inPosition
 
-                                DescPose puntoFocaccia = CalcolaPosizioneFocaccia(
+                                DescPose puntoPlaceScatola = CalcolaPosizioneScatola(
                                     riga,
                                     colonna,
                                     strato,
-                                    larghezzaFocaccia,
-                                    profonditaFocaccia,
-                                    altezzaStrato,
+                                    larghezzaScatola,
+                                    lunghezzaScatola,
+                                    altezzaScatola,
                                     originePallet
                                 );
 
-                                RobotManager.robot.GetInverseKin(0, puntoFocaccia, -1, ref jointPosPlaceCalculated);
+                                RobotManager.robot.GetInverseKin(0, puntoPlaceScatola, -1, ref jointPosPlaceCalculated);
                                 
                                 descPosApproachPlace = new DescPose(
-                                    puntoFocaccia.tran.x,
-                                    puntoFocaccia.tran.y,
-                                    puntoFocaccia.tran.z + 200,
-                                    puntoFocaccia.rpy.rx,
-                                    puntoFocaccia.rpy.ry,
-                                    puntoFocaccia.rpy.rz);
+                                    puntoPlaceScatola.tran.x,
+                                    puntoPlaceScatola.tran.y,
+                                    puntoPlaceScatola.tran.z + 200,
+                                    puntoPlaceScatola.rpy.rx,
+                                    puntoPlaceScatola.rpy.ry,
+                                    puntoPlaceScatola.rpy.rz);
 
                                 RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
 
@@ -3012,11 +3147,11 @@ namespace RM.src.RM250619
                                 GetRobotMovementCode(movementResult);
 
                                 // Movimento lineare
-                                movementResult = robot.MoveL(jointPosPlaceCalculated, puntoFocaccia, tool, user, vel, acc,
+                                movementResult = robot.MoveL(jointPosPlaceCalculated, puntoPlaceScatola, tool, user, vel, acc,
                                     ovl, blendT, epos, 0, offsetFlag, offset
                                     );
 
-
+                                //TODO: questi calcoli non verranno più fatti qui ma direttamente del PLC, noi leggiamo e basta i valori
                                 if (colonna < numeroColonne - 1)
                                 {
                                     colonna++;
@@ -3042,7 +3177,7 @@ namespace RM.src.RM250619
                                 GetRobotMovementCode(movementResult);
                                 */
 
-                                endingPoint = puntoFocaccia; // Assegnazione endingPoint
+                                endingPoint = puntoPlaceScatola; // Assegnazione endingPoint
 
                                 step = 70;
                             }
@@ -3803,18 +3938,36 @@ namespace RM.src.RM250619
 
         }
 
-        static DescPose CalcolaPosizioneFocaccia(
-    int riga,
-    int colonna,
-    int strato,
-    double larghezzaFocaccia,
-    double profonditaFocaccia,
-    double altezzaStrato,
-    DescPose originePallet)
+        /// <summary>
+        /// Calcola la  pose in cui mettere la scatola nel pallet. <br/>
+        /// Il calcolo si basa sulla divisione del pallet (messo per il lato lungo in basso) in una matrice di place in questa maniera: <br/>
+        /// /  (Larghezza) = Divisione in colonne <br/>
+        /// -- (Lunghezza) = Divisione in righe <br/>
+        /// I  (Altezza)   = Divisione in strati <br/>
+        /// Inoltre sono necessiarie le misure Larg,Lung,Alt della scatola <br/>
+        /// NB: le scatole devono essere necessariamente tutte grandi uguali nello stesso pallet <br/>
+        /// </summary>
+        /// <param name="riga">Riga che identifica il posto in cui mettere la nuova scatola</param>
+        /// <param name="colonna">Colonna che identifica il posto in cui mettere la nuova scatola</param>
+        /// <param name="strato">Strato in cui mettere la nuova scatola</param>
+        /// <param name="larghezzaScatola">Larghezza della scatola(mm)</param>
+        /// <param name="profonditaScatola">Lunghezza della scatola(mm)</param>
+        /// <param name="altezzaScatola">Altezza della scatola(mm)</param>
+        /// <param name="originePallet">Punto di origine del pallet, cioè il punto dell'angolo in alto a sinistra. Posizionare il TCP proprio sopra di esso.</param>
+        /// <returns></returns>
+        static DescPose CalcolaPosizioneScatola(
+            int riga,
+            int colonna,
+            int strato,
+            double larghezzaScatola,
+            double profonditaScatola,
+            double altezzaScatola,
+            DescPose originePallet
+            )
         {
-            double x = originePallet.tran.x + (colonna * larghezzaFocaccia) + (larghezzaFocaccia / 2.0);
-            double y = originePallet.tran.y + (riga * profonditaFocaccia) + (profonditaFocaccia / 2.0);
-            double z = originePallet.tran.z + (strato * altezzaStrato);
+            double x = originePallet.tran.x + (colonna * larghezzaScatola) + (larghezzaScatola / 2.0);
+            double y = originePallet.tran.y + (riga * profonditaScatola) + (profonditaScatola / 2.0);
+            double z = originePallet.tran.z + (strato * altezzaScatola);
 
             double rx = originePallet.rpy.rx;
             double ry = originePallet.rpy.ry;
@@ -4501,8 +4654,15 @@ namespace RM.src.RM250619
         /// <param name="j4_actual_pos">Posizione del giunto 4</param>
         /// <param name="j5_actual_pos">Posizione del giunto 5</param>
         /// <param name="j6_actual_pos">Posizione del giunto 6</param>
-        public static void CheckRobotPosition(JointPos jPos, JointPos j1_actual_pos, JointPos j2_actual_pos, JointPos j3_actual_pos,
-            JointPos j4_actual_pos, JointPos j5_actual_pos, JointPos j6_actual_pos)
+        public static void CheckRobotPosition(
+            JointPos jPos, 
+            JointPos j1_actual_pos, 
+            JointPos j2_actual_pos, 
+            JointPos j3_actual_pos,
+            JointPos j4_actual_pos, 
+            JointPos j5_actual_pos, 
+            JointPos j6_actual_pos
+            )
         {
             // Calcolo della posizione in joint eseguendo il calcolo di cinematica inversa
             robot.GetInverseKin(0, TCPCurrentPosition, -1, ref jPos);
