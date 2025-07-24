@@ -618,28 +618,28 @@ namespace RM.src.RM250619
         /// <summary>
         /// Parametro larghezza della focaccia da HMI
         /// </summary>
-        public static int larghezzaScatola = 300;
+        public static int larghezzaScatola = 0;
         /// <summary>
         /// Parametro profondità della focaccia da HMI
         /// </summary>
-        public static int lunghezzaScatola = 300;
+        public static int lunghezzaScatola = 0;
         /// <summary>
         /// Altezza del pallet da HMI
         /// </summary>
-        public static int altezzaScatola = 100;
+        public static int altezzaScatola = 0;
 
         /// <summary>
         /// Larghezza del pallet da HMI
         /// </summary>
-        public static int larghezzaPallet = 800;
+        public static int larghezzaPallet = 0;
         /// <summary>
         ///  Lunghezza del pallet da HMI
         /// </summary>
-        public static int lunghezzaPallet = 600;
+        public static int lunghezzaPallet = 0;
         /// <summary>
         /// Altezza del pallet da HMI
         /// </summary>
-        public static int altezzaPallet = 140;
+        public static int altezzaPallet = 0;
 
         /// <summary>
         /// Speed utilizzata in home routine
@@ -951,7 +951,7 @@ namespace RM.src.RM250619
             hmiCommandsThrad = new Thread(new ThreadStart(HmiCommandsChecker));
             hmiCommandsThrad.IsBackground = true;
             hmiCommandsThrad.Priority = ThreadPriority.Normal;
-            //hmiCommandsThrad.Start();
+            hmiCommandsThrad.Start();
 
 
             // InitRobotComponents();
@@ -968,7 +968,7 @@ namespace RM.src.RM250619
         private static void HmiCommandsChecker()
         {
             //Inizializzo lo start a 0
-            RefresherTask.AddUpdate(PLCTagName.Start_Auto_Robot, 0, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
             //Aspetto che il valore cambi
             Thread.Sleep(2000); // Valutare se tenere il delay o far dei controlli se ha scritto  0 davvero
             while(true)
@@ -983,6 +983,8 @@ namespace RM.src.RM250619
                 CheckHmiSelectedBox(); // Valutare se farlo qui o direttamente nel PLC
                 CheckHmiCommandRecordPoint();
                 CheckHmiCommandResetAlarms();
+
+                Thread.Sleep(200);
             }
         }
 
@@ -1012,8 +1014,10 @@ namespace RM.src.RM250619
 
         private static void CheckHmiCommandStart()
         {
+            // Get valore variabile di avvio ciclo robot
             int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Start_Auto_Robot));
 
+            // Check su cambio di stato
             if(Convert.ToBoolean(startStatus) != previousStartCommandStatus)
             {
                 if(startStatus == 1) // Start
@@ -1022,10 +1026,21 @@ namespace RM.src.RM250619
                     if(!isAutomaticMode)
                     {
                         log.Warn("Tenativo di avvio ciclo con robot non in modalità automatica");
-                        CustomMessageBox.Show(MessageBoxTypeEnum.WARNING_OK ,"Mettere il robot in modalità automatica per avviare il ciclo");
+                        //Inizializzo lo start a 0
+                        RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+                        RefresherTask.AddUpdate(PLCTagName.Start_Auto_Robot, 0, "INT16");
                         return;
                     }
-                    
+
+                    if (larghezzaPallet == 0 || larghezzaScatola == 0) // Controllo che sia stato selezionato il formato di pallet e scatola
+                    {
+                        log.Error("Nessun formato pallet e/o scatola selezionato");
+                        //Inizializzo lo start a 0
+                        RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+                        RefresherTask.AddUpdate(PLCTagName.Start_Auto_Robot, 0, "INT16");
+                        return;
+                    }
+
                     // Setto della velocità del Robot dalle sue proprietà memorizzate sul database
                     if (robotProperties.Speed > 1)
                     {
@@ -1044,16 +1059,13 @@ namespace RM.src.RM250619
                         }
                         else // Se invece il ciclo deve iniziare dall'inizio, avvio normalmente
                         {
-                            //RobotManager.StartApplication(application);
                             PickAndPlaceScatola();
-                            //PickAndPlaceTeglia();
                             EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
                         }
                     }
                     else // Se il Robot è in movimento
                     {
                         log.Error("Impossibile inviare nuovi punti al Robot. Robot in movimento");
-                        CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Robot in movimento");
                     }
                 }
                 else // Stop

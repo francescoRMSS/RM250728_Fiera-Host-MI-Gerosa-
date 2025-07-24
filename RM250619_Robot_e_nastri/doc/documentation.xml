@@ -2708,12 +2708,17 @@
             Aggiorna il contatore che indica lo spostamento della catena
             </summary>
         </member>
+        <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceTeglia">
+            <summary>
+            Esegue ciclo di test per pick e place teglia
+            </summary>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceScatola">
             <summary>
             Esegue ciclo di pick di una scatola e place dentro al pallet in una determinata posizione
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceTeglia">
+        <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceTegliaGiroCompleto">
             <summary>
             Esegue ciclo saldatura
             </summary>
