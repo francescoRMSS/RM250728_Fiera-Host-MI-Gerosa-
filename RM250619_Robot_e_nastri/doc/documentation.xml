@@ -966,34 +966,64 @@
             Comando di apertura/chiusura pinza 1:Aperto|0:Chiuso
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.HomeCommandIn">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.StartApp">
             <summary>
             Comando per andare in home position 1:GoToHome|0:Normal state
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.JogNastroCommandIn">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.StopApp">
             <summary>
             Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedPalletIn">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.GoHome">
             <summary>
-            Indica il pallet selezionato dall'hmi
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedBoxIn">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedFormat">
             <summary>
-            Indica il box format selezionato dall'hmi
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedPointRecordCommandIn">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ResetAlarms">
             <summary>
-            Indica il punto che si sta cercando di registrare 0:Normal state|>0:Punto selezionato
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ResetAlarmsCommandIn">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PLCVersionYear">
             <summary>
-            Comando per resettare gli allarmi robot e PLC
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PLCVersionMonth">
+            <summary>
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PLCVersionDay">
+            <summary>
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedPallet">
+            <summary>
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.openGrippers">
+            <summary>
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.closeGrippers">
+            <summary>
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.jogNastro">
+            <summary>
+            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
             </summary>
         </member>
         <member name="T:RM.src.RM250619.RobotApplication">

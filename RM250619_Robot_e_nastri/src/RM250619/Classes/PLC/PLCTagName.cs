@@ -391,35 +391,69 @@ namespace RM.src.RM250619.Classes.PLC
         /// </summary>
         public static string GripperStatusIn = "PLC1_" + "com_robot_235";
 
+        #region DB17 (HMI)
+
         /// <summary>
         /// Comando per andare in home position 1:GoToHome|0:Normal state
         /// </summary>
-        public static string HomeCommandIn = "PLC1_" + "com_robot_4"; ///////
+        public static string StartApp = "PLC1_" + "hmi_1";
 
         /// <summary>
         /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
         /// </summary>
-        public static string JogNastroCommandIn = "PLC1_" + "com_robot_4"; ///////
+        public static string StopApp = "PLC1_" + "hmi_2";
 
         /// <summary>
-        /// Indica il pallet selezionato dall'hmi
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
         /// </summary>
-        public static string SelectedPalletIn = "PLC1_" + "com_robot_4"; ///////
+        public static string GoHome = "PLC1_" + "hmi_3";
 
         /// <summary>
-        /// Indica il box format selezionato dall'hmi
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
         /// </summary>
-        public static string SelectedBoxIn = "PLC1_" + "com_robot_4"; ///////
+        public static string SelectedFormat = "PLC1_" + "hmi_4";
 
         /// <summary>
-        /// Indica il punto che si sta cercando di registrare 0:Normal state|>0:Punto selezionato
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
         /// </summary>
-        public static string SelectedPointRecordCommandIn = "PLC1_" + "com_robot_4"; ///////
+        public static string ResetAlarms = "PLC1_" + "hmi_5";
 
         /// <summary>
-        /// Comando per resettare gli allarmi robot e PLC
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
         /// </summary>
-        public static string ResetAlarmsCommandIn = "PLC1_" + "com_robot_4"; ///////
+        public static string PLCVersionYear = "PLC1_" + "hmi_6";
+
+        /// <summary>
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+        /// </summary>
+        public static string PLCVersionMonth = "PLC1_" + "hmi_7";
+
+        /// <summary>
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+        /// </summary>
+        public static string PLCVersionDay = "PLC1_" + "hmi_8";
+
+        /// <summary>
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+        /// </summary>
+        public static string SelectedPallet = "PLC1_" + "hmi_9";
+
+        /// <summary>
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+        /// </summary>
+        public static string openGrippers = "PLC1_" + "hmi_10";
+
+        /// <summary>
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+        /// </summary>
+        public static string closeGrippers = "PLC1_" + "hmi_11";
+
+        /// <summary>
+        /// Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
+        /// </summary>
+        public static string jogNastro = "PLC1_" + "hmi_12";
+
+        #endregion
 
 
         #endregion

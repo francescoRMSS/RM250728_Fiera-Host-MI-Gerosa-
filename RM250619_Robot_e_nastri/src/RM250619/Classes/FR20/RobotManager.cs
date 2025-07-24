@@ -969,8 +969,11 @@ namespace RM.src.RM250619
         {
             //Inizializzo lo start a 0
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+            //Inizializzo il go to home a 0
+            RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
             //Aspetto che il valore cambi
             Thread.Sleep(2000); // Valutare se tenere il delay o far dei controlli se ha scritto  0 davvero
+
             while(true)
             {
                 //Check Hmi commands
@@ -1080,7 +1083,7 @@ namespace RM.src.RM250619
 
         private async static void CheckHmiCommandGoToHome() // Questo metodo non deve bloccare il thread
         {
-            int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.HomeCommandIn));
+            int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GoHome));
 
             if (Convert.ToBoolean(homeStatus) != previousHomeCommandStatus)
             {
@@ -1089,12 +1092,13 @@ namespace RM.src.RM250619
                     if (UC_HomePage.homeRoutineStarted)
                     {
                         log.Warn("Tentativo di avvio home routine quando già in esecuzione");
+                        RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
                         return;
                     }
                     if (isAutomaticMode)
                     {
                         log.Warn("Tenativo di avvio home routine in modalità automatica");
-                        CustomMessageBox.Show(MessageBoxTypeEnum.WARNING_OK, "Mettere il robot in modalità manuale per avviare la home routine");
+                        RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
                         return;
                     }
 
@@ -1177,6 +1181,7 @@ namespace RM.src.RM250619
 
                                             EnableButtonHome?.Invoke(1, EventArgs.Empty);
 
+                                            RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
                                             stopHomeRoutine = true;
 
                                             break;
@@ -1248,7 +1253,7 @@ namespace RM.src.RM250619
 
         private static void CheckHmiCommandJogNastro()
         {
-            int jogNastroStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.JogNastroCommandIn));
+            int jogNastroStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.jogNastro));
 
             if (Convert.ToBoolean(jogNastroStatus) != previousJogNastroCommandStatus)
             {
@@ -1265,7 +1270,7 @@ namespace RM.src.RM250619
 
         private static void CheckHmiSelectedPallet()
         {
-            int palletNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPalletIn));
+            int palletNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPallet));
 
             if (palletNumber != previousPalletCommandNumber)
             {
@@ -1314,7 +1319,7 @@ namespace RM.src.RM250619
 
         private static void CheckHmiSelectedBox()
         {
-            int boxNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedBoxIn));
+            int boxNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedFormat));
 
             if (boxNumber != previousBoxFormatCommandNumber)
             {
@@ -1363,7 +1368,9 @@ namespace RM.src.RM250619
 
         private static void CheckHmiCommandRecordPoint()
         {
-            int recordPointCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPointRecordCommandIn));
+            // int recordPointCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPointRecordCommandIn));
+
+            int recordPointCommand = 0;
 
             if (recordPointCommand > 0)
             {
@@ -1394,13 +1401,13 @@ namespace RM.src.RM250619
                 }
 
                 // Reset valore
-                RefresherTask.AddUpdate(PLCTagName.SelectedPointRecordCommandIn, 0, "INT16");
+              //  RefresherTask.AddUpdate(PLCTagName.SelectedPointRecordCommandIn, 0, "INT16");
             }
         }
 
         private static void CheckHmiCommandResetAlarms()
         {
-            int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.ResetAlarmsCommandIn));
+            int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.ResetAlarms));
 
             if (resetAlarmsCommand > 0)
             {
@@ -1408,7 +1415,7 @@ namespace RM.src.RM250619
                 RMLib_AlarmsCleared(null, EventArgs.Empty);
 
                 // Reset valore
-                RefresherTask.AddUpdate(PLCTagName.ResetAlarmsCommandIn, 0, "INT16");
+                RefresherTask.AddUpdate(PLCTagName.ResetAlarms, 0, "INT16");
             }
         }
 
