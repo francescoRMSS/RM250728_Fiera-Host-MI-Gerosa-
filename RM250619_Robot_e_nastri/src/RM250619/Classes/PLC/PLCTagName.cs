@@ -454,7 +454,7 @@ namespace RM.src.RM250619.Classes.PLC
         public static string jogNastro = "PLC1_" + "hmi_12";
 
         #endregion
-
+       
 
         #endregion
 
