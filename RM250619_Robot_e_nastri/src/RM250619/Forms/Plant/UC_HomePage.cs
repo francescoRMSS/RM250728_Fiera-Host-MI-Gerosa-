@@ -1276,7 +1276,7 @@ namespace RM.src.RM250619
                         //RobotManager.StartApplication(application);
                         // RobotManager.PickAndPlaceScatola();
                         // RobotManager.PickAndPlaceTeglia();
-                        RobotManager.PickAndPlaceTegliaGiroCompleto();
+                         RobotManager.PickAndPlaceTegliaGiroCompleto();
                         EnableCycleButton(1); // Disattiva stop, disattiva pause, attiva start
                     }
                 }

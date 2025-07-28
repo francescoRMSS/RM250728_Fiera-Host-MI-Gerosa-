@@ -618,28 +618,28 @@ namespace RM.src.RM250619
         /// <summary>
         /// Parametro larghezza della focaccia da HMI
         /// </summary>
-        public static int larghezzaScatola = 0;
+        public static int larghezzaScatola = 300;
         /// <summary>
         /// Parametro profondità della focaccia da HMI
         /// </summary>
-        public static int lunghezzaScatola = 0;
+        public static int lunghezzaScatola = 300;
         /// <summary>
         /// Altezza del pallet da HMI
         /// </summary>
-        public static int altezzaScatola = 0;
+        public static int altezzaScatola = 100;
 
         /// <summary>
         /// Larghezza del pallet da HMI
         /// </summary>
-        public static int larghezzaPallet = 0;
+        public static int larghezzaPallet = 800;
         /// <summary>
         ///  Lunghezza del pallet da HMI
         /// </summary>
-        public static int lunghezzaPallet = 0;
+        public static int lunghezzaPallet = 1200;
         /// <summary>
         /// Altezza del pallet da HMI
         /// </summary>
-        public static int altezzaPallet = 0;
+        public static int altezzaPallet = 100;
 
         /// <summary>
         /// Speed utilizzata in home routine
@@ -4213,6 +4213,19 @@ namespace RM.src.RM250619
             // Apertura pinza
             RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
 
+           
+
+            double[] levelCollision1 = new double[] { 1, 1, 1, 1, 1, 1 };
+            double[] levelCollision2 = new double[] { 2, 2, 2, 2, 2, 2 };
+            double[] levelCollision3 = new double[] { 3, 3, 3, 3, 3, 3 };
+            double[] levelCollision4 = new double[] { 4, 4, 4, 4, 4, 4 };
+            double[] levelCollision5 = new double[] { 5, 5, 5, 5, 5, 5 };
+            double[] levelCollision6 = new double[] { 6, 6, 6, 6, 6, 6 };
+            double[] levelCollision7 = new double[] { 7, 7, 7, 7, 7, 7 };
+            double[] levelCollision8 = new double[] { 8, 8, 8, 8, 8, 8 };
+
+            robot.SetAnticollision(0, levelCollision5, 1);
+
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
             await Task.Run(async () =>
@@ -4274,7 +4287,7 @@ namespace RM.src.RM250619
                             #region Movimento a punto di Pick
 
                              inPosition = false; // Reset inPosition
-
+                            
                             // Movimento in posa di pre pick 1
                             movementResult = robot.MoveL(jointPrePick1, prePick1Pose, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
                             GetRobotMovementCode(movementResult); // Stampo risultato del movimento
@@ -4282,7 +4295,7 @@ namespace RM.src.RM250619
                             // Movimento in posa di pick 1
                             movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
                             GetRobotMovementCode(movementResult); // Stampo risultato del movimento
-
+                            
                             endingPoint = descPosPick; // Assegnazione endingPoint
                            
                             step = 30; // Passaggio a step 30
@@ -4330,6 +4343,7 @@ namespace RM.src.RM250619
 
                            //  if (gripperStatus == 1)
                             {
+                               
                                 await Task.Delay(800); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
                                 step = 50;
                             }
@@ -4430,18 +4444,39 @@ namespace RM.src.RM250619
                             movementResult = robot.MoveCart(postPlace1RotationPose, tool, user, vel/2, acc/2, ovl, blendT, config);
                             GetRobotMovementCode(movementResult);
 
-                            // Movimento a posa di place 2
-                            movementResult = robot.MoveL(jointPlace2, place2Pose, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
-
-                            endingPoint = place2Pose; // Assegnazione ending point
+                            endingPoint = postPlace1RotationPose;
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 100 - Movimento a punto di place 2");
 
-                            step = 130; // Passaggio a step 130
+                            step = 105;
 
                             break;
 
                         #endregion
+
+                        case 105:
+                            #region Attesa inPosition punto pre place 2
+
+                            if (inPosition) // Se il Robot è arrivato in posizione di place 2
+                            {
+                                await Task.Delay(500);
+                                robot.SetAnticollision(0, levelCollision5, 1);
+
+                                // Movimento a posa di place 2
+                                movementResult = robot.MoveL(jointPlace2, place2Pose, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+
+                                endingPoint = place2Pose; // Assegnazione ending point
+
+                                formDiagnostics.UpdateRobotStepDescription("STEP 100 - Movimento a punto di place 2");
+
+                                step = 130; // Passaggio a step 140
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 130 - Attesa inPosition punto pre place");
+
+                            break;
+
+                            #endregion
 
                         case 120:
                             #region Delay per calcolo in position punto di place 2
@@ -4478,7 +4513,9 @@ namespace RM.src.RM250619
                            // if (gripperStatus == 0)
                             {
                                await Task.Delay(600); // // Ritardo per evitare che il robot riparta senza aver finito di aprire la pinza
-                               step = 150; // Passaggio a step 150
+                                robot.SetAnticollision(0, levelCollision5, 1);
+
+                                step = 150; // Passaggio a step 150
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 140 - Delay post apertura pinza in place 2");
@@ -4692,7 +4729,7 @@ namespace RM.src.RM250619
 
             // Get della posizione di home dal dizionario delle posizioni
             var homePose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
-
+            
             int index = 0; // Indice della posizione
 
             int indexEndingPoint = 0; // Indice della posizione su cui eseguire inPosition
