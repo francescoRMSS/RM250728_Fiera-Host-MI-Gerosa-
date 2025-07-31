@@ -2485,16 +2485,6 @@
             Stato precedente di robotReadyToStart
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotReadyToStart">
-            <summary>
-            Controlla che la lista di applicazione del robot abbia almeno un elemento
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckRobotHasProgramInMemory">
-            <summary>
-            Controlla che il Robot abbia un'applicazione caricata in memoria
-            </summary>
-        </member>
         <member name="F:RM.src.RM250619.RobotManager.isAuto">
             <summary>
             A true quando robot in modalità automatica
@@ -2727,6 +2717,23 @@
             <summary>
             Esegue ciclo di test per pick e place teglia
             </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.MainCycle">
+            <summary>
+            Esegue ciclo di pick di una scatola e place dentro al pallet in una determinata posizione
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.PickBox">
+            <summary>
+            Esegue il pick della scatola
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.PlaceBox">
+            <summary>
+            Esegue il place della scatola
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceScatola">
             <summary>
