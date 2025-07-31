@@ -24,6 +24,7 @@ using System.Web;
 using System.Drawing.Imaging;
 using System.Drawing;
 using RM.src.RM250619.Classes.FR20;
+using log4net.Repository.Hierarchy;
 
 namespace RM.src.RM250619
 {
@@ -1230,28 +1231,56 @@ namespace RM.src.RM250619
                 previousGripperStatus = gripperStatus > 0;
             }
         }
-
         private static void CheckBarrierStatus()
         {
             int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
 
+            ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
+            byte mov_robot_state = 0;
+
+            // Controllo se c'è stato un cambio di stato nella barriera
             if (Convert.ToBoolean(barrierStatus) != previousBarrierStatus)
             {
                 if (barrierStatus == 1)
                 {
-                    robot.PauseMotion(); // Metto in pausa il robot
-                    robotIsPaused = true; // Imposto a true il booleano che segnala che il robot è in pausa
+                    // Richiesta di pausa
+                    robot.PauseMotion();
+                    robotIsPaused = true;
+
+                    // 🔁 Aspetta che lo stato robot diventi 3 (pausa)
+                    const int maxAttempts = 3;
+                    int attempt = 0;
+
+                    do
+                    {
+                        robot.GetRobotRealTimeState(ref robot_state_pkg);
+                        mov_robot_state = robot_state_pkg.robot_state;
+
+                        if (mov_robot_state == 3) break;
+
+                        Thread.Sleep(100); // Attendi un po' prima di riprovare
+                        attempt++;
+
+                    } while (attempt < maxAttempts);
+
+                    if (mov_robot_state != 3)
+                    {
+                        log.Error("ERRORE: Il robot non si è messo in pausa correttamente.");
+                    }
                 }
                 else
                 {
-                    robot.ResumeMotion(); // Faccio ripartire il movimento del robot
-                    robotIsPaused = false; // Imposto a false il booleano che segnala che il robot è in pausa
+                    // Ripresa
+                    robot.ResumeMotion();
+                    robotIsPaused = false;
+
+                    // (Opzionale) potresti verificare qui che il robot riprenda correttamente
                 }
 
                 previousBarrierStatus = barrierStatus > 0;
             }
-            
         }
+
 
         private static void CheckCommandJogNastro()
         {
