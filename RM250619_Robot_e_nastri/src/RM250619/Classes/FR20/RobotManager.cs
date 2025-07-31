@@ -261,8 +261,8 @@ namespace RM.src.RM250619
 
         private static PositionChecker checker_ingombro_pick;
         private static PositionChecker checker_ingombro_place;
-        private static PositionChecker checker_ingombro_welding;
         private static PositionChecker checker_ingombro_home;
+
 
         private static PositionChecker checker_pos;
         private static PositionChecker checker_safeZone;
@@ -1007,7 +1007,7 @@ namespace RM.src.RM250619
                 //Check Robot related status
                 CheckIsRobotEnable();
                 CheckRobotMode();
-                CheckIsRobotInHomePosition(homePose);
+               // CheckIsRobotInHomePosition(homePose);
                
 
                 Thread.Sleep(auxiliaryThreadRefreshPeriod);
@@ -1467,7 +1467,6 @@ namespace RM.src.RM250619
             // Calcola lo stato corrente
             isInHomePosition = checker_pos.IsInPosition(homePose, TCPCurrentPosition);
 
-
             // Controlla se lo stato è cambiato rispetto al precedente
             if (previousIsInHomePosition == null || isInHomePosition != previousIsInHomePosition)
             {
@@ -1486,7 +1485,7 @@ namespace RM.src.RM250619
                 }
                     
                 // Aggiorna solo se c'è stato un cambiamento
-              //  RefresherTask.AddUpdate(PLCTagName.Home_Pos, isInHomePosition ? 1 : 0, "INT16");
+                RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, isInHomePosition ? 1 : 0, "INT16");
 
                 // Aggiorna lo stato precedente
                 previousIsInHomePosition = isInHomePosition;
@@ -1649,26 +1648,26 @@ namespace RM.src.RM250619
             // Zone di ingombro
             var pickPose = ApplicationConfig.applicationsManager.GetPosition("pPick","RM");
             var placePose = ApplicationConfig.applicationsManager.GetPosition("pPlace","RM");
-            var weldingPose = ApplicationConfig.applicationsManager.GetPosition("pWelding","RM");
+            var homePose = ApplicationConfig.applicationsManager.GetPosition("pHome","RM");
 
             DescPose[] startPoints = new DescPose[]
             {
                 new DescPose(pickPose.x, pickPose.y, pickPose.z, pickPose.rx, pickPose.ry, pickPose.rz),
                 new DescPose(placePose.x, placePose.y, placePose.z, placePose.rx, placePose.ry, placePose.rz),
-                 new DescPose(weldingPose.x, weldingPose.y, weldingPose.z, weldingPose.rx, weldingPose.ry, weldingPose.rz),
+                new DescPose(homePose.x, homePose.y, homePose.z, homePose.rx, homePose.ry, homePose.rz),
             };
 
             // Oggetto che rileva ingombro pick
-            double delta_ingombro_pick = 100.0;
+            double delta_ingombro_pick = 200.0;
             checker_ingombro_pick = new PositionChecker(delta_ingombro_pick);
 
             // Oggetto che rileva ingombro place
-            double delta_ingombro_place = 100.0;
+            double delta_ingombro_place = 200.0;
             checker_ingombro_place = new PositionChecker(delta_ingombro_place);
 
-            // Oggetto che rileva ingombro welding
-            double delta_ingombro_welding = 200.0;
-            checker_ingombro_welding = new PositionChecker(delta_ingombro_welding);
+            // Oggetto che rileva ingombro home
+            double delta_ingombro_home = 200.0;
+            checker_ingombro_home = new PositionChecker(delta_ingombro_home);
 
             #endregion
 
@@ -1688,7 +1687,7 @@ namespace RM.src.RM250619
 
             #endregion
 
-            checker_pos = new PositionChecker(5.0); // 1cm  //10.0
+            checker_pos = new PositionChecker(5.0);
 
             while (true)
             {
@@ -1699,7 +1698,7 @@ namespace RM.src.RM250619
                         robot.GetActualTCPPose(flag, ref TCPCurrentPosition); // Leggo posizione robot TCP corrente
                         CheckIsRobotMoving(updates);
                         CheckIsRobotInObstructionArea(startPoints, updates);
-                        //CheckIsRobotInSafeZone(pointSafeZone, updates);
+                        CheckIsRobotInSafeZone(pointSafeZone);
                         CheckIsRobotInPos();
                         CheckBarrierStatus();
 
@@ -1859,64 +1858,78 @@ namespace RM.src.RM250619
         /// <summary>
         /// Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
         /// </summary>
+        /// <param name="startPoints">Array con i punti di partenza per Pick, Place e Home</param>
         /// <param name="updates">Lista di aggiornamenti</param>
         private static void CheckIsRobotInObstructionArea(DescPose[] startPoints, List<(string key, bool value, string type)> updates)
         {
             isInPositionPick = checker_ingombro_pick.IsInObstruction(startPoints[0], TCPCurrentPosition);
+            isInPositionPlace = checker_ingombro_place.IsInObstruction(startPoints[1], TCPCurrentPosition);
+            isInPositionHome = checker_ingombro_home.IsInObstruction(startPoints[2], TCPCurrentPosition);
 
             if (isInPositionPick)
             {
                 if (prevRobotOutPick != false)
                 {
                     prevRobotOutPick = false;
+                    prevRobotOutPlace = true;
+                    prevInHomePos = true;
                     prevFuoriIngombro = false;
+
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
                 }
             }
-
-            isInPositionPlace = checker_ingombro_place.IsInObstruction(startPoints[1], TCPCurrentPosition);
-
-            if (isInPositionPlace)
+            else if (isInPositionPlace)
             {
                 if (prevRobotOutPlace != false)
                 {
                     prevRobotOutPlace = false;
+                    prevRobotOutPick = true;
+                    prevInHomePos = true;
                     prevFuoriIngombro = false;
+
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
                 }
             }
-
-            isInPositionWelding = checker_ingombro_welding.IsInObstruction(startPoints[2], TCPCurrentPosition);
-
-            if (isInPositionWelding)
+            else if (isInPositionHome)
             {
-                if (prevRobotOutWelding != false)
+                if (prevInHomePos != false)
                 {
-                    prevRobotOutWelding = false;
+                    prevInHomePos = false;
+                    prevRobotOutPick = true;
+                    prevRobotOutPlace = true;
                     prevFuoriIngombro = false;
+
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 1, "INT16");
                 }
             }
-
-            if (!isInPositionWelding && !isInPositionPick && !isInPositionWelding)
+            else
             {
                 if (prevFuoriIngombro != true)
                 {
                     prevFuoriIngombro = true;
+                    prevRobotOutPick = true;
+                    prevRobotOutPlace = true;
+                    prevInHomePos = true;
+
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
                 }
             }
-
-            /*
-            log.Info("\nIngombro Pick: " + isInPositionPick.ToString() +
-                "\nIngombro Place: " + isInPositionPlace.ToString() + 
-                "\nIngombro Welding: " + isInPositionWelding.ToString() +
-                "\nFuori ingombro: " + prevFuoriIngombro.ToString()
-                );
-            */
         }
+
+
 
         /// <summary>
         /// Verifica se il punto corrente è all'interno dell'area di safe zone
         /// </summary>
-        /// <param name="updates">Lista di aggiornamenti</param>
-        private static void CheckIsRobotInSafeZone(DescPose pSafeZone, List<(string key, bool value, string type)> updates)
+        private static void CheckIsRobotInSafeZone(DescPose pSafeZone)
         {
             isInSafeZone = checker_safeZone.IsYLessThan(pSafeZone, TCPCurrentPosition);
 

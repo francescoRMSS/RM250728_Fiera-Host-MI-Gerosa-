@@ -2901,13 +2901,13 @@
             <summary>
             Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
             </summary>
+            <param name="startPoints">Array con i punti di partenza per Pick, Place e Home</param>
             <param name="updates">Lista di aggiornamenti</param>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotInSafeZone(fairino.DescPose,System.Collections.Generic.List{System.ValueTuple{System.String,System.Boolean,System.String}})">
+        <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotInSafeZone(fairino.DescPose)">
             <summary>
             Verifica se il punto corrente è all'interno dell'area di safe zone
             </summary>
-            <param name="updates">Lista di aggiornamenti</param>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotInPos">
             <summary>
