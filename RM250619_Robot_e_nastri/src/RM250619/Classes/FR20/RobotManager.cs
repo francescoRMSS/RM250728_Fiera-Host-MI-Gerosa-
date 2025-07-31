@@ -4213,8 +4213,6 @@ namespace RM.src.RM250619
             // Apertura pinza
             RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
 
-           
-
             double[] levelCollision1 = new double[] { 1, 1, 1, 1, 1, 1 };
             double[] levelCollision2 = new double[] { 2, 2, 2, 2, 2, 2 };
             double[] levelCollision3 = new double[] { 3, 3, 3, 3, 3, 3 };
@@ -4224,7 +4222,9 @@ namespace RM.src.RM250619
             double[] levelCollision7 = new double[] { 7, 7, 7, 7, 7, 7 };
             double[] levelCollision8 = new double[] { 8, 8, 8, 8, 8, 8 };
 
-            robot.SetAnticollision(0, levelCollision5, 1);
+            robot.SetAnticollision(0, levelCollision6, 1);
+
+            byte ris = 0;
 
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
@@ -4325,7 +4325,7 @@ namespace RM.src.RM250619
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
                             {
                                 // Chiudo la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
+                                robot.SetDO(0, 1, 0, 0);
 
                                 step = 40; // Passaggio a step 40
                             }
@@ -4339,12 +4339,12 @@ namespace RM.src.RM250619
                         case 40:
                             #region Delay post chiusura pinza
 
-                           // gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
+                            robot.GetDI(0, 1, ref ris);
 
-                           //  if (gripperStatus == 1)
+                             if (ris == 0)
                             {
                                
-                                await Task.Delay(800); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
+                                //await Task.Delay(800); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
                                 step = 50;
                             }
 
@@ -4459,8 +4459,8 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place 2
                             {
-                                await Task.Delay(500);
-                                robot.SetAnticollision(0, levelCollision5, 1);
+                              //  await Task.Delay(300);
+                               // robot.SetAnticollision(0, levelCollision5, 1);
 
                                 // Movimento a posa di place 2
                                 movementResult = robot.MoveL(jointPlace2, place2Pose, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
@@ -4494,7 +4494,7 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place 2
                             {
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16"); // Apro la pinza
+                                robot.SetDO(0, 0, 0, 0); // Apro la pinza
 
                                 step = 140; // Passaggio a step 140
                             }
@@ -4508,12 +4508,12 @@ namespace RM.src.RM250619
                         case 140:
                             #region Delay post apertura pinza
 
-                            // gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
+                            robot.GetDI(0, 1, ref ris);
 
-                           // if (gripperStatus == 0)
+                            if (ris == 1)
                             {
-                               await Task.Delay(600); // // Ritardo per evitare che il robot riparta senza aver finito di aprire la pinza
-                                robot.SetAnticollision(0, levelCollision5, 1);
+                              // await Task.Delay(300); // // Ritardo per evitare che il robot riparta senza aver finito di aprire la pinza
+                              //  robot.SetAnticollision(0, levelCollision5, 1);
 
                                 step = 150; // Passaggio a step 150
                             }

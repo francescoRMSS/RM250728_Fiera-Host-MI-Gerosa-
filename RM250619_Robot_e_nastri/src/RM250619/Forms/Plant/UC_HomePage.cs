@@ -2077,5 +2077,87 @@ namespace RM.src.RM250619
                 RobotManager.robotIsPaused = false; // Imposto a false il booleano che segnala che il robot è in pausa
             }
         }
-    }
+
+        private void button1_Click(object sender, EventArgs e)
+        {/*
+            for (int i = 0; i < 8; i++)
+            {
+                RobotManager.robot.SetDO(i, 0, 1, 1);
+            }
+
+            MessageBox.Show("A zero");
+
+           
+
+            */
+
+            RobotManager.robot.SetDO(0, 1, 0, 0);
+           //  RobotManager.robot.GetDI(0, 1, ref ris);
+          /*  byte ris = 0;
+
+            RobotManager.robot.GetDI(0, 1, ref ris);
+            MessageBox.Show(ris.ToString());*/
+
+            /*
+            for (int i = 0; i < 15; i++)
+            {
+                RobotManager.robot.SetDO(i, 0, 1, 1);
+            }
+            */
+            /*
+            RobotManager.robot.SetDO(0, 1, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(1, 1, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(2, 1, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(3, 1, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(4, 1, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(5, 1, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(6, 1, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(7, 1, 1, 1);
+            */
+            /*
+            MessageBox.Show("A zero");
+            RobotManager.robot.SetDO(0, 0, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(1, 0, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(2, 0, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(3, 0, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(4, 0, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(5, 0, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(6, 0, 1, 1);
+            MessageBox.Show("Vai avanti");
+            RobotManager.robot.SetDO(7, 0, 1, 1);
+            */
+            /*
+            int h = 0;
+            int l = 0;
+            RobotManager.robot.GetDO(ref h, ref l);
+            MessageBox.Show("H: " + h.ToString() + " L: " + l.ToString());
+            */
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            RobotManager.robot.SetDO(0, 0, 0, 0);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            byte ris = 0;
+
+            RobotManager.robot.GetDI(0, 1, ref ris);
+            MessageBox.Show(ris.ToString());
+        }
+    } 
 }

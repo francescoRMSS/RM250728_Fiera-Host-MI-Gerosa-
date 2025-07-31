@@ -26,11 +26,6 @@ namespace RM.src.RM250619.Classes.PLC
         public const string Automatic_Start = "PLC1_" + "com_robot_3";
 
         /// <summary>
-        /// A 1 quando la catena è attiva
-        /// </summary>
-        public const string Chain_Enable = "PLC1_" + "com_robot_4";
-
-        /// <summary>
         /// A 1 se è presente il programma nella memoria del Robot e quindi può essere inviato
         /// </summary>
         public const string Program_In_Memory = "PLC1_" + "com_robot_6";
@@ -198,11 +193,6 @@ namespace RM.src.RM250619.Classes.PLC
         public const string rz_threshold = "PLC1_" + "com_robot_164";
 
         /// <summary>
-        /// Spostamento della catena in mm
-        /// </summary>
-        public const string Chain_Pos = "PLC1_" + "com_robot_165";
-
-        /// <summary>
         /// Enable robot from PLC
         /// </summary>
         public const string Enable = "PLC1_" + "com_robot_166";
@@ -280,17 +270,12 @@ namespace RM.src.RM250619.Classes.PLC
         #endregion
 
         #region HMI
-
+        public static string Chain_Pos;
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
         public static string Alarm_Presence = "PLC1_" + "com_robot_203";
-
-        /// <summary>
-        /// 0...1(bool)
-        /// </summary>
-        public static string Buzzer_On = "PLC1_" + "com_robot_204";
 
         /// <summary>
         /// 0...1(bool)

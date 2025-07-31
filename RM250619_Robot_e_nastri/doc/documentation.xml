@@ -621,11 +621,6 @@
             A 1 quando quando il robot lavora in modalità automatico
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Chain_Enable">
-            <summary>
-            A 1 quando la catena è attiva
-            </summary>
-        </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Program_In_Memory">
             <summary>
             A 1 se è presente il programma nella memoria del Robot e quindi può essere inviato
@@ -781,11 +776,6 @@
             rz axis threshold [°]
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Chain_Pos">
-            <summary>
-            Spostamento della catena in mm
-            </summary>
-        </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Enable">
             <summary>
             Enable robot from PLC
@@ -862,11 +852,6 @@
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alarm_Presence">
-            <summary>
-            0...1(bool)
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Buzzer_On">
             <summary>
             0...1(bool)
             </summary>
