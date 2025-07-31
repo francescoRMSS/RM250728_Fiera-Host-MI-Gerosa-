@@ -25,15 +25,68 @@ namespace RM.src.RM250619.Classes.PLC
         /// </summary>
         public const string Automatic_Start = "PLC1_" + "com_robot_3";
 
+        #region spare
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_1_to_write = "PLC1_" + "com_robot_4";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_2_to_write = "PLC1_" + "com_robot_5";
+
+        #endregion
+
         /// <summary>
         /// A 1 se è presente il programma nella memoria del Robot e quindi può essere inviato
         /// </summary>
         public const string Program_In_Memory = "PLC1_" + "com_robot_6";
 
+        #region spare
+
         /// <summary>
-        /// Stato della pinza
+        /// spare
         /// </summary>
-        public const string GripperStatusOut = "PLC1_" + "com_robot_11";
+        public const string spare_3_to_write = "PLC1_" + "com_robot_7";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_7_to_write = "PLC1_" + "com_robot_8";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_16_to_write = "PLC1_" + "com_robot_9";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_17_to_write = "PLC1_" + "com_robot_10";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_24_to_write = "PLC1_" + "com_robot_11";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_4_to_write = "PLC1_" + "com_robot_12";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_5_to_write = "PLC1_" + "com_robot_13";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_6_to_write = "PLC1_" + "com_robot_14";
+
+        #endregion
 
         /// <summary>
         /// A 1 quando il Robot è in errore ma ha potenza
@@ -55,19 +108,234 @@ namespace RM.src.RM250619.Classes.PLC
         /// </summary>
         public const string Auto_Cycle_End = "PLC1_" + "com_robot_18";
 
+        #region spare
+
         /// <summary>
-        /// A 1 quando il Robot si trova in home position
+        /// spare
         /// </summary>
-        public const string Home_Pos = "PLC1_" + "com_robot_20";
+        public const string spare_18_to_write = "PLC1_" + "com_robot_19";
+
+        #endregion
+
+        /// <summary>
+        /// A 1 quando il Robot si trova in zona di home
+        /// </summary>
+        public const string ACT_Zone_Home_inPos = "PLC1_" + "com_robot_20";
+
+        /// <summary>
+        /// A 1 quando il Robot si trova in zona di pick
+        /// </summary>
+        public const string ACT_Zone_Pick_inPos = "PLC1_" + "com_robot_21";
+
+        /// <summary>
+        /// A 1 quando il Robot si trova in zona di place
+        /// </summary>
+        public const string ACT_Zone_Place_inPos = "PLC1_" + "com_robot_22";
+
+        #region spare
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_10_to_write = "PLC1_" + "com_robot_23";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_19_to_write = "PLC1_" + "com_robot_24";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_20_to_write = "PLC1_" + "com_robot_25";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_21_to_write = "PLC1_" + "com_robot_26";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_22_to_write = "PLC1_" + "com_robot_27";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_23_to_write = "PLC1_" + "com_robot_28";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_11_to_write = "PLC1_" + "com_robot_29";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_12_to_write = "PLC1_" + "com_robot_30";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_13_to_write = "PLC1_" + "com_robot_31";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_14_to_write = "PLC1_" + "com_robot_32";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_15_to_write = "PLC1_" + "com_robot_33";
+
+        #endregion
+
+        #region array di spare
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_0_to_write = "PLC1_" + "com_robot_34";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_1_to_write = "PLC1_" + "com_robot_35";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_2_to_write = "PLC1_" + "com_robot_36";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_3_to_write = "PLC1_" + "com_robot_37";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_4_to_write = "PLC1_" + "com_robot_38";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_5_to_write = "PLC1_" + "com_robot_39";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_6_to_write = "PLC1_" + "com_robot_40";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_7_to_write = "PLC1_" + "com_robot_41";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_8_to_write = "PLC1_" + "com_robot_42";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_9_to_write = "PLC1_" + "com_robot_43";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_10_to_write = "PLC1_" + "com_robot_44";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_11_to_write = "PLC1_" + "com_robot_45";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_12_to_write = "PLC1_" + "com_robot_46";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_13_to_write = "PLC1_" + "com_robot_47";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_14_to_write = "PLC1_" + "com_robot_48";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_15_to_write = "PLC1_" + "com_robot_49";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_16_to_write = "PLC1_" + "com_robot_50";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_17_to_write = "PLC1_" + "com_robot_51";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_18_to_write = "PLC1_" + "com_robot_52";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string array_spare_19_to_write = "PLC1_" + "com_robot_53";
+
+        #endregion
 
         #endregion
 
         #region HMI
 
+        #region spare
+
         /// <summary>
-        /// 0...1(bool)
+        /// spare
         /// </summary>
-        public const string Cmd_Reset_Alarm = "PLC1_" + "com_robot_57";
+        public const string spare_hmi_24_to_write = "PLC1_" + "com_robot_54";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_hmi_25_to_write = "PLC1_" + "com_robot_55";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_hmi_26_to_write = "PLC1_" + "com_robot_56";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public const string spare_hmi_50_to_write = "PLC1_" + "com_robot_57";
+
+        #endregion
+
+        /// <summary>
+        /// Numero di step main cycle
+        /// </summary>
+        public const string ACT_Step_MainCycle = "PLC1_" + "com_robot_58";
+
+        /// <summary>
+        /// Numero di step ciclo di pick
+        /// </summary>
+        public const string ACT_Step_Cycle_Pick = "PLC1_" + "com_robot_59";
+
+        /// <summary>
+        /// Numero di step ciclo di place
+        /// </summary>
+        public const string ACT_Step_Cycle_Place = "PLC1_" + "com_robot_60";
 
         /// <summary>
         /// x axis actual position [mm]
@@ -146,6 +414,20 @@ namespace RM.src.RM250619.Classes.PLC
         /// A 1 durante tutta la durante del ciclo
         /// </summary>
         public static string Start_Auto_Robot = "PLC1_" + "com_robot_153";
+
+        #region spare
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_to_read_50 = "PLC1_" + "com_robot_154";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_to_read_51 = "PLC1_" + "com_robot_155";
+
+        #endregion
 
         /// <summary>
         /// 0-joint, 2-base, 4-tool, 8-workpiece
@@ -270,7 +552,16 @@ namespace RM.src.RM250619.Classes.PLC
         #endregion
 
         #region HMI
-        public static string Chain_Pos;
+
+        /// <summary>
+        /// A 1 per far girare il main
+        /// </summary>
+        public static string CMD_StartApp = "PLC1_" + "com_robot_201";
+
+        /// <summary>
+        /// A 1 per fermare il main
+        /// </summary>
+        public static string CMD_StopApp = "PLC1_" + "com_robot_202";
 
         /// <summary>
         /// 0...1(bool)
@@ -278,38 +569,73 @@ namespace RM.src.RM250619.Classes.PLC
         public static string Alarm_Presence = "PLC1_" + "com_robot_203";
 
         /// <summary>
-        /// 0...1(bool)
+        /// A 1 per avvia routine per tornare in home
+        /// </summary>
+        public static string CMD_GoHome = "PLC1_" + "com_robot_204";
+
+        /// <summary>
+        /// A 1 quando il robot è in manuale
         /// </summary>
         public static string Manual_Mode = "PLC1_" + "com_robot_205";
 
         /// <summary>
-        /// 0...1(bool)
+        /// A 1 quando il robot è in automatico
         /// </summary>
         public static string Automatic_Mode = "PLC1_" + "com_robot_206";
 
-        public static string PLC_Version_YYYY = "PLC1_" + "com_robot_211";
-
-        public static string PLC_Version_MMDD = "PLC1_" + "com_robot_212";
+        /// <summary>
+        /// Formato selezionato
+        /// </summary>
+        public static string CMD_SelectedFormat = "PLC1_" + "com_robot_207";
 
         /// <summary>
-        /// 0...1(bool)ALARM 1 - Emergency not OK
+        /// A 1 per resettare gli allarmi
         /// </summary>
-        public static string Alr_1 = "PLC1_" + "com_robot_213";
+        public static string CMD_ResetAlarms = "PLC1_" + "com_robot_208";
 
         /// <summary>
-        /// 0...1(bool)ALARM 2 - Guards not OK
+        ///  Pallet selezionato
         /// </summary>
-        public static string Alr_2 = "PLC1_" + "com_robot_214";
+        public static string CMD_SelectedPallet = "PLC1_" + "com_robot_209";
 
         /// <summary>
-        /// 0...1(bool)ALARM 3 - 24Vdc gun thermal protection
+        /// Livello del pallet
         /// </summary>
-        public static string Alr_3 = "PLC1_" + "com_robot_215";
+        public static string CMD_Layer_Pallet = "PLC1_" + "com_robot_210";
 
         /// <summary>
-        /// 0...1(bool)ALARM 4 - Error Feedback KM Emergency
+        /// Indice della scatola
         /// </summary>
-        public static string Alr_4 = "PLC1_" + "com_robot_216";
+        public static string CMD_Index_Box = "PLC1_" + "com_robot_211";
+
+        /// <summary>
+        /// Scatola ruotata/non ruotata
+        /// </summary>
+        public static string CMD_Box_Rotate_180 = "PLC1_" + "com_robot_212";
+
+        #region spare
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare = "PLC1_" + "com_robot_213";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_1 = "PLC1_" + "com_robot_214";
+
+        #endregion
+
+        /// <summary>
+        /// A 1 per consenso di pick
+        /// </summary>
+        public static string Enable_To_Pick = "PLC1_" + "com_robot_215";
+
+        /// <summary>
+        /// A 1 per consenso di place
+        /// </summary>
+        public static string Enable_To_Place = "PLC1_" + "com_robot_216";
 
         /// <summary>
         /// 0...1(bool)ALARM 5 - Error Feedback KM Gards
@@ -322,14 +648,14 @@ namespace RM.src.RM250619.Classes.PLC
         public static string Alr_6 = "PLC1_" + "com_robot_218";
 
         /// <summary>
-        /// 0...1(bool)ALARM 7 - Error F-Output modul
+        /// A 1 per eseguire pick
         /// </summary>
-        public static string Alr_7 = "PLC1_" + "com_robot_219";
+        public static string CMD_Pick = "PLC1_" + "com_robot_219";
 
         /// <summary>
-        /// 0...1(bool)ALARM 8 - Com Gun
+        /// A 1 per eseguire place
         /// </summary>
-        public static string Alr_8 = "PLC1_" + "com_robot_220";
+        public static string CMD_Place = "PLC1_" + "com_robot_220";
 
         /// <summary>
         /// 0...1(bool)ALARM 9 - Emergency Mobile Panel not ok
@@ -365,6 +691,36 @@ namespace RM.src.RM250619.Classes.PLC
         /// 0...1(bool)ALARM 15 -
         /// </summary>
         public static string Alr_15 = "PLC1_" + "com_robot_227";
+
+        /// <summary>
+        /// A 1 per apertura manuale pinze
+        /// </summary>
+        public static string CMD_MAN_openGrippers = "PLC1_" + "com_robot_228";
+
+        /// <summary>
+        /// A 1 per chiusura manuale pinze
+        /// </summary>
+        public static string CMD_MAN_closeGrippers = "PLC1_" + "com_robot_229";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_64 = "PLC1_" + "com_robot_230";
+
+        /// <summary>
+        /// A 1 per registrare il punto
+        /// </summary>
+        public static string CMD_RegisterPoint = "PLC1_" + "com_robot_231";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_62 = "PLC1_" + "com_robot_232";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_63 = "PLC1_" + "com_robot_233";
 
         /// <summary>
         /// Errore di comunicazione con la pulsantiera

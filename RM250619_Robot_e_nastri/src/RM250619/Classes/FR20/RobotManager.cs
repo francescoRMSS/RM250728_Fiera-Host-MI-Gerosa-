@@ -1231,6 +1231,10 @@ namespace RM.src.RM250619
                 previousGripperStatus = gripperStatus > 0;
             }
         }
+
+        /// <summary>
+        /// Check su accesso barriere
+        /// </summary>
         private static void CheckBarrierStatus()
         {
             int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
@@ -1482,7 +1486,7 @@ namespace RM.src.RM250619
                 }
                     
                 // Aggiorna solo se c'è stato un cambiamento
-                RefresherTask.AddUpdate(PLCTagName.Home_Pos, isInHomePosition ? 1 : 0, "INT16");
+              //  RefresherTask.AddUpdate(PLCTagName.Home_Pos, isInHomePosition ? 1 : 0, "INT16");
 
                 // Aggiorna lo stato precedente
                 previousIsInHomePosition = isInHomePosition;
@@ -2796,7 +2800,7 @@ namespace RM.src.RM250619
             if (!stopChainUpdaterThread)
             {
                 // Get del valore dello spostamento catena dal dizionario di variabili PLC
-                chainPos = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Chain_Pos));
+               // chainPos = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Chain_Pos));
             }
             else
             {
@@ -3052,7 +3056,7 @@ namespace RM.src.RM250619
             RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
 
             // Apertura pinza
-            RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+           // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
 
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
@@ -3157,7 +3161,7 @@ namespace RM.src.RM250619
                             {
                                 Thread.Sleep(500);
                                 // Chiudo la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
+                              //  RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
                                 step = 40;
                             }
 
@@ -3248,7 +3252,7 @@ namespace RM.src.RM250619
                             {
                                 Thread.Sleep(500);
                                 // Chiudo la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
                                 step = 90;
                             }
 
@@ -3334,7 +3338,7 @@ namespace RM.src.RM250619
                             {
                                 Thread.Sleep(500);
                                 // Chiudo la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
+                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
                                 step = 140;
                             }
 
@@ -3429,7 +3433,7 @@ namespace RM.src.RM250619
                             {
                                 Thread.Sleep(500);
                                 // Chiudo la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
                                 step = 190;
                             }
 
@@ -3971,7 +3975,7 @@ namespace RM.src.RM250619
                             if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
                                 // Chiudo la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
                                 stepPlace = 30;
                             }
 
@@ -4221,7 +4225,7 @@ namespace RM.src.RM250619
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
                                 // Chiudo la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                              //  RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
                                 step = 40;
                             }
 
@@ -4361,7 +4365,7 @@ namespace RM.src.RM250619
                             if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
                                 // Chiudo la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
                                 step = 90;
                             }
 
@@ -4712,7 +4716,7 @@ namespace RM.src.RM250619
             RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
 
             // Apertura pinza
-            RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+           // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
 
             double[] levelCollision1 = new double[] { 1, 1, 1, 1, 1, 1 };
             double[] levelCollision2 = new double[] { 2, 2, 2, 2, 2, 2 };
@@ -5086,7 +5090,7 @@ namespace RM.src.RM250619
                             {
                                // Thread.Sleep(500);
                                 // Chiudo la pinza
-                                RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
                                 step = 190;
                             }
 
@@ -5623,7 +5627,7 @@ namespace RM.src.RM250619
 
 
                             // Aggiorniamo offsetChain dinamicamente
-                            offsetChain = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Chain_Pos));
+                            offsetChain = 0;
 
                             targetPos = new DescPose(
                                         pointList[index].tran.x + offsetChain,

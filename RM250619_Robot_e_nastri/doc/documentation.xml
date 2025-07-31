@@ -621,14 +621,59 @@
             A 1 quando quando il robot lavora in modalità automatico
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_1_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_2_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Program_In_Memory">
             <summary>
             A 1 se è presente il programma nella memoria del Robot e quindi può essere inviato
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.GripperStatusOut">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_3_to_write">
             <summary>
-            Stato della pinza
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_7_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_16_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_17_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_24_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_4_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_5_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_6_to_write">
+            <summary>
+            spare
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.System_error">
@@ -651,14 +696,214 @@
             A 1 quando il Robot finisce il ciclo automatico
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Home_Pos">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_18_to_write">
             <summary>
-            A 1 quando il Robot si trova in home position
+            spare
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Cmd_Reset_Alarm">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_Zone_Home_inPos">
             <summary>
-            0...1(bool)
+            A 1 quando il Robot si trova in zona di home
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_Zone_Pick_inPos">
+            <summary>
+            A 1 quando il Robot si trova in zona di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_Zone_Place_inPos">
+            <summary>
+            A 1 quando il Robot si trova in zona di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_10_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_19_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_20_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_21_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_22_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_23_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_11_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_12_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_13_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_14_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_15_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_0_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_1_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_2_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_3_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_4_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_5_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_6_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_7_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_8_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_9_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_10_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_11_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_12_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_13_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_14_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_15_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_16_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_17_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_18_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.array_spare_19_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_hmi_24_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_hmi_25_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_hmi_26_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_hmi_50_to_write">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_Step_MainCycle">
+            <summary>
+            Numero di step main cycle
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_Step_Cycle_Pick">
+            <summary>
+            Numero di step ciclo di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_Step_Cycle_Place">
+            <summary>
+            Numero di step ciclo di place
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.x_actual_pos">
@@ -729,6 +974,16 @@
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Start_Auto_Robot">
             <summary>
             A 1 durante tutta la durante del ciclo
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_to_read_50">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_to_read_51">
+            <summary>
+            spare
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Jog_Ref_type">
@@ -851,39 +1106,84 @@
             0...1(bool)
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_StartApp">
+            <summary>
+            A 1 per far girare il main
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_StopApp">
+            <summary>
+            A 1 per fermare il main
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alarm_Presence">
             <summary>
             0...1(bool)
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_GoHome">
+            <summary>
+            A 1 per avvia routine per tornare in home
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Manual_Mode">
             <summary>
-            0...1(bool)
+            A 1 quando il robot è in manuale
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Automatic_Mode">
             <summary>
-            0...1(bool)
+            A 1 quando il robot è in automatico
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alr_1">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_SelectedFormat">
             <summary>
-            0...1(bool)ALARM 1 - Emergency not OK
+            Formato selezionato
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alr_2">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_ResetAlarms">
             <summary>
-            0...1(bool)ALARM 2 - Guards not OK
+            A 1 per resettare gli allarmi
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alr_3">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_SelectedPallet">
             <summary>
-            0...1(bool)ALARM 3 - 24Vdc gun thermal protection
+             Pallet selezionato
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alr_4">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_Layer_Pallet">
             <summary>
-            0...1(bool)ALARM 4 - Error Feedback KM Emergency
+            Livello del pallet
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_Index_Box">
+            <summary>
+            Indice della scatola
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_Box_Rotate_180">
+            <summary>
+            Scatola ruotata/non ruotata
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_1">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Enable_To_Pick">
+            <summary>
+            A 1 per consenso di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Enable_To_Place">
+            <summary>
+            A 1 per consenso di place
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alr_5">
@@ -896,14 +1196,14 @@
             0...1(bool)ALARM 6 - Error F-Input modul
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alr_7">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_Pick">
             <summary>
-            0...1(bool)ALARM 7 - Error F-Output modul
+            A 1 per eseguire pick
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alr_8">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_Place">
             <summary>
-            0...1(bool)ALARM 8 - Com Gun
+            A 1 per eseguire place
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alr_9">
@@ -939,6 +1239,36 @@
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Alr_15">
             <summary>
             0...1(bool)ALARM 15 -
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_MAN_openGrippers">
+            <summary>
+            A 1 per apertura manuale pinze
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_MAN_closeGrippers">
+            <summary>
+            A 1 per chiusura manuale pinze
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_64">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_RegisterPoint">
+            <summary>
+            A 1 per registrare il punto
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_62">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_63">
+            <summary>
+            spare
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.MobilePanel_CommError">
@@ -2468,6 +2798,11 @@
         <member name="M:RM.src.RM250619.RobotManager.AuxiliaryWorker">
             <summary>
             Gestisce gli ausiliari del Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckBarrierStatus">
+            <summary>
+            Check su accesso barriere
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotInHomePosition(fairino.DescPose)">
