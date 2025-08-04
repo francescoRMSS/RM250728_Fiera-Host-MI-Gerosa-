@@ -981,7 +981,7 @@
             spare
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_to_read_51">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_OverrideAuto">
             <summary>
             spare
             </summary>
@@ -1279,66 +1279,6 @@
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.GripperStatusIn">
             <summary>
             Comando di apertura/chiusura pinza 1:Aperto|0:Chiuso
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.StartApp">
-            <summary>
-            Comando per andare in home position 1:GoToHome|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.StopApp">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.GoHome">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedFormat">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ResetAlarms">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PLCVersionYear">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PLCVersionMonth">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PLCVersionDay">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SelectedPallet">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.openGrippers">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.closeGrippers">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.jogNastro">
-            <summary>
-            Comando per far partire il jog nastro 1:StartJogNastro|0:Normal state
             </summary>
         </member>
         <member name="T:RM.src.RM250619.RobotApplication">
@@ -2654,6 +2594,11 @@
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.previousPalletCommandNumber">
+            <summary>
+            Memorizza lo stato della variabile selected pallet dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousFormatCommandNumber">
             <summary>
             Memorizza lo stato della variabile selected pallet dal PLC
             </summary>

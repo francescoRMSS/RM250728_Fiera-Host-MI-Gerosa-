@@ -607,6 +607,8 @@ namespace RM.src.RM250619
         /// </summary>
         private static int previousBoxFormatCommandNumber = 0;
 
+        private static int previousSelectedFormat = 0;
+
         /// <summary>
         /// Memorizza lo stato precedente della variabile on/off jog nastro dal PLC
         /// </summary>
@@ -978,10 +980,6 @@ namespace RM.src.RM250619
 
         private static void CommandsChecker()
         {
-            //Inizializzo lo start a 0
-            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-            //Inizializzo il go to home a 0
-            RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
             //Aspetto che il valore cambi
             Thread.Sleep(2000); // Valutare se tenere il delay o far dei controlli se ha scritto  0 davvero
 
@@ -993,12 +991,10 @@ namespace RM.src.RM250619
                 CheckCommandGoToHome();
                 // Valutare se mettere anche la velocità e gli altri parametri del robot nell'hmi e leggerli qui
                 CheckCommandGripper();
-                CheckCommandJogNastro(); // Valutare se farlo qui o direttamente nel PLC
-                CheckSelectedPallet(); // Valutare se farlo qui o direttamente nel PLC
-                CheckSelectedBox(); // Valutare se farlo qui o direttamente nel PLC
                 CheckCommandRecordPoint();
                 CheckCommandResetAlarms();
-                CheckSelectedFormat();
+                // CheckSelectedFormat();
+                CheckVelCommand();
 
                 Thread.Sleep(200);
             }
@@ -1017,6 +1013,22 @@ namespace RM.src.RM250619
                     stopCycleRequested = true;
                     previousStopCommandStatus = true;
                 }
+            }
+        }
+
+        private static int previousVel = 0;
+        private static void CheckVelCommand()
+        {
+            // Get valore variabile di stop ciclo robot
+            int velocity = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_OverrideAuto));
+
+            // Check su cambio di stato
+            if (velocity != previousVel)
+            {
+                vel = velocity;
+                acc = velocity;
+                previousVel = velocity;
+                
             }
         }
 
@@ -1114,7 +1126,7 @@ namespace RM.src.RM250619
 
         private async static void CheckCommandGoToHome() // Questo metodo non deve bloccare il thread
         {
-            int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GoHome));
+            int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_GoHome));
 
             if (Convert.ToBoolean(homeStatus) != previousHomeCommandStatus)
             {
@@ -1123,13 +1135,11 @@ namespace RM.src.RM250619
                     if (UC_HomePage.homeRoutineStarted)
                     {
                         log.Warn("Tentativo di avvio home routine quando già in esecuzione");
-                        RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
                         return;
                     }
                     if (isAutomaticMode)
                     {
                         log.Warn("Tenativo di avvio home routine in modalità automatica");
-                        RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
                         return;
                     }
 
@@ -1212,7 +1222,7 @@ namespace RM.src.RM250619
 
                                             EnableButtonHome?.Invoke(1, EventArgs.Empty);
 
-                                            RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
+                                           // RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
                                             stopHomeRoutine = true;
 
                                             break;
@@ -1314,174 +1324,8 @@ namespace RM.src.RM250619
         }
 
 
-        private static void CheckCommandJogNastro()
-        {
-            int jogNastroStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.jogNastro));
 
-            if (Convert.ToBoolean(jogNastroStatus) != previousJogNastroCommandStatus)
-            {
-                if (jogNastroStatus == 1)
-                {
-                    // Start jog nastro
-
-
-                }
-
-                previousJogNastroCommandStatus = false; // reset status
-            }
-        }
-
-        private static void CheckSelectedPallet()
-        {
-            int palletNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPallet));
-
-            if (palletNumber != previousPalletCommandNumber)
-            {
-                // Lettura dimensioni lunghezza larghezza altezza box da PLC della scatola selezionata
-                switch (palletNumber)
-                {
-                    // Nessuna scatola selezionata
-                    case 0:
-                        larghezzaPallet = 0;
-                        lunghezzaPallet = 0;
-                        altezzaPallet = 0;
-                        break;
-                    // Scatola 1
-                    case 1:
-                        larghezzaPallet = 1200;
-                        lunghezzaPallet = 800;
-                        altezzaPallet = 144;
-                        break;
-                    // Scatola 2
-                    case 2:
-                        larghezzaPallet = 1200;
-                        lunghezzaPallet = 800;
-                        altezzaPallet = 144;
-                        break;
-                    // Scatola 3
-                    case 3:
-                        larghezzaPallet = 1200;
-                        lunghezzaPallet = 800;
-                        altezzaPallet = 144;
-                        break;
-                    // Scatola 4
-                    case 4:
-                        larghezzaPallet = 1200;
-                        lunghezzaPallet = 800;
-                        altezzaPallet = 144;
-                        break;
-                    // Altrimenti
-                    default:
-                        log.Error($"Tentativo di lettura dimensioni del pallet: {palletNumber} che però è inesistente, operazione annullata.");
-                        break;
-                }
-
-                previousPalletCommandNumber = palletNumber; // reset status
-            }
-        }
-
-        private static void CheckSelectedFormat()
-        {
-            int selectedFormat = 
-                Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedPallet)) * 1000 +
-                Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) * 100;
-
-            
-            if (selectedFormat != previousFormatCommandNumber)
-            {
-                // Lettura dimensioni lunghezza larghezza altezza box da PLC della scatola selezionata
-                switch (selectedFormat)
-                {
-                    // Nessuna scatola selezionata
-                    case 0:
-                        larghezzaPallet = 0;
-                        lunghezzaPallet = 0;
-                        altezzaPallet = 0;
-                        break;
-                    // Scatola 1
-                    case 1:
-                        larghezzaPallet = 1200;
-                        lunghezzaPallet = 800;
-                        altezzaPallet = 144;
-                        break;
-                    // Scatola 2
-                    case 2:
-                        larghezzaPallet = 1200;
-                        lunghezzaPallet = 800;
-                        altezzaPallet = 144;
-                        break;
-                    // Scatola 3
-                    case 3:
-                        larghezzaPallet = 1200;
-                        lunghezzaPallet = 800;
-                        altezzaPallet = 144;
-                        break;
-                    // Scatola 4
-                    case 4:
-                        larghezzaPallet = 1200;
-                        lunghezzaPallet = 800;
-                        altezzaPallet = 144;
-                        break;
-                    // Altrimenti
-                    default:
-                        log.Error($"Tentativo di lettura dimensioni del pallet: {selectedFormat} che però è inesistente, operazione annullata.");
-                        break;
-                }
-
-                previousFormatCommandNumber = selectedFormat; // reset status
-            
-            }
-        }
-
-        private static void CheckSelectedBox()
-        {
-            int boxNumber = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedFormat));
-
-            if (boxNumber != previousBoxFormatCommandNumber)
-            {
-                // Lettura dimensioni lunghezza larghezza altezza box da PLC della scatola selezionata
-                switch (boxNumber)
-                {
-                    // Nessuna scatola selezionata
-                    case 0:
-                        larghezzaScatola = 0;
-                        lunghezzaScatola = 0;
-                        altezzaScatola = 0;
-                        break;
-                    // Scatola 1
-                    case 1:
-                        larghezzaScatola = 400;
-                        lunghezzaScatola = 600;
-                        altezzaScatola = 300;
-                        break;
-                    // Scatola 2
-                    case 2:
-                        larghezzaScatola = 400;
-                        lunghezzaScatola = 600;
-                        altezzaScatola = 300;
-                        break;
-                    // Scatola 3
-                    case 3:
-                        larghezzaScatola = 400;
-                        lunghezzaScatola = 600;
-                        altezzaScatola = 300;
-                        break;
-                    // Scatola 4
-                    case 4:
-                        larghezzaScatola = 400;
-                        lunghezzaScatola = 600;
-                        altezzaScatola = 300;
-                        break;
-                    // Altrimenti
-                    default:
-                        log.Error($"Tentativo di lettura dimensioni della scatola: {boxNumber} che però è inesistente, operazione annullata.");
-                        break;
-                }
-
-                previousBoxFormatCommandNumber = boxNumber; // reset status
-            }
-        }
-
+      
         private static void CheckCommandRecordPoint()
         {
             // int recordPointCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPointRecordCommandIn));
@@ -1522,7 +1366,7 @@ namespace RM.src.RM250619
         }
 
         private static void CheckCommandResetAlarms()
-        {
+        {/*
             int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.ResetAlarms));
 
             if (resetAlarmsCommand > 0)
@@ -1532,7 +1376,7 @@ namespace RM.src.RM250619
 
                 // Reset valore
                 RefresherTask.AddUpdate(PLCTagName.ResetAlarms, 0, "INT16");
-            }
+            }*/
         }
 
         public static event EventHandler RobotInHomePosition;
@@ -3973,10 +3817,21 @@ namespace RM.src.RM250619
 
             #region Punto di place
 
+            int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+            int boxIndex = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Index_Box));
+            int rotate180 = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Box_Rotate_180));
+
+
+
             JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
-            var place = ApplicationConfig.applicationsManager.GetPosition("pPlace", "RM");
+            var place = ApplicationConfig.applicationsManager.GetPosition((selectedFormat + boxIndex).ToString(), "RM");
             DescPose descPosPlace = new DescPose(place.x, place.y, place.z, place.rx, place.ry, place.rz);
             RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
+
+            if (rotate180 == 1)
+            {
+                descPosPlace.rpy.rz = NormalizeAngle((float)descPosPlace.rpy.rz + 180);
+            }
 
             #endregion
 
@@ -4012,7 +3867,7 @@ namespace RM.src.RM250619
                             #region Movimento a punto di place
                             
                             inPosition = false; // Reset inPosition
-
+                            /*
                             // Calcolo dove appoggiare la scatola
                             DescPose puntoPlaceScatola = CalcolaPosizioneScatola(
                                 riga,
@@ -4036,15 +3891,17 @@ namespace RM.src.RM250619
                                 puntoPlaceScatola.rpy.ry,
                                 puntoPlaceScatola.rpy.rz);
 
+
+
                             // Get posizione di avvicinamento place in joint
                             RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
-
+                            */
                             // Invio punto di avvicinamento place
                             movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc, ovl, blendT, config); // Invio punto di avvicinamento place
                             GetRobotMovementCode(movementResult);
 
                             // Invio punto di place
-                            movementResult = robot.MoveL(jointPosPlaceCalculated, puntoPlaceScatola, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset );
+                            movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset );
 
                             //TODO: questi calcoli non verranno più fatti qui ma direttamente del PLC, noi leggiamo e basta i valori
                             if (colonna < numeroColonne - 1)
@@ -4066,7 +3923,7 @@ namespace RM.src.RM250619
                                 }
                             }
 
-                            endingPoint = puntoPlaceScatola; // Assegnazione endingPoint
+                            endingPoint = descPosPlace; // Assegnazione endingPoint
 
                             stepPlace = 10;
                             
