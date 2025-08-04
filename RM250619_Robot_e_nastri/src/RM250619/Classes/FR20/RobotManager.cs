@@ -598,6 +598,11 @@ namespace RM.src.RM250619
         private static int previousPalletCommandNumber = 0;
 
         /// <summary>
+        /// Memorizza lo stato della variabile selected pallet dal PLC
+        /// </summary>
+        private static int previousFormatCommandNumber = 0;
+
+        /// <summary>
         /// Memorizza lo stato della variabile selected box format dal PLC
         /// </summary>
         private static int previousBoxFormatCommandNumber = 0;
@@ -993,6 +998,7 @@ namespace RM.src.RM250619
                 CheckSelectedBox(); // Valutare se farlo qui o direttamente nel PLC
                 CheckCommandRecordPoint();
                 CheckCommandResetAlarms();
+                CheckSelectedFormat();
 
                 Thread.Sleep(200);
             }
@@ -1371,6 +1377,59 @@ namespace RM.src.RM250619
                 }
 
                 previousPalletCommandNumber = palletNumber; // reset status
+            }
+        }
+
+        private static void CheckSelectedFormat()
+        {
+            int selectedFormat = 
+                Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedPallet)) * 1000 +
+                Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) * 100;
+
+            
+            if (selectedFormat != previousFormatCommandNumber)
+            {
+                // Lettura dimensioni lunghezza larghezza altezza box da PLC della scatola selezionata
+                switch (selectedFormat)
+                {
+                    // Nessuna scatola selezionata
+                    case 0:
+                        larghezzaPallet = 0;
+                        lunghezzaPallet = 0;
+                        altezzaPallet = 0;
+                        break;
+                    // Scatola 1
+                    case 1:
+                        larghezzaPallet = 1200;
+                        lunghezzaPallet = 800;
+                        altezzaPallet = 144;
+                        break;
+                    // Scatola 2
+                    case 2:
+                        larghezzaPallet = 1200;
+                        lunghezzaPallet = 800;
+                        altezzaPallet = 144;
+                        break;
+                    // Scatola 3
+                    case 3:
+                        larghezzaPallet = 1200;
+                        lunghezzaPallet = 800;
+                        altezzaPallet = 144;
+                        break;
+                    // Scatola 4
+                    case 4:
+                        larghezzaPallet = 1200;
+                        lunghezzaPallet = 800;
+                        altezzaPallet = 144;
+                        break;
+                    // Altrimenti
+                    default:
+                        log.Error($"Tentativo di lettura dimensioni del pallet: {selectedFormat} che però è inesistente, operazione annullata.");
+                        break;
+                }
+
+                previousFormatCommandNumber = selectedFormat; // reset status
+            
             }
         }
 
