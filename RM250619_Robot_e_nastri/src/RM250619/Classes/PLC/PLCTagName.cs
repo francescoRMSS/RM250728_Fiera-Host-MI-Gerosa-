@@ -728,12 +728,85 @@ namespace RM.src.RM250619.Classes.PLC
         public static string MobilePanel_CommError = "PLC1_" + "com_robot_234";
 
         /// <summary>
-        /// Comando di apertura/chiusura pinza 1:Aperto|0:Chiuso
+        /// spare
         /// </summary>
-        public static string GripperStatusIn = "PLC1_" + "com_robot_235";
+        public static string spare_51 = "PLC1_" + "com_robot_235";
 
-        
-       
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_26 = "PLC1_" + "com_robot_236";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_27 = "PLC1_" + "com_robot_237";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_28 = "PLC1_" + "com_robot_238";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_29 = "PLC1_" + "com_robot_239";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_30 = "PLC1_" + "com_robot_240";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_31 = "PLC1_" + "com_robot_241";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_32 = "PLC1_" + "com_robot_242";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_33 = "PLC1_" + "com_robot_243";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_34 = "PLC1_" + "com_robot_244";
+
+        /// <summary>
+        /// xOffset punto di pick
+        /// </summary>
+        public static string OFFSET_Pick_X = "PLC1_" + "com_robot_245";
+
+        /// <summary>
+        /// yOffset punto di pick
+        /// </summary>
+        public static string OFFSET_Pick_Y = "PLC1_" + "com_robot_246";
+
+        /// <summary>
+        /// zOffset punto di pick
+        /// </summary>
+        public static string OFFSET_Pick_Z = "PLC1_" + "com_robot_247";
+
+        /// <summary>
+        /// xOffset punto di place
+        /// </summary>
+        public static string OFFSET_Place_X = "PLC1_" + "com_robot_248";
+
+        /// <summary>
+        /// yOffset punto di place
+        /// </summary>
+        public static string OFFSET_Place_Y = "PLC1_" + "com_robot_249";
+
+        /// <summary>
+        /// zOffset punto di place
+        /// </summary>
+        public static string OFFSET_Place_Z = "PLC1_" + "com_robot_250";
+
 
         #endregion
 

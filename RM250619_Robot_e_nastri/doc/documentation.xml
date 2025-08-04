@@ -1276,9 +1276,84 @@
             Errore di comunicazione con la pulsantiera
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.GripperStatusIn">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_51">
             <summary>
-            Comando di apertura/chiusura pinza 1:Aperto|0:Chiuso
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_26">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_27">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_28">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_29">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_30">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_31">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_32">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_33">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_34">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.OFFSET_Pick_X">
+            <summary>
+            xOffset punto di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.OFFSET_Pick_Y">
+            <summary>
+            yOffset punto di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.OFFSET_Pick_Z">
+            <summary>
+            zOffset punto di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.OFFSET_Place_X">
+            <summary>
+            xOffset punto di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.OFFSET_Place_Y">
+            <summary>
+            yOffset punto di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.OFFSET_Place_Z">
+            <summary>
+            zOffset punto di place
             </summary>
         </member>
         <member name="T:RM.src.RM250619.RobotApplication">

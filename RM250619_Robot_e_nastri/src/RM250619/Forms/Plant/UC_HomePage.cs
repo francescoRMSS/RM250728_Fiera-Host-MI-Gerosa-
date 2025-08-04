@@ -2011,16 +2011,7 @@ namespace RM.src.RM250619
 
         private void ClickEvent_openGripper(object sender, EventArgs e)
         {
-            int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn)); // lettura
-
-            if (gripperStatus == 0) // se è 0 scrivo 1
-            {
-               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
-            }
-            else // se è 1 scrivo 0
-            {
-               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
-            }
+          
         }
 
         private void ClickEvent_restoreScreenSaverManager(object sender, EventArgs e)

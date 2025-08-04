@@ -985,15 +985,11 @@ namespace RM.src.RM250619
 
             while(true)
             {
-                //Check Hmi commands
                 CheckCommandStart();
                 CheckCommandStop();
                 CheckCommandGoToHome();
-                // Valutare se mettere anche la velocità e gli altri parametri del robot nell'hmi e leggerli qui
-                CheckCommandGripper();
                 CheckCommandRecordPoint();
                 CheckCommandResetAlarms();
-                // CheckSelectedFormat();
                 CheckVelCommand();
 
                 Thread.Sleep(200);
@@ -1251,24 +1247,6 @@ namespace RM.src.RM250619
             }
         }
 
-        private static void CheckCommandGripper()
-        {
-            int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
-
-            if(previousGripperStatus == null || Convert.ToBoolean(gripperStatus) != previousGripperStatus)
-            {
-                if (gripperStatus == 1)
-                {
-                    GripperStatusOFF?.Invoke(null, EventArgs.Empty);
-                }
-                else
-                {
-                    GripperStatusON?.Invoke(null, EventArgs.Empty);
-                }
-
-                previousGripperStatus = gripperStatus > 0;
-            }
-        }
 
         /// <summary>
         /// Check su accesso barriere
@@ -3111,8 +3089,6 @@ namespace RM.src.RM250619
                         case 40:
                             #region Presa teglia
 
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
-
                             // if (gripperStatus == 0)
                             {
                                 Thread.Sleep(1000); // Per evitare "rimbalzo" del Robot
@@ -3201,8 +3177,6 @@ namespace RM.src.RM250619
                         case 90:
                             #region Rilascio teglia
 
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
-
                             // if (gripperStatus == 0)
                             {
                                 Thread.Sleep(1000); // Per evitare "rimbalzo" del Robot
@@ -3286,8 +3260,6 @@ namespace RM.src.RM250619
 
                         case 140:
                             #region Presa teglia
-
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
 
                             // if (gripperStatus == 0)
                             {
@@ -3382,8 +3354,6 @@ namespace RM.src.RM250619
 
                         case 190:
                             #region Rilascio teglia
-
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
 
                             // if (gripperStatus == 0)
                             {
@@ -3556,6 +3526,7 @@ namespace RM.src.RM250619
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 0 - Check richiesta interruzione ciclo");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, 0, "IN16"); // Scrittura fase ciclo a PLC
                             break;
 
                         #endregion
@@ -3578,6 +3549,7 @@ namespace RM.src.RM250619
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 5 - Termine routine");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, 5, "IN16"); // Scrittura fase ciclo a PLC
                             break;
 
                         #endregion
@@ -3622,6 +3594,7 @@ namespace RM.src.RM250619
                             step = 0; // Riavvio mainCycle
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 10 - Check richiesta movimento");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, 10, "IN16"); // Scrittura fase ciclo a PLC
 
                             break;
 
@@ -3655,9 +3628,13 @@ namespace RM.src.RM250619
 
             #region Punto di pick
 
+            int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
+            int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
+            int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
+
             JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
             var pick = ApplicationConfig.applicationsManager.GetPosition("pPick", "RM");
-            DescPose descPosPick = new DescPose(pick.x, pick.y, pick.z, pick.rx, pick.ry, pick.rz);
+            DescPose descPosPick = new DescPose(pick.x + xOffset, pick.y + yOffset, pick.z + zOffset, pick.rx, pick.ry, pick.rz);
             RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
 
             #endregion
@@ -3705,6 +3682,7 @@ namespace RM.src.RM250619
                             stepPick = 10;
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 0 - Movimento a punto di Pick");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 0, "IN16"); // Scrittura fase ciclo a PLC
 
                             break;
 
@@ -3716,6 +3694,7 @@ namespace RM.src.RM250619
                             Thread.Sleep(500);
                             stepPick = 20;
                             formDiagnostics.UpdateRobotStepDescription("STEP 10 -  Delay calcolo in position punto di pick");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 10, "IN16"); // Scrittura fase ciclo a PLC
 
                             break;
 
@@ -3732,14 +3711,14 @@ namespace RM.src.RM250619
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 20 - Attesa inPosition punto di Pick");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 20, "IN16"); // Scrittura fase ciclo a PLC
+
                             break;
 
                         #endregion
 
                         case 30:
                             #region Check presa ventosa
-
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
 
                             // if (gripperStatus == 0)
                             {
@@ -3748,6 +3727,8 @@ namespace RM.src.RM250619
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 30 - Check presa ventosa");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 30, "IN16"); // Scrittura fase ciclo a PLC
+
                             break;
 
                         #endregion
@@ -3768,6 +3749,7 @@ namespace RM.src.RM250619
                             endingPoint = descPosHome;
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 40 - Movimento a punto di Home");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 40, "IN16"); // Scrittura fase ciclo a PLC
 
                             stepPick = 50;
 
@@ -3783,8 +3765,10 @@ namespace RM.src.RM250619
                                 stopPickRoutine = true;
                             }
 
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 50, "IN16"); // Scrittura fase ciclo a PLC
                             break;
 
+                           
                             #endregion
                     }
 
@@ -3821,11 +3805,13 @@ namespace RM.src.RM250619
             int boxIndex = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Index_Box));
             int rotate180 = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Box_Rotate_180));
 
-
+            int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
+            int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Y));
+            int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
 
             JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
             var place = ApplicationConfig.applicationsManager.GetPosition((selectedFormat + boxIndex).ToString(), "RM");
-            DescPose descPosPlace = new DescPose(place.x, place.y, place.z, place.rx, place.ry, place.rz);
+            DescPose descPosPlace = new DescPose(place.x + xOffset, place.y + yOffset, place.z + zOffset, place.rx, place.ry, place.rz);
             RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
 
             if (rotate180 == 1)
@@ -3867,35 +3853,7 @@ namespace RM.src.RM250619
                             #region Movimento a punto di place
                             
                             inPosition = false; // Reset inPosition
-                            /*
-                            // Calcolo dove appoggiare la scatola
-                            DescPose puntoPlaceScatola = CalcolaPosizioneScatola(
-                                riga,
-                                colonna,
-                                strato,
-                                larghezzaScatola,
-                                lunghezzaScatola,
-                                altezzaScatola,
-                                originePallet
-                            );
-
-                            // Get posizione di place in joint
-                            RobotManager.robot.GetInverseKin(0, puntoPlaceScatola, -1, ref jointPosPlaceCalculated);
-
-                            // Calcolo punto di avvicinamento place
-                            descPosApproachPlace = new DescPose(
-                                puntoPlaceScatola.tran.x,
-                                puntoPlaceScatola.tran.y,
-                                puntoPlaceScatola.tran.z + 200,
-                                puntoPlaceScatola.rpy.rx,
-                                puntoPlaceScatola.rpy.ry,
-                                puntoPlaceScatola.rpy.rz);
-
-
-
-                            // Get posizione di avvicinamento place in joint
-                            RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
-                            */
+                           
                             // Invio punto di avvicinamento place
                             movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc, ovl, blendT, config); // Invio punto di avvicinamento place
                             GetRobotMovementCode(movementResult);
@@ -3903,32 +3861,13 @@ namespace RM.src.RM250619
                             // Invio punto di place
                             movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset );
 
-                            //TODO: questi calcoli non verranno più fatti qui ma direttamente del PLC, noi leggiamo e basta i valori
-                            if (colonna < numeroColonne - 1)
-                            {
-                                colonna++;
-                            }
-                            else
-                            {
-                                if (riga < numeroRighe - 1)
-                                {
-                                    riga++;
-                                    colonna = 0;
-                                }
-                                else
-                                {
-                                    riga = 0;
-                                    colonna = 0;
-                                    strato++;
-                                }
-                            }
-
                             endingPoint = descPosPlace; // Assegnazione endingPoint
 
                             stepPlace = 10;
                             
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 60 - Movimento a punto di place");
+                            formDiagnostics.UpdateRobotStepDescription("STEP 0 - Movimento a punto di place");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 0, "IN16"); // Scrittura fase ciclo a PLC
                             break;
 
                         #endregion
@@ -3939,6 +3878,7 @@ namespace RM.src.RM250619
                             Thread.Sleep(500);
                             stepPlace = 20;
                             formDiagnostics.UpdateRobotStepDescription("STEP 10 -  Delay calcolo in position punto di place");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 10, "IN16"); // Scrittura fase ciclo a PLC
                             break;
 
                         #endregion
@@ -3954,6 +3894,7 @@ namespace RM.src.RM250619
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 20 - Attesa inPosition punto di place");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 20, "IN16"); // Scrittura fase ciclo a PLC
 
                             break;
 
@@ -3962,8 +3903,6 @@ namespace RM.src.RM250619
                         case 30:
                             #region Rilascio scatola su pallet
 
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
-
                             // if (gripperStatus == 0)
                             {
                                 Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
@@ -3971,6 +3910,7 @@ namespace RM.src.RM250619
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 30 - Rilascio scatola su pallet");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 30, "IN16"); // Scrittura fase ciclo a PLC
                             break;
 
                         #endregion
@@ -3987,6 +3927,7 @@ namespace RM.src.RM250619
                             GetRobotMovementCode(movementResult);
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 40 - Movimento a punto di Home e termine routine");
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 40, "IN16"); // Scrittura fase ciclo a PLC
 
                             stopPlaceRoutine = true;
 
@@ -4211,8 +4152,6 @@ namespace RM.src.RM250619
                         case 40:
                             #region Presa focaccia
 
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
-
                             // if (gripperStatus == 0)
                             {
                                 Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
@@ -4349,8 +4288,6 @@ namespace RM.src.RM250619
 
                         case 90:
                             #region Rilascio focaccia
-
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
 
                             // if (gripperStatus == 0)
                             {
@@ -4899,8 +4836,6 @@ namespace RM.src.RM250619
                         case 90:
                             #region Rilascio teglia
 
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
-
                             // if (gripperStatus == 0)
                             {
                                 await Task.Delay(500);
@@ -5075,8 +5010,6 @@ namespace RM.src.RM250619
 
                         case 190:
                             #region Rilascio teglia
-
-                            gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
 
                             // if (gripperStatus == 0)
                             {
