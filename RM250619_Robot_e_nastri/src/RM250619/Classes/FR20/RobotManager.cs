@@ -3761,7 +3761,7 @@ namespace RM.src.RM250619
                         #endregion
 
                         case 50:
-                            #region Movimento a punto di Home
+                            #region Attesa inPosition punto di Home
 
                             if (inPosition) // Se è arrivato in home termino la routine
                             {
@@ -3919,7 +3919,7 @@ namespace RM.src.RM250619
                         #endregion
 
                         case 40:
-                            #region Movimento a punto di Home e riavvio ciclo
+                            #region Movimento a punto di Home
 
                             // Invio punto di allontamento place
                             movementResult = robot.MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset );
@@ -3932,9 +3932,23 @@ namespace RM.src.RM250619
                             formDiagnostics.UpdateRobotStepDescription("STEP 40 - Movimento a punto di Home e termine routine");
                             RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 40, "IN16"); // Scrittura fase ciclo a PLC
 
-                            stopPlaceRoutine = true;
+                            stepPlace = 50;
 
                             break;
+
+                        #endregion
+
+                        case 50:
+                            #region Attesa inPosition punto di Home
+
+                            if (inPosition) // Se è arrivato in home termino la routine
+                            {
+                                stopPlaceRoutine = true;
+                            }
+
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 50, "IN16"); // Scrittura fase ciclo a PLC
+                            break;
+
 
                             #endregion
                     }
