@@ -578,9 +578,14 @@ namespace RM.src.RM250619
         private static bool? previousBarrierStatus = false;
 
         /// <summary>
-        /// Memorizza lo stato precedente della variabile start/stop ciclo dal PLC
+        /// Memorizza lo stato precedente della variabile start ciclo dal PLC
         /// </summary>
-        private static bool previousStartCommandStatus = false;
+        private static bool? previousStartCommandStatus = null;
+
+        /// <summary>
+        /// Memorizza lo stato precedente della variabile stop ciclo dal PLC
+        /// </summary>
+        private static bool? previousStopCommandStatus = null;
 
         /// <summary>
         /// Memorizza lo stato precedente della variabile go to home position dal PLC
@@ -978,7 +983,8 @@ namespace RM.src.RM250619
             while(true)
             {
                 //Check Hmi commands
-                CheckCommandStart();  
+                CheckCommandStart();
+                CheckCommandStop();
                 CheckCommandGoToHome();
                 // Valutare se mettere anche la velocità e gli altri parametri del robot nell'hmi e leggerli qui
                 CheckCommandGripper();
@@ -989,6 +995,22 @@ namespace RM.src.RM250619
                 CheckCommandResetAlarms();
 
                 Thread.Sleep(200);
+            }
+        }
+
+        private static void CheckCommandStop()
+        {
+            // Get valore variabile di stop ciclo robot
+            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopApp));
+
+            // Check su cambio di stato
+            if (Convert.ToBoolean(stopStatus) != previousStopCommandStatus)
+            {
+                if (stopStatus == 1) // Stop
+                {
+                    stopCycleRequested = true;
+                    previousStopCommandStatus = true;
+                }
             }
         }
 
@@ -1017,7 +1039,7 @@ namespace RM.src.RM250619
         private static void CheckCommandStart()
         {
             // Get valore variabile di avvio ciclo robot
-            int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Start_Auto_Robot));
+            int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StartApp));
 
             // Check su cambio di stato
             if(Convert.ToBoolean(startStatus) != previousStartCommandStatus)
@@ -2160,7 +2182,7 @@ namespace RM.src.RM250619
                 // Resetto contatore posizionamento catena
                 RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
 
-            }
+            } 
 
             TriggerAllarmeResettato();
 
@@ -3505,11 +3527,6 @@ namespace RM.src.RM250619
         /// </summary>
         public static async Task MainCycle()
         {
-            /*if(larghezzaScatola == 0 || larghezzaPallet == 0) // controllare che non ci siano valori = 0 prima di iniziare
-            {
-                return;
-            }*/
-
             #region Dichiarazione punti routine
 
             #region Punto home
@@ -3579,10 +3596,16 @@ namespace RM.src.RM250619
             int gripperStatus = -1; 
 
             // Segnale di pick
-            bool execPick = true;
+            int execPick = 0;
 
             // Segnale di place
-            bool execPlace = true;
+            int execPlace = 0;
+
+            // Consensi di pick
+            int enableToPick = 0;
+
+            // Consensi di place
+            int enableToPlace = 0;
 
             // Segnale di place
             bool appoggiaSuPallet = true;
@@ -3659,17 +3682,39 @@ namespace RM.src.RM250619
                         case 10:
                             #region Check richiesta routine
 
-                            if (execPick) // Check richiesta di pick routine
+                            #region Pick
+
+                            // Get comando di pick
+                            execPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick));
+                            // Get consensi di pick
+                            enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
+
+                            if (execPick == 1) // Check richiesta di pick routine
                             {
-                                await PickBox(); // Eseguo e attendo sia terminata la routine di pick
-                                execPick = false; // Resetto richiesta di pick routine
+                                if (enableToPick == 1) // Check consensi pick
+                                {
+                                    await PickBox(); // Eseguo e attendo sia terminata la routine di pick
+                                }
                             }
 
-                            if (execPlace) // Check richiesta di place routine
+                            #endregion
+
+                            #region Place
+
+                            // Get comando di place
+                            execPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place));
+                            // Get consensi di place
+                            enableToPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Place));
+
+                            if (execPlace == 1) // Check richiesta di place routine
                             {
-                                await PlaceBox(); // Eseguo e attendo sia terminata la routine di place
-                                execPlace = false; // Resetto richiesta di palce routine
+                                if (enableToPlace == 1) // Check consensi place
+                                {
+                                    await PlaceBox(); // Eseguo e attendo sia terminata la routine di place
+                                }
                             }
+
+                            #endregion
 
                             step = 0; // Riavvio mainCycle
 

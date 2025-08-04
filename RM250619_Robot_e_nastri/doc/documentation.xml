@@ -2640,7 +2640,12 @@
         </member>
         <member name="F:RM.src.RM250619.RobotManager.previousStartCommandStatus">
             <summary>
-            Memorizza lo stato precedente della variabile start/stop ciclo dal PLC
+            Memorizza lo stato precedente della variabile start ciclo dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousStopCommandStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile stop ciclo dal PLC
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.previousHomeCommandStatus">
