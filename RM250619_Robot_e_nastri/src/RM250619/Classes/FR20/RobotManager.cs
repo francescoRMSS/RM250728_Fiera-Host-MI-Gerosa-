@@ -1055,10 +1055,13 @@ namespace RM.src.RM250619
             // Get valore variabile di avvio ciclo robot
             int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StartApp));
 
+            // Get valore variabile di stop ciclo robot
+            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopApp));
+
             // Check su cambio di stato
-            if(Convert.ToBoolean(startStatus) != previousStartCommandStatus)
+            if (Convert.ToBoolean(startStatus) != previousStartCommandStatus)
             {
-                if(startStatus == 1) // Start
+                if(startStatus == 1 && stopStatus != 1) // Start
                 {
                     // Controllo che il robot sia in automatico
                     if(!isAutomaticMode)
