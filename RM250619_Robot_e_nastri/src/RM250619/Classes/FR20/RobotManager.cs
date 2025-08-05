@@ -3948,14 +3948,31 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se è arrivato in home termino la routine
                             {
-                                stopPlaceRoutine = true;
+                                stepPlace = 99;
                             }
 
                             RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 50, "IN16"); // Scrittura fase ciclo a PLC
+
                             break;
 
+                        #endregion
+
+                        case 99:
+                            #region Attesa reset comando di place
+
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 99, "IN16"); // Scrittura fase ciclo a PLC
+
+                            int placeSignal = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place)); // Get segnale di place
+
+                            if (placeSignal == 0) // Se è stato resettato, termino la routine
+                            {
+                                stopPlaceRoutine = true;
+                            }
 
                             #endregion
+
+                            break;
+
                     }
 
                     Thread.Sleep(100); // Delay routine
