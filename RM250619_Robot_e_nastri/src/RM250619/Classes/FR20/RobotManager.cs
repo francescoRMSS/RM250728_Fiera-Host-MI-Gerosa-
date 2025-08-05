@@ -3765,14 +3765,30 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se è arrivato in home termino la routine
                             {
-                                stopPickRoutine = true;
+                                stepPick = 99;
                             }
 
                             RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 50, "IN16"); // Scrittura fase ciclo a PLC
                             break;
 
-                           
+
+                        #endregion
+
+                        case 99:
+                            #region Attesa reset comando di pick
+
+                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 99, "IN16"); // Scrittura fase ciclo a PLC
+
+                            int pickSignal = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick)); // Get segnale di place
+
+                            if (pickSignal == 0) // Se è stato resettato, termino la routine
+                            {
+                                stopPickRoutine = true;
+                            }
+
                             #endregion
+
+                            break;
                     }
 
                     Thread.Sleep(100); // Delay routine
