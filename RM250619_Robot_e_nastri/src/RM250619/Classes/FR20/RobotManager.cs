@@ -3813,7 +3813,7 @@ namespace RM.src.RM250619
             int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
 
             JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
-            var place = ApplicationConfig.applicationsManager.GetPosition((selectedFormat + boxIndex).ToString(), "RM");
+            var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
             DescPose descPosPlace = new DescPose(place.x + xOffset, place.y + yOffset, place.z + zOffset, place.rx, place.ry, place.rz);
             RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
 
@@ -3919,7 +3919,10 @@ namespace RM.src.RM250619
                         #endregion
 
                         case 40:
+
                             #region Movimento a punto di Home
+
+                            inPosition = false; // Reset inPosition
 
                             // Invio punto di allontamento place
                             movementResult = robot.MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset );
@@ -3931,6 +3934,8 @@ namespace RM.src.RM250619
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 40 - Movimento a punto di Home e termine routine");
                             RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 40, "IN16"); // Scrittura fase ciclo a PLC
+
+                            endingPoint = descPosHome;
 
                             stepPlace = 50;
 
