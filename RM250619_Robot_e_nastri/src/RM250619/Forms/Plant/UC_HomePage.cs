@@ -1269,7 +1269,7 @@ namespace RM.src.RM250619
                     // che fa uscire dallo step di attesa il metodo che riproduce i punti dentro StartApplication
                     if (RobotManager.pauseCycleRequested)
                     {
-                        RobotManager.riprendiCiclo = true;
+                       // RobotManager.riprendiCiclo = true;
                     }
                     else // Se invece il ciclo deve iniziare dall'inizio, avvio normalmente
                     {

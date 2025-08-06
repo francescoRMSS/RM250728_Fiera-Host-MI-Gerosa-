@@ -276,8 +276,6 @@ namespace RM.src.RM250619.Forms.DragMode
             formDebugSettings.PTPModeCheckedChanged += ChangeDragModePTP;
             formDebugSettings.LinearModeCheckedChanged += ChangeDragModeLinear;
 
-            RobotManager.PointPositionAdded += AddPositionToListView;
-
             if (debugCurrentIndex >= 0 && lw_positions.Items.Count > 0)
             {
                 lw_positions.Items[debugCurrentIndex].BackColor = CurrentPointColor;
@@ -457,7 +455,6 @@ namespace RM.src.RM250619.Forms.DragMode
 
             formDebugSettings.PTPModeCheckedChanged -= ChangeDragModePTP;
             formDebugSettings.LinearModeCheckedChanged -= ChangeDragModeLinear;
-            RobotManager.PointPositionAdded -= AddPositionToListView;
 
             RobotManager.EnableDragModeButtons -= RobotManager_EnableDragModeButtonEvent;
 
@@ -577,11 +574,11 @@ namespace RM.src.RM250619.Forms.DragMode
 
             if (dragMode == 0) // PTP
             {
-                RobotManager.StartTeachingPTP();
+                //RobotManager.StartTeachingPTP();
             }
             else // Linear
             {
-                RobotManager.StartTeachingLineare();
+               // RobotManager.StartTeachingLineare();
             }
         }
 
@@ -621,7 +618,7 @@ namespace RM.src.RM250619.Forms.DragMode
             {
                 if (!positionUpdateRequested) // Se non è stata richiesta la modifica di un punto
                 {
-                    RobotManager.StopTeachingPTP();
+                   // RobotManager.StopTeachingPTP();
 
                     AddPositionToListView(RobotManager.positionToSend);
 
@@ -630,7 +627,7 @@ namespace RM.src.RM250619.Forms.DragMode
                 else // Se è stata richiesta la modifica di un punto
                 {
                     log.Info("Stop DragMode");
-                    RobotManager.StopTeachingPTP();
+                   // RobotManager.StopTeachingPTP();
                     UpdatePositionInListView(RobotManager.positionToSend, selectedIndex);
 
                     lw_positions.Items[updateRowIndex].BackColor = NewPointColor;
@@ -638,7 +635,7 @@ namespace RM.src.RM250619.Forms.DragMode
             }
             else // Linear
             {
-                RobotManager.StopTeachingLineare();
+                //RobotManager.StopTeachingLineare();
                 foreach (PointPosition point in RobotManager.positionsToSend)
                 {
                     AddPositionToListView(point);
@@ -988,7 +985,7 @@ namespace RM.src.RM250619.Forms.DragMode
                         case 20:
                             #region Spostamento del robot
 
-                            RobotManager.MoveToPoint(pose);
+                           // RobotManager.MoveToPoint(pose);
 
                             RobotManager.inPosition = false;
                             RobotManager.endingPoint = pose;
@@ -1121,7 +1118,7 @@ namespace RM.src.RM250619.Forms.DragMode
                         case 20:
                             #region Spostamento del robot
 
-                            RobotManager.MoveToPoint(pose);
+                           // RobotManager.MoveToPoint(pose);
 
                             RobotManager.inPosition = false;
                             RobotManager.endingPoint = pose;
@@ -1635,7 +1632,7 @@ namespace RM.src.RM250619.Forms.DragMode
                     isDragStart = true;
                     EnableScreenElements();
                     log.Info("Avvio DragMode PTP per modifica punto");
-                    RobotManager.StartTeachingPTP();
+                   // RobotManager.StartTeachingPTP();
                 }
                 else // Modifica annullata, rimetto i colori di partenza
                 {
@@ -2528,12 +2525,12 @@ namespace RM.src.RM250619.Forms.DragMode
 
                 if (dragMode == 0) // PTP
                 {
-                    RobotManager.StartTeachingPTP();
+                   // RobotManager.StartTeachingPTP();
                 }
                 else // Linear
                 {
                     //RobotManager.velRec = frequency;
-                    RobotManager.StartTeachingLineare();
+                  //  RobotManager.StartTeachingLineare();
                 }
             }
         }
@@ -2566,12 +2563,12 @@ namespace RM.src.RM250619.Forms.DragMode
 
                 if (dragMode == 0) // PTP
                 {
-                    RobotManager.StartTeachingPTP();
+                   // RobotManager.StartTeachingPTP();
                 }
                 else // Linear
                 {
                     //RobotManager.velRec = frequency;
-                    RobotManager.StartTeachingLineare();
+                   // RobotManager.StartTeachingLineare();
                 }
             }
         }

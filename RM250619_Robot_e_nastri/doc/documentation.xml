@@ -2049,21 +2049,6 @@
             True quando può partire la PlaceRoutine
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.RobotManager.pickRoutineDone">
-            <summary>
-            A true se completata la pick routine
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.placeRoutineDone">
-            <summary>
-            A true se completata la place routine
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.teglieInLavorazione">
-            <summary>
-            Mostra quali teglie sono il lavorazione
-            </summary>
-        </member>
         <member name="F:RM.src.RM250619.RobotManager.startHomeRoutine">
             <summary>
             True quando può partire la HomeRoutine
@@ -2072,41 +2057,6 @@
         <member name="F:RM.src.RM250619.RobotManager.startCycle">
             <summary>
             True quando il ciclo puo essere avviato
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.trayPosition">
-            <summary>
-            Identifica la posizione all'interno della teglia
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.trayId">
-            <summary>
-            Identifica numero della teglia
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.xLimit">
-            <summary>
-            Limite di posizioni su asse X
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.yLimit">
-            <summary>
-            Limite di posizioni su asse Y
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.xCurrent">
-            <summary>
-            Posizione corrente su asse X
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.yCurrent">
-            <summary>
-            Posizione corrente su asse Y
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.tegliaFull">
-            <summary>
-            Traccia se una teglia è piena
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.velRec">
@@ -2519,86 +2469,19 @@
             A true quando il robot viene messo in pausa
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.TriggerRobotVelocityChangedEvent(System.Int32)">
+        <member name="F:RM.src.RM250619.RobotManager.previousVel">
             <summary>
-            Invoca metodo relativo al cambio di velocità del robot
-            </summary>
-            <param name="vel">Velocità impostata al Robot</param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.TriggerRobotModeChangedEvent(System.Int32)">
-            <summary>
-            Invoca metodo relativo al cambio di modalità del robot
-            </summary>
-            <param name="mode"></param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.GetPLCErrorCode(System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.Dictionary{System.String,System.String},System.DateTime,System.Int64,System.DateTime,System.String)">
-            <summary>
-            Check su errori comunicati da PLC
-            </summary>
-            <param name="alarmValues"></param>
-            <param name="alarmDescriptions"></param>
-            <param name="now"></param>
-            <param name="unixTimestamp"></param>
-            <param name="dateTime"></param>
-            <param name="formattedDate"></param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.GenerateAlarmId(System.String)">
-            <summary>
-            Genera ID allarme
-            </summary>
-            <param name="alarmKey"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.IsAlarmAlreadySignaled(System.String)">
-            <summary>
-            Avvisa se un allarme è già stato segnalato
-            </summary>
-            <param name="alarmKey"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.MarkAlarmAsSignaled(System.String)">
-            <summary>
-            Imposta l'allarme come segnalato
-            </summary>
-            <param name="alarmKey"></param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.GetRobotErrorCode(System.Collections.Generic.List{System.ValueTuple{System.String,System.Boolean,System.String}},System.Boolean,System.Data.DataRow,System.DateTime,System.String,System.String,System.String,System.String,System.String,System.Int64,System.DateTime,System.String)">
-            <summary>
-            Legge allarmi derivanti dal Robot
-            </summary>
-            <param name="updates"></param>
-            <param name="allarmeSegnalato"></param>
-            <param name="robotAlarm"></param>
-            <param name="now"></param>
-            <param name="id"></param>
-            <param name="description"></param>
-            <param name="timestamp"></param>
-            <param name="device"></param>
-            <param name="state"></param>
-            <param name="unixTimestamp"></param>
-            <param name="dateTime"></param>
-            <param name="formattedDate"></param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.InitRobot(System.String)">
-            <summary>
-            Metodo che inizializza Robot e lo accende
-            </summary>
-            <param name="robotIpAddress">Indirizzo IP Robot</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.AuxiliaryWorker">
-            <summary>
-            Gestisce gli ausiliari del Robot
+            Salva stato di override velocità precedente
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckBarrierStatus">
+        <member name="F:RM.src.RM250619.RobotManager.stopHomeRoutine">
             <summary>
-            Check su accesso barriere
+            Richiesta stop ciclo home
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotInHomePosition(fairino.DescPose)">
+        <member name="F:RM.src.RM250619.RobotManager.stepHomeRoutine">
             <summary>
-            Verifica se il Robot si trova in posizione di Home
+            Step ciclo home
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.prevRobotReadyToStart">
@@ -2651,15 +2534,199 @@
             Modalità stabile da impostare
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.RobotManager.CycleRun_Main">
+            <summary>
+            Valore di avvio ciclo main
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.CycleRun_Pick">
+            <summary>
+            Valore di avvio ciclo pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.CycleRun_Place">
+            <summary>
+            Valore di avvio ciclo place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.CycleRun_Home">
+            <summary>
+            Valore di avvio ciclo home
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.prevIsPlcConnected">
+            <summary>
+            Stato precedente connessione plc
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.stopPickRoutine">
+            <summary>
+            Segnale di stop della pick routine
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.stepPick">
+            <summary>
+            Step ciclo di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.stopPlaceRoutine">
+            <summary>
+            Segnale di stop della place routine
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.stepPlace">
+            <summary>
+            Step ciclo di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousTCPposition">
+            <summary>
+            Posizione precedente robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.isEnable">
+            <summary>
+            Valore enable robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.prevIsEnable">
+            <summary>
+            Valore precedente enable robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.isNotEnable">
+            <summary>
+            Valore not enable robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.prevIsNotEnable">
+            <summary>
+            Valore precednete not enable robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.isEnabledNow">
+            <summary>
+            Valore enable now robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.TriggerRobotVelocityChangedEvent(System.Int32)">
+            <summary>
+            Invoca metodo relativo al cambio di velocità del robot
+            </summary>
+            <param name="vel">Velocità impostata al Robot</param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.TriggerRobotModeChangedEvent(System.Int32)">
+            <summary>
+            Invoca metodo relativo al cambio di modalità del robot
+            </summary>
+            <param name="mode"></param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.GetPLCErrorCode(System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.Dictionary{System.String,System.String},System.DateTime,System.Int64,System.DateTime,System.String)">
+            <summary>
+            Check su errori comunicati da PLC
+            </summary>
+            <param name="alarmValues"></param>
+            <param name="alarmDescriptions"></param>
+            <param name="now"></param>
+            <param name="unixTimestamp"></param>
+            <param name="dateTime"></param>
+            <param name="formattedDate"></param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.IsAlarmAlreadySignaled(System.String)">
+            <summary>
+            Avvisa se un allarme è già stato segnalato
+            </summary>
+            <param name="alarmKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.MarkAlarmAsSignaled(System.String)">
+            <summary>
+            Imposta l'allarme come segnalato
+            </summary>
+            <param name="alarmKey"></param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.GetRobotErrorCode(System.Collections.Generic.List{System.ValueTuple{System.String,System.Boolean,System.String}},System.Boolean,System.Data.DataRow,System.DateTime,System.String,System.String,System.String,System.String,System.String,System.Int64,System.DateTime,System.String)">
+            <summary>
+            Legge allarmi derivanti dal Robot
+            </summary>
+            <param name="updates"></param>
+            <param name="allarmeSegnalato"></param>
+            <param name="robotAlarm"></param>
+            <param name="now"></param>
+            <param name="id"></param>
+            <param name="description"></param>
+            <param name="timestamp"></param>
+            <param name="device"></param>
+            <param name="state"></param>
+            <param name="unixTimestamp"></param>
+            <param name="dateTime"></param>
+            <param name="formattedDate"></param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.InitRobot(System.String)">
+            <summary>
+            Metodo che inizializza Robot e lo accende
+            </summary>
+            <param name="robotIpAddress">Indirizzo IP Robot</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.ResetPLCVariables">
+            <summary>
+            Reset iniziali delle variabili PLC
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CommandsChecker">
+            <summary>
+            Metodo che esegue check sui comandi derivanti dal plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckCommandStop">
+            <summary>
+            Gestione comando di stop derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckVelCommand">
+            <summary>
+            Esegue check su cambio velocità derivante dal plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.AuxiliaryWorker">
+            <summary>
+            Gestisce gli ausiliari del Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckCommandStart">
+            <summary>
+            Check su comando di start derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckCommandGoToHome">
+            <summary>
+            Check su comando di stop derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckBarrierStatus">
+            <summary>
+            Check su accesso barriere
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckCommandRecordPoint">
+            <summary>
+            Check su comando di registrazione punto derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckCommandResetAlarms">
+            <summary>
+            Check su comando di reset allarmi derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotInHomePosition(fairino.DescPose)">
+            <summary>
+            Verifica se il Robot si trova in posizione di Home
+            </summary>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckRobotMode">
             <summary>
             Esegue check su modalità Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.InitRobotComponents">
-            <summary>
-            Inizializza tutti gli elementi del robot all'avvio:
-            <para>Teglie</para>
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckHighPriority">
@@ -2675,6 +2742,11 @@
         <member name="M:RM.src.RM250619.RobotManager.CheckLowPriority">
             <summary>
             Thread a priorità bassa che gestisce allarmi robot e PLC
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckStepRoutine">
+            <summary>
+            Esegue scrittua su plc
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckPLCConnection">
@@ -2698,13 +2770,6 @@
             <summary>
             Verifica se il punto corrente corrisponde ai punti di pick e/o place
             </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.RefreshVariables(System.Object,RMLib.PLC.DictionaryChangedEventArgs)">
-            <summary>
-            Metodo richiamato dall'evento ValueChanged del dizionario delle variabili PLC
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.RMLib_AlarmsCleared(System.Object,System.EventArgs)">
             <summary>
@@ -2740,53 +2805,6 @@
         <member name="M:RM.src.RM250619.RobotManager.WaitForRobotToFinish">
             <summary>
             Funzione per aspettare che il robot abbia finito di muoversi
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.MoveRobotAlongXYAxis(fairino.DescPose,fairino.DescPose,System.Double,System.Double)">
-            <summary>
-            Metodo per spostare il robot lungo gli assi X e Y di una quantità specificata utilizzando la cinematica diretta e inversa.
-            </summary>
-            <param name="approachPoint">Posizione dei giunti di avvicinamento.</param>
-            <param name="xIncrement">Quantità di incremento lungo l'asse X in millimetri.</param>
-            <param name="yIncrement">Quantità di incremento lungo l'asse Y in millimetri.</param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.PlaceRoutine(System.Boolean,System.Boolean)">
-            <summary>
-            Routine di Place
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.GoToPickApproachPose(fairino.DescPose)">
-            <summary>
-            Movimento del robot al punto PickApproach
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.GoToPickPose(fairino.DescPose)">
-            <summary>
-            Movimento del robot al punto PickPose
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.GoToPlaceApproachPose(fairino.DescPose,System.Double,System.Double)">
-            <summary>
-            Movimento del Robot al punto PlaceApproach
-            </summary>
-            <param name="approachPoint">Punto di avvicinamento</param>
-            <param name="xIncrement">x offset</param>
-            <param name="yIncrement">y offset</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.GoToPlacePose(fairino.DescPose,System.Double,System.Double)">
-            <summary>
-            Movimento del robot al punto PlacePose
-            </summary>
-            <param name="xIncrement">x offset</param>
-            <param name="yIncrement">y offset</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.RestRoutine(fairino.DescPose)">
-            <summary>
-            Routine di riposo
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.SetRobotProperties">
@@ -2828,11 +2846,6 @@
             Metodo che pinga un indirizzo IP e ritorna true se il ping ha successo.
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckChainPos">
-            <summary>
-            Aggiorna il contatore che indica lo spostamento della catena
-            </summary>
-        </member>
         <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceTeglia">
             <summary>
             Esegue ciclo di test per pick e place teglia
@@ -2860,9 +2873,16 @@
             Esegue ciclo di pick di una scatola e place dentro al pallet in una determinata posizione
             </summary>
         </member>
+        <member name="M:RM.src.RM250619.RobotManager.NormalizeAngle(System.Single)">
+            <summary>
+            Normalizza angolo robot
+            </summary>
+            <param name="angle"></param>
+            <returns></returns>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceTegliaGiroCompleto">
             <summary>
-            Esegue ciclo saldatura
+            Esegue ciclo teglie
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.CalcolaPosizioneScatola(System.Int32,System.Int32,System.Int32,System.Double,System.Double,System.Double,fairino.DescPose)">
@@ -2883,48 +2903,6 @@
             <param name="altezzaScatola">Altezza della scatola(mm)</param>
             <param name="originePallet">Punto di origine del pallet, cioè il punto dell'angolo in alto a sinistra. Posizionare il TCP proprio sopra di esso.</param>
             <returns></returns>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.riprendiCiclo">
-            <summary>
-            A true quando il ciclo deve riprendere da un punto precedente
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.StartApplication(System.String)">
-            <summary>
-            Avvia la riproduzione dei punti dell'applicazione selezionata
-            </summary>
-            <param name="application">Applicazione selezionata</param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager._StartApplication(System.String)">
-            <summary>
-            Avvia la riproduzione dei punti dell'applicazione selezionata
-            </summary>
-            <param name="application">Applicazione selezionata</param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.StartApplication(System.String,System.Int32)">
-            <summary>
-            Esegue tutti i punti dell'applicazione scelta a partire da uno specifico indice
-            </summary>
-            <param name="application"></param>
-            <param name="startingIndex"></param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.StopApplication">
-            <summary>
-            Annulla il token per fermare il task che gestisce le routine del robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.MoveToPoint(fairino.DescPose)">
-            <summary>
-            Usato per muovere il Robot al punto precedente/successivo della lista di punti
-            </summary>
-            <param name="pos">Punto da raggiungere</param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.MoveToSelectedPoint(System.Collections.Generic.List{fairino.DescPose})">
-            <summary>
-            Usato per muovere il Robot al punto selezionato, eseguendo in ordine
-            anche quelli precedenti all'obiettivo
-            </summary>
-            <param name="points">Punto da raggiungere</param>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotEnable">
             <summary>
@@ -3012,11 +2990,6 @@
             Metodo per reset errori Robot
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.EnableRobot">
-            <summary>
-            Metodo che riattiva Robot
-            </summary>
-        </member>
         <member name="M:RM.src.RM250619.RobotManager.SetRobotMode(System.Int32)">
             <summary>
             Imposta la modalità operativa del robot: 
@@ -3024,90 +2997,6 @@
             <para>1 = manuale</para>
             </summary>
             <param name="mode"></param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.RequestStopCycle">
-            <summary>
-            Alza il bool per richiedere la terminazione del thread application al termine del ciclo in corso
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.positionCheckerThread">
-            <summary>
-            Thread che esegue il metodo CheckPosition
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.positionCheckerThreadRefreshPeriod">
-            <summary>
-            Tempo di refresh all'interno del metodo CheckPosition del thread positionCheckerThread
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.stopPositionCheckerThread">
-            <summary>
-            A true quando il thread deve essere concluso
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.checker_monitoringPos">
-            <summary>
-            Checker utilizzato per la colorazione delle righe all'interna di lw_positions
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.inPositionGun">
-            <summary>
-            A true quando il punto attuale del robot corrisponde con la posizione interrogata della lw_positions
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.positionsToCheck">
-            <summary>
-            Lista di posizioni su cui eseguire l'inPosition per gestire colorazione di lw_positions
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.numPositionsToCheck">
-            <summary>
-            Numero di posizioni su cui eseguire l'inPosition e la relativa colorazione su lw_positions
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.aggiornamentoFinito">
-            <summary>
-            A true quando l'aggiornamento della lista di posizioni su cui eseguire inPosition 
-            per gestire colorazione su lw_positions viene terminato
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckPosition">
-            <summary>
-            Esegue inPosition su una lista di posizioni continuamente aggiornata da CheckMonitoring
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.StopTeachingPTP">
-            <summary>
-            Metodo che stoppa modalità teaching Point to Point
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.StartTeachingPTP">
-            <summary>
-            Metodo che avvia modalità teaching Point to Point
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.StartTeachingLineare">
-            <summary>
-            Metodo che lancia Thread per salvataggio posizioni in LinearDragMode
-            </summary>
-            <param name="application"></param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.StopTeachingLineare">
-            <summary>
-            Metodo che stoppa modalità LinearDragMode
-            </summary>
-            <param name="application"></param>
-        </member>
-        <member name="E:RM.src.RM250619.RobotManager.PointPositionAdded">
-            <summary>
-            Evento al premere del pulsante previous
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.ExecLinearDragMode(System.Object)">
-            <summary>
-            Metodo che salva le posizioni nella lista di posizioni
-            </summary>
-            <param name="obj"></param>
         </member>
         <member name="T:RM.src.RM250619.RobotProperties">
             <summary>
