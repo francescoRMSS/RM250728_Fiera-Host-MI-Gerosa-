@@ -346,7 +346,7 @@ namespace RM.src.RM250619
         /// Dichiarazione thread a priorità bassa
         /// </summary>
         private static Thread lowPriorityThread;
-        private static int lowPriorityRefreshPeriod = 100;
+        private static int lowPriorityRefreshPeriod = 300;
 
         private static Thread CommandsThrad;
         private static int hmiCommandsThradRefreshPeriod = 200;
@@ -585,7 +585,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Memorizza lo stato precedente della variabile stop ciclo dal PLC
         /// </summary>
-        private static bool? previousStopCommandStatus = null;
+        private static int? previousStopCommandStatus = null;
 
         /// <summary>
         /// Memorizza lo stato precedente della variabile go to home position dal PLC
@@ -894,9 +894,6 @@ namespace RM.src.RM250619
                         allarmeSegnalato = true;
                     }
 
-                    // Alzo bit per segnalare errore
-                    RefresherTask.AddUpdate(PLCTagName.System_error, 1, "INT16");
-
                     // Segnalo che è presente un allarme bloccante (allarme robot)
                     AlarmManager.blockingAlarm = true;
                 }
@@ -975,8 +972,23 @@ namespace RM.src.RM250619
 
             robot.SetSpeed(robotProperties.Speed);
 
+            ResetPLCVariables();
+
             return true;
         }
+
+        private static void ResetPLCVariables()
+        {
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, 0, "INT16"); // Scrittura fase ciclo a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Home, 0, "INT16"); // Scrittura fase ciclo a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 0, "INT16"); // Scrittura fase ciclo a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 0, "INT16"); // Scrittura fase ciclo a PLC
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Main, 0, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Home, 0, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Pick, 0, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Place, 0, "INT16");
+        }
+        
 
         private static void CommandsChecker()
         {
@@ -992,23 +1004,38 @@ namespace RM.src.RM250619
                 CheckCommandResetAlarms();
                 CheckVelCommand();
 
-                Thread.Sleep(200);
+                Thread.Sleep(100);
             }
         }
 
         private static void CheckCommandStop()
         {
             // Get valore variabile di stop ciclo robot
-            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopApp));
+            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopCicloAuto));
 
-            // Check su cambio di stato
-            if (Convert.ToBoolean(stopStatus) != previousStopCommandStatus)
+            if (stopStatus == 1 && previousStopCommandStatus != 1)
             {
-                if (stopStatus == 1) // Stop
-                {
-                    stopCycleRequested = true;
-                    previousStopCommandStatus = true;
-                }
+                stopCycleRoutine = true;
+                CycleRun_Main = 0;
+
+                stopHomeRoutine = true;
+                CycleRun_Home = 0;
+
+                stopPickRoutine = true;
+                CycleRun_Pick = 0;
+
+                stopPlaceRoutine = true;
+                CycleRun_Place = 0;
+
+                robot.PauseMotion(); // Invio comando di pausa al robot
+                Thread.Sleep(200); // Leggero ritardo per stabilizzare il robot
+                robot.StopMotion(); // Stop Robot con conseguente cancellazione di coda di punti
+
+                previousStopCommandStatus = 1;
+            }
+            else
+            {
+                previousStopCommandStatus = 0;
             }
         }
 
@@ -1053,10 +1080,10 @@ namespace RM.src.RM250619
         private static void CheckCommandStart()
         {
             // Get valore variabile di avvio ciclo robot
-            int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StartApp));
+            int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StartCicloAuto));
 
             // Get valore variabile di stop ciclo robot
-            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopApp));
+            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopCicloAuto));
 
             // Check su cambio di stato
             if (Convert.ToBoolean(startStatus) != previousStartCommandStatus)
@@ -1067,9 +1094,6 @@ namespace RM.src.RM250619
                     if(!isAutomaticMode)
                     {
                         log.Warn("Tenativo di avvio ciclo con robot non in modalità automatica");
-                        //Inizializzo lo start a 0
-                        RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-                        RefresherTask.AddUpdate(PLCTagName.Start_Auto_Robot, 0, "INT16");
                         return;
                     }
                     // 1. Lancia la procedura per andare in home
@@ -1079,9 +1103,6 @@ namespace RM.src.RM250619
                     if (larghezzaPallet == 0 || larghezzaScatola == 0) // aggiungi livello, scatola, rotazione // Controllo che sia stato selezionato il formato di pallet e scatola
                     {
                         log.Error("Nessun formato pallet e/o scatola selezionato");
-                        //Inizializzo lo start a 0
-                        RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-                        RefresherTask.AddUpdate(PLCTagName.Start_Auto_Robot, 0, "INT16");
                         return;
                     }
 
@@ -1123,127 +1144,107 @@ namespace RM.src.RM250619
             }
         }
 
+        static bool stopHomeRoutine = false; // Reset della richiesta di stop HomeRoutine
+        static int stepHomeRoutine = 0; // Reset degli step della HomeRoutine
         private async static void CheckCommandGoToHome() // Questo metodo non deve bloccare il thread
         {
             int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_GoHome));
 
-            if (Convert.ToBoolean(homeStatus) != previousHomeCommandStatus)
+            //if (Convert.ToBoolean(homeStatus) != previousHomeCommandStatus)
             {
                 if (homeStatus == 1) // Go to home
                 {
-                    if (UC_HomePage.homeRoutineStarted)
+                    previousHomeCommandStatus = true;
+
+                    // Get del punto di home
+                    var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+                    DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
+
+                    stopHomeRoutine = false;
+                    stepHomeRoutine = 0; // Reset degli step della HomeRoutine
+
+                    ClearRobotQueue();
+                    await Task.Delay(2000);
+                    UC_HomePage.homeRoutineStarted = true; // Segnalo che la home routine è partita
+
+                    // Rendo il tasto per andare in HomePosition non cliccabile
+                    EnableButtonHome?.Invoke(0, EventArgs.Empty);
+                    bool stepWritten = false;
+
+                    // Avvia un task separato per il ciclo while
+                    await Task.Run(async () =>
                     {
-                        log.Warn("Tentativo di avvio home routine quando già in esecuzione");
-                        return;
-                    }
-                    if (isAutomaticMode)
-                    {
-                        log.Warn("Tenativo di avvio home routine in modalità automatica");
-                        return;
-                    }
-
-                    if (!AlarmManager.isRobotMoving) // Se il Robot non è in movimento 
-                    {
-                        // Get del punto di home
-                        var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
-                        DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
-
-                        bool stopHomeRoutine = false; // Reset della richiesta di stop HomeRoutine
-                        int stepHomeRoutine = 0; // Reset degli step della HomeRoutine
-
-                        ClearRobotQueue();
-
-                        robot.RobotEnable(1); // Abilito il Robot
-                        Thread.Sleep(2000); // Attesa di 2s per stabilizzare il Robot
-                        UC_HomePage.homeRoutineStarted = true; // Segnalo che la home routine è partita
-
-                        // Rendo il tasto per andare in HomePosition non cliccabile
-                        EnableButtonHome?.Invoke(0, EventArgs.Empty);
-
-                        // Avvia un task separato per il ciclo while
-                        await Task.Run(async () =>
+                        while (!stopHomeRoutine) // Fino a quando non termino la home routine
                         {
-                            while (!stopHomeRoutine) // Fino a quando non termino la home routine
+                            
+                            switch (stepHomeRoutine)
                             {
-                                // Se viene tolta la modalità manuale durante la home routine, questa viene bloccata immediatamente
-                                if (mode != 2)
-                                {
-                                    robot.PauseMotion(); // Pausa Robot
-                                    Thread.Sleep(200); // Leggero delay per stabilizzare il Robot
-                                    robot.StopMotion(); // Stop del Robot
-                                    UC_HomePage.homeRoutineStarted = false; // Reset variabile che indica l'avvio della home routine
-                                    stopHomeRoutine = true; // Alzo richiesta per terminare metodo che riproduce home routine
-                                }
-                                else // Altrimenti eseguo la home routine normalmente
-                                {
-                                    switch (stepHomeRoutine)
+                                case 0:
+                                    #region Cancellazione coda Robot e disattivazione tasti applicazione
+                                    CycleRun_Home = 1;
+
+                                    EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
+
+                                    ClearRobotQueue();
+                                    SetHomeRoutineSpeed();
+                                    await Task.Delay(1000);
+
+                                    stepHomeRoutine = 10;
+
+                                    break;
+
+                                #endregion
+
+                                case 10:
+                                    #region Movimento a punto di home
+
+                                    MoveRobotToSafePosition();
+                                    GoToHomePosition();
+                                    endingPoint = pHome;
+
+                                    stepHomeRoutine = 20;
+                                       
+                                    break;
+
+                                #endregion
+
+                                case 20:
+                                    #region Attesa inPosition home
+
+                                    if (inPosition)
+                                        stepHomeRoutine = 99;
+
+                                    break;
+
+                                #endregion
+
+                                case 99:
+                                    #region Termine ciclo e riattivazione tasti applicazione e tasto home 
+
+                                    homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_GoHome));
+
+                                    if (homeStatus == 0)
                                     {
-                                        case 0:
-                                            #region Cancellazione coda Robot e disattivazione tasti applicazione
+                                        ResetHomeRoutineSpeed();
 
-                                            EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
+                                        UC_HomePage.homeRoutineStarted = false;
 
-                                            ClearRobotQueue();
-                                            SetHomeRoutineSpeed();
-                                            await Task.Delay(1000);
+                                        EnableButtonHome?.Invoke(1, EventArgs.Empty);
 
-                                            stepHomeRoutine = 10;
-                                            break;
-
-                                        #endregion
-
-                                        case 10:
-                                            #region Movimento a punto di home
-
-                                            MoveRobotToSafePosition();
-                                            GoToHomePosition();
-                                            endingPoint = pHome;
-
-                                            stepHomeRoutine = 20;
-                                            break;
-
-                                        #endregion
-
-                                        case 20:
-                                            #region Attesa inPosition home
-
-                                            if (inPosition)
-                                                stepHomeRoutine = 30;
-                                            break;
-
-                                        #endregion
-
-                                        case 30:
-                                            #region Termine ciclo e riattivazione tasti applicazione e tasto home 
-                                            ResetHomeRoutineSpeed();
-
-                                            UC_HomePage.homeRoutineStarted = false;
-
-                                            EnableButtonHome?.Invoke(1, EventArgs.Empty);
-
-                                           // RefresherTask.AddUpdate(PLCTagName.GoHome, 0, "INT16");
-                                            stopHomeRoutine = true;
-
-                                            break;
-
-                                            #endregion
+                                        stopHomeRoutine = true;
                                     }
-                                }
+                                    break;
 
-                                await Task.Delay(100); // Delay routine
+                                #endregion
+
+                                   
                             }
-                        });
+                            
 
-                        Thread.Sleep(2000); // Attesa di 2s per stabilizzare il Robot
-
-                        robot.RobotEnable(0); // Disattivo il Robot
-                    }
-                    else // Se il Robot è in movimento
-                    {
-                        log.Error("Impossibile inviare nuovi punti al Robot. Robot in movimento");
-                        CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Robot in movimento");
-                    }
-
+                            await Task.Delay(1000); // Delay routine
+                        }
+                    });
+                    
                 }
 
                 previousHomeCommandStatus = false; // reset status
@@ -1342,7 +1343,7 @@ namespace RM.src.RM250619
                 }
 
                 // Reset valore
-              //  RefresherTask.AddUpdate(PLCTagName.SelectedPointRecordCommandIn, 0, "INT16");
+             
             }
         }
 
@@ -1696,9 +1697,29 @@ namespace RM.src.RM250619
                 GetPLCErrorCode(alarmValues, alarmDescriptions, now, unixTimestamp,
                     dateTime, formattedDate);
 
+                CheckStepRoutine();
+
                 Thread.Sleep(lowPriorityRefreshPeriod);
             }
         }
+
+        static int CycleRun_Main = 0;
+        static int CycleRun_Pick = 0;
+        static int CycleRun_Place = 0;
+        static int CycleRun_Home = 0;
+
+        private static void CheckStepRoutine()
+        {
+            //RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Home, stepHomeRoutine, "INT16"); // Scrittura fase ciclo a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, step, "INT16"); // Scrittura fase ciclo a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, stepPick, "INT16"); // Scrittura fase ciclo a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, stepPlace, "INT16"); // Scrittura fase ciclo a PLC
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Main, CycleRun_Main, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Pick, CycleRun_Pick, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Home, CycleRun_Home, "INT16");
+        }
+        
+
 
         private static bool prevIsPlcConnected = true;
         /// <summary>
@@ -1731,7 +1752,6 @@ namespace RM.src.RM250619
             {
                 if (!prevIsPlcConnected)
                 {
-                    // RefresherTask.AddUpdate("PLC1_" + "CMD_Stop_Ciclo", true, "BOOL");
 
                     RobotManager.stopRoutine = true;
                     RobotManager.StopApplication();
@@ -1747,19 +1767,7 @@ namespace RM.src.RM250619
             }
         }
 
-        /// <summary>
-        /// Invia aggiornamenti alla coda che esegue aggiornamento su PLC
-        /// </summary>
-        /// <param name="updates">Lista di aggiornamenti</param>
-        private static void SendUpdatesToPLC(List<(string key, int? value, string type)> updates)
-        {
-            foreach (var update in updates)
-            {
-                RefresherTask.AddUpdate(update.key, update.value, update.type);
-            }
-
-            updates.Clear(); // Pulizia della coda
-        }
+ 
 
         /// <summary>
         /// Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
@@ -1846,13 +1854,13 @@ namespace RM.src.RM250619
             {
                 prevIsInSafeZone = false;
                 FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_yellow32;
-                RefresherTask.AddUpdate(PLCTagName.SafePos, 0, "INT16");
+              
             }
             else if (isInSafeZone && prevIsInSafeZone != true) // Se il robot è nella safe zone
             {
                 prevIsInSafeZone = true;
                 FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_green32;
-                RefresherTask.AddUpdate(PLCTagName.SafePos, 1, "INT16");
+            
             }
 
         }
@@ -1904,9 +1912,9 @@ namespace RM.src.RM250619
                             tegliaFull[0] = false;
                             xCurrent[0] = 0;
                             yCurrent[0] = 0;
-                            RefresherTask.AddUpdate("PLC1_" + "bPlate1_Full", false, "BOOL");
+                         
                             contTrays[0] = 0;
-                            RefresherTask.AddUpdate("PLC1_" + "iNrPosTeglia1", 0, "INT16");
+                        
                         }
                         break;
 
@@ -1917,9 +1925,9 @@ namespace RM.src.RM250619
                             tegliaFull[1] = false;
                             xCurrent[1] = 0;
                             yCurrent[1] = 0;
-                            RefresherTask.AddUpdate("PLC1_" + "bPlate2_Full", false, "BOOL");
+                         
                             contTrays[1] = 0;
-                            RefresherTask.AddUpdate("PLC1_" + "iNrPosTeglia2", 0, "INT16");
+                           
                         }
                         break;
 
@@ -1958,7 +1966,7 @@ namespace RM.src.RM250619
                             */
                             velocityOverride = Convert.ToInt16(PLCConfig.appVariables.getValue("PLC1_" + "speedRobot"));
 
-                            RefresherTask.AddUpdate("PLC1_" + "iOverride", 10, "INT16");
+                       
 
                             // Modifico proprietà velocity dell'oggetto robotProperties
                             RobotManager.robotProperties.Velocity = 10;
@@ -1972,7 +1980,7 @@ namespace RM.src.RM250619
                             robotInPause = false;
                             */
 
-                            RefresherTask.AddUpdate("PLC1_" + "iOverride", velocityOverride, "INT16");
+                         
 
                             // Modifico proprietà velocity dell'oggetto robotProperties
                             RobotManager.robotProperties.Velocity = velocityOverride;
@@ -2063,14 +2071,12 @@ namespace RM.src.RM250619
                 // Abilito i tasti relativi al monitoring
                 EnableDragModeButtons?.Invoke(null, EventArgs.Empty);
 
-                // Resetto contatore posizionamento catena
-                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
 
             } 
 
             TriggerAllarmeResettato();
 
-            RefresherTask.AddUpdate(PLCTagName.System_error, 0, "INT16");
+    
 
             // Reset degli allarmi segnalati
             foreach (var key in allarmiSegnalati.Keys.ToList())
@@ -2271,56 +2277,16 @@ namespace RM.src.RM250619
 
 
 
-            // Apro le pinze
-            RefresherTask.AddUpdate("PLC1_" + "bOpenGripper", true, "BOOL");
-            RefresherTask.AddUpdate("PLC1_" + "bCloseGripper", false, "BOOL");
-
+          
             while (!gripperOpened)
             {
                 // Attendo feedback di pinze aperte
             }
 
-            // chiudo le pinze
-            RefresherTask.AddUpdate("PLC1_" + "bOpenGripper", false, "BOOL");
-            RefresherTask.AddUpdate("PLC1_" + "bCloseGripper", true, "BOOL");
-
+          
             await Task.Delay(300);
 
 
-            // Apro le pinze
-            RefresherTask.AddUpdate("PLC1_" + "bOpenGripper", true, "BOOL");
-            RefresherTask.AddUpdate("PLC1_" + "bCloseGripper", false, "BOOL");
-
-            //  await Task.Delay(1500);
-
-            /* // Apro le pinze
-             RefresherTask.AddUpdate("PLC1_" + "bOpenGripper", true, "BOOL");
-             RefresherTask.AddUpdate("PLC1_" + "bCloseGripper", false, "BOOL");
-
-             while (!gripperOpened)
-             {
-                 // Attendo feedback di pinze aperte
-             }
-
-             // chiudo le pinze
-             RefresherTask.AddUpdate("PLC1_" + "bOpenGripper", false, "BOOL");
-             RefresherTask.AddUpdate("PLC1_" + "bCloseGripper", true, "BOOL");
-
-             while (!gripperClosed)
-             {
-                 // Attendo feedback di pinze aperte
-             }
-
-
-
-             // Apro le pinze
-             RefresherTask.AddUpdate("PLC1_" + "bOpenGripper", true, "BOOL");
-             RefresherTask.AddUpdate("PLC1_" + "bCloseGripper", false, "BOOL");
-
-             while (!gripperOpened)
-             {
-                 // Attendo feedback di pinze aperte
-             }*/
 
             // Reset delle variabili
             gripperOpened = false;
@@ -2387,7 +2353,7 @@ namespace RM.src.RM250619
                 {
                     tegliaInLavorazione = i;
 
-                    RefresherTask.AddUpdate("PLC1_" + "bPlate" + (i + 1) + "_Filling", true, "BOOL");
+                
 
                     break; // Esce dal ciclo non appena trova una teglia in lavorazione e non piena
                 }
@@ -2403,7 +2369,7 @@ namespace RM.src.RM250619
                     {
                         tegliaInLavorazione = i;
 
-                        RefresherTask.AddUpdate("PLC1_" + "bPlate" + (i + 1) + "_Filling", true, "BOOL");
+                   
 
                         teglieInLavorazione[tegliaInLavorazione] = true; // Imposta la teglia come in lavorazione
                         break;
@@ -2445,16 +2411,13 @@ namespace RM.src.RM250619
                     yCurrent[tegliaInLavorazione] = 0; // Reset a zero se abbiamo completato l'intera matrice
                     tegliaFull[tegliaInLavorazione] = true; // Imposta la teglia come piena
 
-                    RefresherTask.AddUpdate("PLC1_" + "bPlate" +
-                     (tegliaInLavorazione + 1) + "_Full", true, "BOOL");
 
                     teglieInLavorazione[tegliaInLavorazione] = false; // Imposta la teglia come non in lavorazione
                 }
             }
 
             contTrays[tegliaInLavorazione] += 1;
-            RefresherTask.AddUpdate("PLC1_" + "iNrPosTeglia" + (tegliaInLavorazione + 1).ToString(),
-                  contTrays[tegliaInLavorazione], "INT16");
+       
 
             return true;
         }
@@ -2662,7 +2625,6 @@ namespace RM.src.RM250619
                     if (!Connection_Robot_Error)
                     {
                         // Alzo bit per segnalare errore connessione al Robot
-                        RefresherTask.AddUpdate(PLCTagName.Emergency, 1, "INT16");
 
                         Connection_Robot_Error = true;
                     }
@@ -2681,7 +2643,6 @@ namespace RM.src.RM250619
 
                 if (Connection_Robot_Error)
                 {
-                    RefresherTask.AddUpdate(PLCTagName.Emergency, 0, "INT16");
                     Connection_Robot_Error = false;
                 }
             }
@@ -2970,12 +2931,6 @@ namespace RM.src.RM250619
 
             #endregion
 
-            // Segnalo al PLC che il robot sta lavorando in modalità automatica
-            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
-
-            // Apertura pinza
-           // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
 
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
@@ -3020,9 +2975,6 @@ namespace RM.src.RM250619
                                 // Abilito il tasto Start per avviare nuovamente la routine
                                 EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
 
-                                // Segnalo al PLC che il robot ha terminato il lavoro in modalità automatica
-                                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-                                RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
 
                                 // Imposto a false il booleano che fa terminare il thread della routine
                                 stopCycleRoutine = true;
@@ -3080,7 +3032,7 @@ namespace RM.src.RM250619
                             {
                                 Thread.Sleep(500);
                                 // Chiudo la pinza
-                              //  RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
+                              
                                 step = 40;
                             }
 
@@ -3169,7 +3121,7 @@ namespace RM.src.RM250619
                             {
                                 Thread.Sleep(500);
                                 // Chiudo la pinza
-                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+      
                                 step = 90;
                             }
 
@@ -3253,7 +3205,7 @@ namespace RM.src.RM250619
                             {
                                 Thread.Sleep(500);
                                 // Chiudo la pinza
-                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 1, "INT16");
+                            
                                 step = 140;
                             }
 
@@ -3346,7 +3298,7 @@ namespace RM.src.RM250619
                             {
                                 Thread.Sleep(500);
                                 // Chiudo la pinza
-                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                               
                                 step = 190;
                             }
 
@@ -3486,9 +3438,6 @@ namespace RM.src.RM250619
             // Segnale di place
             bool appoggiaSuPallet = true;
 
-            // Segnalo al PLC che il robot sta lavorando in modalità automatica
-            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
 
             int numeroRighe = (int)(larghezzaPallet / larghezzaScatola);
             int numeroColonne = (int)(lunghezzaPallet / lunghezzaScatola);
@@ -3497,6 +3446,8 @@ namespace RM.src.RM250619
 
             DescPose originePallet = descPosPlace;
             JointPos jointPosPlaceCalculated = new JointPos(0, 0, 0, 0, 0, 0);
+
+            bool stepWritten = false;
 
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
@@ -3510,52 +3461,13 @@ namespace RM.src.RM250619
                         case 0:
                             #region Check richiesta interruzione ciclo
 
-                            if (!stopCycleRequested) // Se non è stata richiesta nessuna interruzione
-                            {
-                                step = 10;
-                            }
-                            else // Se è stata richiesta l'interruzione
-                            {
-                                // Ritorno del Robot a casa
-                                GoToHomePosition();
+                            CycleRun_Main = 1;
+                            step = 10;
 
-                                // Reset inPosition
-                                inPosition = false;
-
-                                // Assegnazione del pHome come ending point
-                                endingPoint = descPosHome;
-
-                                step = 5;
-                            }
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 0 - Check richiesta interruzione ciclo");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, 0, "IN16"); // Scrittura fase ciclo a PLC
                             break;
 
                         #endregion
 
-                        case 5:
-                            #region Termine routine
-
-                            if (inPosition) // Se il Robot è arrivato in HomePosition
-                            {
-                                // Abilito il tasto Start per avviare nuovamente la routine
-                                EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
-
-                                // Segnalo al PLC che il robot ha terminato il lavoro in modalità automatica
-                                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-                                RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
-
-                                // Imposto a false il booleano che fa terminare il thread della routine
-                                stopCycleRoutine = true;
-
-                            }
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 5 - Termine routine");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, 5, "IN16"); // Scrittura fase ciclo a PLC
-                            break;
-
-                        #endregion
 
                         case 10:
                             #region Check richiesta routine
@@ -3594,31 +3506,29 @@ namespace RM.src.RM250619
 
                             #endregion
 
-                            step = 0; // Riavvio mainCycle
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 10 - Check richiesta movimento");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, 10, "IN16"); // Scrittura fase ciclo a PLC
-
                             break;
 
                         #endregion
                     }
 
-                    Thread.Sleep(10); // Delay routine
+                    Thread.Sleep(100); // Delay routine
                 }
             });
         }
 
+        static bool stopPickRoutine = false; // Segnale di stop della pick routine
+        static int stepPick = 0; // Step ciclo di pick
         /// <summary>
         /// Esegue il pick della scatola
         /// </summary>
         /// <returns></returns>
         public static async Task PickBox()
         {
-            int stepPick = 0; // Step ciclo di pick
+            stepPick = 0; // Step ciclo di pick
             int movementResult = 0; // Risultato del movimento del Robot
             int gripperStatus = 0; // Stato della ventosa
-            bool stopPickRoutine = false; // Segnale di stop della pick routine
+            stopPickRoutine = false; // Segnale di stop della pick routine
+            bool stepWritten = false;
 
             #region Dichiarazione punti routine
 
@@ -3670,6 +3580,8 @@ namespace RM.src.RM250619
                         case 0:
                             #region Movimento a punto di Pick
 
+                            CycleRun_Pick = 1;
+
                             inPosition = false; // Reset inPosition
 
                             // Invio punto di avvicinamento Pick
@@ -3684,9 +3596,6 @@ namespace RM.src.RM250619
 
                             stepPick = 10;
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 0 - Movimento a punto di Pick");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 0, "IN16"); // Scrittura fase ciclo a PLC
-
                             break;
 
                         #endregion
@@ -3695,9 +3604,8 @@ namespace RM.src.RM250619
                             #region Delay per calcolo in position punto di pick
 
                             Thread.Sleep(500);
+
                             stepPick = 20;
-                            formDiagnostics.UpdateRobotStepDescription("STEP 10 -  Delay calcolo in position punto di pick");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 10, "IN16"); // Scrittura fase ciclo a PLC
 
                             break;
 
@@ -3708,14 +3616,9 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
-                                // Chiudo la pinza
-
                                 stepPick = 30;
                             }
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 20 - Attesa inPosition punto di Pick");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 20, "IN16"); // Scrittura fase ciclo a PLC
-
+                           
                             break;
 
                         #endregion
@@ -3723,14 +3626,9 @@ namespace RM.src.RM250619
                         case 30:
                             #region Check presa ventosa
 
-                            // if (gripperStatus == 0)
-                            {
-                                Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
-                                stepPick = 40;
-                            }
+                            Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 30 - Check presa ventosa");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 30, "IN16"); // Scrittura fase ciclo a PLC
+                            stepPick = 40;
 
                             break;
 
@@ -3751,9 +3649,6 @@ namespace RM.src.RM250619
 
                             endingPoint = descPosHome;
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Movimento a punto di Home");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 40, "IN16"); // Scrittura fase ciclo a PLC
-
                             stepPick = 50;
 
                             break;
@@ -3768,21 +3663,18 @@ namespace RM.src.RM250619
                                 stepPick = 99;
                             }
 
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 50, "IN16"); // Scrittura fase ciclo a PLC
                             break;
-
 
                         #endregion
 
                         case 99:
                             #region Attesa reset comando di pick
 
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 99, "IN16"); // Scrittura fase ciclo a PLC
-
                             int pickSignal = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick)); // Get segnale di place
 
                             if (pickSignal == 0) // Se è stato resettato, termino la routine
                             {
+                                stepPick = 0; 
                                 stopPickRoutine = true;
                             }
 
@@ -3791,10 +3683,13 @@ namespace RM.src.RM250619
                             break;
                     }
 
-                    Thread.Sleep(100); // Delay routine
+                    Thread.Sleep(200); // Delay routine
                 }
             });
         }
+
+        static bool stopPlaceRoutine = false; // Segnale di stop della place routine
+        static int stepPlace = 0; // Step ciclo di place
 
         /// <summary>
         /// Esegue il place della scatola
@@ -3802,12 +3697,13 @@ namespace RM.src.RM250619
         /// <returns></returns>
         public static async Task PlaceBox()
         {
-            int stepPlace = 0; // Step ciclo di place
+            stepPlace = 0; // Step ciclo di place
             int movementResult = 0; // Risultato del movimento del Robot
             int gripperStatus = 0; // Stato della ventosa
-            bool stopPlaceRoutine = false; // Segnale di stop della place routine
+            stopPlaceRoutine = false; // Segnale di stop della place routine
             int numeroRighe = (int)(larghezzaPallet / larghezzaScatola); // Numero di righe di scatole su pallet
             int numeroColonne = (int)(lunghezzaPallet / lunghezzaScatola); // Numero di colonne di scatole su pallet
+            bool stepWritten = false;
 
             #region Dichiarazione dei punti
 
@@ -3821,7 +3717,6 @@ namespace RM.src.RM250619
             #region Punto di place
 
             int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
-            int boxIndex = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Index_Box));
             int rotate180 = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Box_Rotate_180));
 
             int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
@@ -3870,7 +3765,9 @@ namespace RM.src.RM250619
                     {
                         case 0:
                             #region Movimento a punto di place
-                            
+
+                            CycleRun_Place = 1;
+
                             inPosition = false; // Reset inPosition
                            
                             // Invio punto di avvicinamento place
@@ -3883,10 +3780,7 @@ namespace RM.src.RM250619
                             endingPoint = descPosPlace; // Assegnazione endingPoint
 
                             stepPlace = 10;
-                            
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 0 - Movimento a punto di place");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 0, "IN16"); // Scrittura fase ciclo a PLC
+                           
                             break;
 
                         #endregion
@@ -3896,8 +3790,7 @@ namespace RM.src.RM250619
 
                             Thread.Sleep(500);
                             stepPlace = 20;
-                            formDiagnostics.UpdateRobotStepDescription("STEP 10 -  Delay calcolo in position punto di place");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 10, "IN16"); // Scrittura fase ciclo a PLC
+
                             break;
 
                         #endregion
@@ -3906,14 +3799,9 @@ namespace RM.src.RM250619
                             #region Attesa inPosition punto di Place
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place
-                            {
-                                // Chiudo la pinza
-                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                            {                                                      
                                 stepPlace = 30;
                             }
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 20 - Attesa inPosition punto di place");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 20, "IN16"); // Scrittura fase ciclo a PLC
 
                             break;
 
@@ -3922,20 +3810,16 @@ namespace RM.src.RM250619
                         case 30:
                             #region Rilascio scatola su pallet
 
-                            // if (gripperStatus == 0)
                             {
                                 Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
                                 stepPlace = 40;
                             }
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 30 - Rilascio scatola su pallet");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 30, "IN16"); // Scrittura fase ciclo a PLC
                             break;
 
                         #endregion
 
                         case 40:
-
                             #region Movimento a punto di Home
 
                             inPosition = false; // Reset inPosition
@@ -3947,9 +3831,6 @@ namespace RM.src.RM250619
                             // Invio punto di place
                             movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc, ovl, blendT, config); // Invio punto di Home
                             GetRobotMovementCode(movementResult);
-
-                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Movimento a punto di Home e termine routine");
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 40, "IN16"); // Scrittura fase ciclo a PLC
 
                             endingPoint = descPosHome;
 
@@ -3967,8 +3848,6 @@ namespace RM.src.RM250619
                                 stepPlace = 99;
                             }
 
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 50, "IN16"); // Scrittura fase ciclo a PLC
-
                             break;
 
                         #endregion
@@ -3976,12 +3855,13 @@ namespace RM.src.RM250619
                         case 99:
                             #region Attesa reset comando di place
 
-                            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 99, "IN16"); // Scrittura fase ciclo a PLC
+                          
 
                             int placeSignal = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place)); // Get segnale di place
 
                             if (placeSignal == 0) // Se è stato resettato, termino la routine
                             {
+                                stepPlace = 0;
                                 stopPlaceRoutine = true;
                             }
 
@@ -3991,7 +3871,7 @@ namespace RM.src.RM250619
 
                     }
 
-                    Thread.Sleep(100); // Delay routine
+                    Thread.Sleep(200); // Delay routine
                 }
             });
         }
@@ -4080,9 +3960,6 @@ namespace RM.src.RM250619
             // Segnale di place
             bool appoggiaSuPallet = true;
 
-            // Segnalo al PLC che il robot sta lavorando in modalità automatica
-            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
 
             int numeroRighe = (int)(larghezzaPallet / larghezzaScatola);
             int numeroColonne = (int)(lunghezzaPallet / lunghezzaScatola);
@@ -4134,10 +4011,6 @@ namespace RM.src.RM250619
                             {
                                 // Abilito il tasto Start per avviare nuovamente la routine
                                 EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
-
-                                // Segnalo al PLC che il robot ha terminato il lavoro in modalità automatica
-                                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-                                RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
 
                                 // Imposto a false il booleano che fa terminare il thread della routine
                                 stopCycleRoutine = true;
@@ -4195,7 +4068,7 @@ namespace RM.src.RM250619
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
                                 // Chiudo la pinza
-                              //  RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                      
                                 step = 40;
                             }
 
@@ -4333,7 +4206,7 @@ namespace RM.src.RM250619
                             if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
                                 // Chiudo la pinza
-                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                              
                                 step = 90;
                             }
 
@@ -4677,13 +4550,6 @@ namespace RM.src.RM250619
 
             #endregion
 
-            // Segnalo al PLC che il robot sta lavorando in modalità automatica
-            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
-
-            // Apertura pinza
-           // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
-
             double[] levelCollision1 = new double[] { 1, 1, 1, 1, 1, 1 };
             double[] levelCollision2 = new double[] { 2, 2, 2, 2, 2, 2 };
             double[] levelCollision3 = new double[] { 3, 3, 3, 3, 3, 3 };
@@ -4739,10 +4605,6 @@ namespace RM.src.RM250619
                             {
                                 // Abilito il tasto Start per avviare nuovamente la routine
                                 EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
-
-                                // Segnalo al PLC che il robot ha terminato il lavoro in modalità automatica
-                                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-                                RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
 
                                 // Imposto a false il booleano che fa terminare il thread della routine
                                 stopCycleRoutine = true;
@@ -5054,7 +4916,7 @@ namespace RM.src.RM250619
                             {
                                // Thread.Sleep(500);
                                 // Chiudo la pinza
-                               // RefresherTask.AddUpdate(PLCTagName.GripperStatusOut, 0, "INT16");
+                              
                                 step = 190;
                             }
 
@@ -5249,14 +5111,8 @@ namespace RM.src.RM250619
             await Task.Run(async () =>
             {
                 // Reset variabile che fa partire il contatore della catena
-                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+
                 Thread.Sleep(200); // Leggero ritardo per stabilizzare il sistema
-
-                // Imposto a 1 (true) Automatic_Start, così che parta anche il conteggio dello spostamento della catena
-                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
-
-                // Imposto a 0 (false) Auto_Cycle_End che segnala che il ciclo automatico è iniziato
-                RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 0, "INT16");
 
                 // Lista delle posizioni da riprodurre 
                 List<DescPose> targetPositions = new List<DescPose>();
@@ -5369,12 +5225,6 @@ namespace RM.src.RM250619
                             positionsToCheck.Clear();
 
                             stopPositionCheckerThread = true;
-
-                            // Imposto a 0 (false) Automatic_Start che resetta anche il contatore dello spostamento della catena
-                            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-
-                            // Imposto a 1 (true) Auto_Cycle_End che segnala che il ciclo automatico è terminato
-                            RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
 
                             // Abilito il tasto Start per avviare nuovamente la routine
                             EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
@@ -5529,7 +5379,7 @@ namespace RM.src.RM250619
             // Faccio girare processo su un thread esterno a quello principale
             await Task.Run(async () =>
             {
-                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 1, "INT16");
+
                 Queue<DescPose> commandQueue = new Queue<DescPose>();
 
                 while (!stopRoutine)
@@ -5572,8 +5422,6 @@ namespace RM.src.RM250619
                                 // Reset indice posizione 
                                 index = 0;
 
-                                // Reset variabile Automatic_Start
-                                RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
 
                                 // Reset step routine
                                 step = 0;
@@ -6213,7 +6061,7 @@ namespace RM.src.RM250619
                     if (previousPoint >= positions.Count - 1)
                     {
                         previousPoint = -1; // Resetta solo il contatore
-                        RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+
                         chainPos = 0;
                     }
 

@@ -2023,10 +2023,10 @@ namespace RM.src.RM250619
         {
             RobotManager.stopCycleRoutine = true; // Alzo richiesta per fermare thread di riproduzione ciclo
                                                   // Imposto a 0 (false) Automatic_Start che resetta anche il contatore dello spostamento della catena
-            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+           // RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
 
             // Imposto a 1 (true) Auto_Cycle_End che segnala che il ciclo automatico è terminato
-            RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
+        //RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
 
             EnableCycleButton(0);
 
