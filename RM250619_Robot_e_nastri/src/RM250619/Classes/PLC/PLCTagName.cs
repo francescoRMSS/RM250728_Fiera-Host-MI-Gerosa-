@@ -46,6 +46,11 @@ namespace RM.src.RM250619.Classes.PLC
         public const string VersionDay = "PLC1_" + "VersionDay";
 
         /// <summary>
+        /// Feedback in scrittura dello stato di pausa del robot
+        /// </summary>
+        public const string Move_InPause = "PLC1_" + "Move_InPause";
+
+        /// <summary>
         /// Errore nel sistema
         /// </summary>
         public const string System_error = "PLC1_" + "System_error";
@@ -99,6 +104,276 @@ namespace RM.src.RM250619.Classes.PLC
         /// A 1 quando è avviato il ciclo place
         /// </summary>
         public const string CycleRun_Place = "PLC1_" + "CycleRun_Place";
+
+        /// <summary>
+        /// coord x di home point
+        /// </summary>
+        public const string HomePoint_X = "PLC1_" + "HomePoint_X";
+
+        /// <summary>
+        /// coord y di home point
+        /// </summary>
+        public const string HomePoint_Y = "PLC1_" + "HomePoint_Y";
+
+        /// <summary>
+        /// coord z di home point
+        /// </summary>
+        public const string HomePoint_Z = "PLC1_" + "HomePoint_Z";
+
+        /// <summary>
+        /// coord rx di home point
+        /// </summary>
+        public const string HomePoint_RX = "PLC1_" + "HomePoint_RX";
+
+        /// <summary>
+        /// coord ry di home point
+        /// </summary>
+        public const string HomePoint_RY = "PLC1_" + "HomePoint_RY";
+
+        /// <summary>
+        /// coord rz di home point
+        /// </summary>
+        public const string HomePoint_RZ = "PLC1_" + "HomePoint_RZ";
+
+        /// <summary>
+        /// coord x di pick box 1
+        /// </summary>
+        public const string PickPoint_Box1_X = "PLC1_" + "PickPoint_Box1_X";
+
+        /// <summary>
+        /// coord y di pick box 1
+        /// </summary>
+        public const string PickPoint_Box1_Y = "PLC1_" + "PickPoint_Box1_Y";
+
+        /// <summary>
+        /// coord z di pick box 1
+        /// </summary>
+        public const string PickPoint_Box1_Z = "PLC1_" + "PickPoint_Box1_Z";
+
+        /// <summary>
+        /// coord rx di pick box 1
+        /// </summary>
+        public const string PickPoint_Box1_RX = "PLC1_" + "PickPoint_Box1_RX";
+
+        /// <summary>
+        /// coord ry di pick box 1
+        /// </summary>
+        public const string PickPoint_Box1_RY = "PLC1_" + "PickPoint_Box1_RY";
+
+        /// <summary>
+        /// coord rz di pick box 1
+        /// </summary>
+        public const string PickPoint_Box1_RZ = "PLC1_" + "PickPoint_Box1_RZ";
+
+        /// <summary>
+        /// coord x di pick box 2
+        /// </summary>
+        public const string PickPoint_Box2_X = "PLC1_" + "PickPoint_Box2_X";
+
+        /// <summary>
+        /// coord y di pick box 2
+        /// </summary>
+        public const string PickPoint_Box2_Y = "PLC1_" + "PickPoint_Box2_Y";
+
+        /// <summary>
+        /// coord z di pick box 2
+        /// </summary>
+        public const string PickPoint_Box2_Z = "PLC1_" + "PickPoint_Box2_Z";
+
+        /// <summary>
+        /// coord rx di pick box 2
+        /// </summary>
+        public const string PickPoint_Box2_RX = "PLC1_" + "PickPoint_Box2_RX";
+
+        /// <summary>
+        /// coord ry di pick box 2
+        /// </summary>
+        public const string PickPoint_Box2_RY = "PLC1_" + "PickPoint_Box2_RY";
+
+        /// <summary>
+        /// coord rz di pick box 2
+        /// </summary>
+        public const string PickPoint_Box2_RZ = "PLC1_" + "PickPoint_Box2_RZ";
+
+        /// <summary>
+        /// coord x di pick box 3
+        /// </summary>
+        public const string PickPoint_Box3_X = "PLC1_" + "PickPoint_Box3_X";
+
+        /// <summary>
+        /// coord y di pick box 3
+        /// </summary>
+        public const string PickPoint_Box3_Y = "PLC1_" + "PickPoint_Box3_Y";
+
+        /// <summary>
+        /// coord z di pick box 3
+        /// </summary>
+        public const string PickPoint_Box3_Z = "PLC1_" + "PickPoint_Box3_Z";
+
+        /// <summary>
+        /// coord rx di pick box 3
+        /// </summary>
+        public const string PickPoint_Box3_RX = "PLC1_" + "PickPoint_Box3_RX";
+
+        /// <summary>
+        /// coord ry di pick box 3
+        /// </summary>
+        public const string PickPoint_Box3_RY = "PLC1_" + "PickPoint_Box3_RY";
+
+        /// <summary>
+        /// coord rz di pick box 3
+        /// </summary>
+        public const string PickPoint_Box3_RZ = "PLC1_" + "PickPoint_Box3_RZ";
+
+        /// <summary>
+        /// coord x di place pallet 1 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box1_X = "PLC1_" + "PlacePoint_Pallet1_Box1_X";
+
+        /// <summary>
+        /// coord y di place pallet 1 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box1_Y = "PLC1_" + "PlacePoint_Pallet1_Box1_Y";
+
+        /// <summary>
+        /// coord z di place pallet 1 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box1_Z = "PLC1_" + "PlacePoint_Pallet1_Box1_Z";
+
+        /// <summary>
+        /// coord rx di place pallet 1 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box1_RX = "PLC1_" + "PlacePoint_Pallet1_Box1_RX";
+
+        /// <summary>
+        /// coord ry di place pallet 1 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box1_RY = "PLC1_" + "PlacePoint_Pallet1_Box1_RY";
+
+        /// <summary>
+        /// coord rz di place pallet 1 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box1_RZ = "PLC1_" + "PlacePoint_Pallet1_Box1_RZ";
+
+        /// <summary>
+        /// coord x di place pallet 1 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box2_X = "PLC1_" + "PlacePoint_Pallet1_Box2_X";
+
+        /// <summary>
+        /// coord y di place pallet 1 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box2_Y = "PLC1_" + "PlacePoint_Pallet1_Box2_Y";
+
+        /// <summary>
+        /// coord z di place pallet 1 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box2_Z = "PLC1_" + "PlacePoint_Pallet1_Box2_Z";
+
+        /// <summary>
+        /// coord rx di place pallet 1 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box2_RX = "PLC1_" + "PlacePoint_Pallet1_Box2_RX";
+
+        /// <summary>
+        /// coord ry di place pallet 1 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box2_RY = "PLC1_" + "PlacePoint_Pallet1_Box2_RY";
+
+        /// <summary>
+        /// coord rz di place pallet 1 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box2_RZ = "PLC1_" + "PlacePoint_Pallet1_Box2_RZ";
+
+        /// <summary>
+        /// coord x di place pallet 1 box 3
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box3_X = "PLC1_" + "PlacePoint_Pallet1_Box3_X";
+
+        /// <summary>
+        /// coord y di place pallet 1 box 3
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box3_Y = "PLC1_" + "PlacePoint_Pallet1_Box3_Y";
+
+        /// <summary>
+        /// coord z di place pallet 1 box 3
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box3_Z = "PLC1_" + "PlacePoint_Pallet1_Box3_Z";
+
+        /// <summary>
+        /// coord rx di place pallet 1 box 3
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box3_RX = "PLC1_" + "PlacePoint_Pallet1_Box3_RX";
+
+        /// <summary>
+        /// coord ry di place pallet 1 box 3
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box3_RY = "PLC1_" + "PlacePoint_Pallet1_Box3_RY";
+
+        /// <summary>
+        /// coord rz di place pallet 1 box 3
+        /// </summary>
+        public const string PlacePoint_Pallet1_Box3_RZ = "PLC1_" + "PlacePoint_Pallet1_Box3_RZ";
+
+        /// <summary>
+        /// coord x di place pallet 2 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box1_X = "PLC1_" + "PlacePoint_Pallet2_Box1_X";
+
+        /// <summary>
+        /// coord y di place pallet 2 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box1_Y = "PLC1_" + "PlacePoint_Pallet2_Box1_Y";
+
+        /// <summary>
+        /// coord z di place pallet 2 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box1_Z = "PLC1_" + "PlacePoint_Pallet2_Box1_Z";
+
+        /// <summary>
+        /// coord rx di place pallet 2 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box1_RX = "PLC1_" + "PlacePoint_Pallet2_Box1_RX";
+
+        /// <summary>
+        /// coord ry di place pallet 2 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box1_RY = "PLC1_" + "PlacePoint_Pallet2_Box1_RY";
+
+        /// <summary>
+        /// coord rz di place pallet 2 box 1
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box1_RZ = "PLC1_" + "PlacePoint_Pallet2_Box1_RZ";
+
+        /// <summary>
+        /// coord x di place pallet 2 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box2_X = "PLC1_" + "PlacePoint_Pallet2_Box2_X";
+
+        /// <summary>
+        /// coord y di place pallet 2 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box2_Y = "PLC1_" + "PlacePoint_Pallet2_Box2_Y";
+
+        /// <summary>
+        /// coord z di place pallet 2 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box2_Z = "PLC1_" + "PlacePoint_Pallet2_Box2_Z";
+
+        /// <summary>
+        /// coord rx di place pallet 2 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box2_RX = "PLC1_" + "PlacePoint_Pallet2_Box2_RX";
+
+        /// <summary>
+        /// coord ry di place pallet 2 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box2_RY = "PLC1_" + "PlacePoint_Pallet2_Box2_RY";
+
+        /// <summary>
+        /// coord rz di place pallet 2 box 2
+        /// </summary>
+        public const string PlacePoint_Pallet2_Box2_RZ = "PLC1_" + "PlacePoint_Pallet2_Box2_RZ";
 
         #endregion
 

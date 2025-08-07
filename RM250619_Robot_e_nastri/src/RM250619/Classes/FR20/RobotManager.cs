@@ -764,6 +764,11 @@ namespace RM.src.RM250619
         /// </summary>
         public static bool isEnabledNow = false;
 
+        /// <summary>
+        /// A 1 quando il robot è in pausa
+        /// </summary>
+        public static int robotMove_inPause = 0;
+
         #endregion
 
         #region Metodi della classe RobotManager
@@ -1060,6 +1065,78 @@ namespace RM.src.RM250619
         /// </summary>
         private static void ResetPLCVariables()
         {
+            var HomePoint = ApplicationConfig.applicationsManager.GetPosition("1", "RM"); // Get punto di home point
+            RefresherTask.AddUpdate(PLCTagName.HomePoint_X, HomePoint.x, "FLOAT"); // Scrittura xCoord punto di home point
+            RefresherTask.AddUpdate(PLCTagName.HomePoint_Y, HomePoint.y, "FLOAT"); // Scrittura yCoord punto di home point
+            RefresherTask.AddUpdate(PLCTagName.HomePoint_Z, HomePoint.z, "FLOAT"); // Scrittura zCoord punto di home point
+            // RefresherTask.AddUpdate(PLCTagName.HomePoint_RX, HomePoint.rx, "FLOAT"); // Scrittura rxCoord punto di home point
+            // RefresherTask.AddUpdate(PLCTagName.HomePoint_RY, HomePoint.ry, "FLOAT"); // Scrittura ryCoord punto di home point
+            // RefresherTask.AddUpdate(PLCTagName.HomePoint_RZ, HomePoint.rz, "FLOAT"); // Scrittura rzCoord punto di home point
+
+            var pickPoint_Box1 = ApplicationConfig.applicationsManager.GetPosition("101", "RM"); // Get punto di pick box 1
+            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_X, pickPoint_Box1.x, "FLOAT"); // Scrittura xCoord punto di pick box 1
+            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_Y, pickPoint_Box1.y, "FLOAT"); // Scrittura yCoord punto di pick box 1
+            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_Z, pickPoint_Box1.z, "FLOAT"); // Scrittura zCoord punto di pick box 1
+            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_RX, pickPoint_Box1.rx, "FLOAT"); // Scrittura rxCoord punto di pick box 1
+            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_RY, pickPoint_Box1.ry, "FLOAT"); // Scrittura ryCoord punto di pick box 1
+            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_RZ, pickPoint_Box1.rz, "FLOAT"); // Scrittura rzCoord punto di pick box 1
+
+            var pickPoint_Box2 = ApplicationConfig.applicationsManager.GetPosition("201", "RM"); // Get punto di pick box 2
+            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_X, pickPoint_Box2.x, "FLOAT"); // Scrittura xCoord punto di pick box 2
+            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_Y, pickPoint_Box2.y, "FLOAT"); // Scrittura yCoord punto di pick box 2
+            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_Z, pickPoint_Box2.z, "FLOAT"); // Scrittura zCoord punto di pick box 2
+            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_RX, pickPoint_Box2.rx, "FLOAT"); // Scrittura rxCoord punto di pick box 2
+            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_RY, pickPoint_Box2.ry, "FLOAT"); // Scrittura ryCoord punto di pick box 2
+            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_RZ, pickPoint_Box2.rz, "FLOAT"); // Scrittura rzCoord punto di pick box 2
+
+            var pickPoint_Box3 = ApplicationConfig.applicationsManager.GetPosition("301", "RM"); // Get punto di pick box 3
+            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_X, pickPoint_Box3.x, "FLOAT"); // Scrittura xCoord punto di pick box 3
+            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_Y, pickPoint_Box3.y, "FLOAT"); // Scrittura yCoord punto di pick box 3
+            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_Z, pickPoint_Box3.z, "FLOAT"); // Scrittura zCoord punto di pick box 3
+            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_RX, pickPoint_Box3.rx, "FLOAT"); // Scrittura rxCoord punto di pick box 3
+            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_RY, pickPoint_Box3.ry, "FLOAT"); // Scrittura ryCoord punto di pick box 3
+            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_RZ, pickPoint_Box3.rz, "FLOAT"); // Scrittura rzCoord punto di pick box 3
+
+            var PlacePoint_Pallet1_Box1 = ApplicationConfig.applicationsManager.GetPosition("1101", "RM"); // Get punto di place pallet 1 box 1
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_X, PlacePoint_Pallet1_Box1.x, "FLOAT"); // Scrittura xCoord punto di place pallet 1 box 1
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_Y, PlacePoint_Pallet1_Box1.y, "FLOAT"); // Scrittura yCoord punto di place pallet 1 box 1
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_Z, PlacePoint_Pallet1_Box1.z, "FLOAT"); // Scrittura zCoord punto di place pallet 1 box 1
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_RX, PlacePoint_Pallet1_Box1.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 1 box 1
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_RY, PlacePoint_Pallet1_Box1.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 1 box 1
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_RZ, PlacePoint_Pallet1_Box1.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 1 box 1
+
+            var PlacePoint_Pallet1_Box2 = ApplicationConfig.applicationsManager.GetPosition("1201", "RM"); // Get punto di place pallet 1 box 2
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_X, PlacePoint_Pallet1_Box2.x, "FLOAT"); // Scrittura xCoord punto di place pallet 1 box 2
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_Y, PlacePoint_Pallet1_Box2.y, "FLOAT"); // Scrittura yCoord punto di place pallet 1 box 2
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_Z, PlacePoint_Pallet1_Box2.z, "FLOAT"); // Scrittura zCoord punto di place pallet 1 box 2
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_RX, PlacePoint_Pallet1_Box2.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 1 box 2
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_RY, PlacePoint_Pallet1_Box2.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 1 box 2
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_RZ, PlacePoint_Pallet1_Box2.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 1 box 2
+
+            var PlacePoint_Pallet1_Box3 = ApplicationConfig.applicationsManager.GetPosition("1301", "RM"); // Get punto di place pallet 1 box 3
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_X, PlacePoint_Pallet1_Box3.x, "FLOAT"); // Scrittura xCoord punto di place pallet 1 box 3
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_Y, PlacePoint_Pallet1_Box3.y, "FLOAT"); // Scrittura yCoord punto di place pallet 1 box 3
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_Z, PlacePoint_Pallet1_Box3.z, "FLOAT"); // Scrittura zCoord punto di place pallet 1 box 3
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_RX, PlacePoint_Pallet1_Box3.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 1 box 3
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_RY, PlacePoint_Pallet1_Box3.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 1 box 3
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_RZ, PlacePoint_Pallet1_Box3.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 1 box 3
+
+            var PlacePoint_Pallet2_Box1 = ApplicationConfig.applicationsManager.GetPosition("2101", "RM"); // Get punto di place pallet 2 box 1
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_X, PlacePoint_Pallet2_Box1.x, "FLOAT"); // Scrittura xCoord punto di place pallet 2 box 1
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_Y, PlacePoint_Pallet2_Box1.y, "FLOAT"); // Scrittura yCoord punto di place pallet 2 box 1
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_Z, PlacePoint_Pallet2_Box1.z, "FLOAT"); // Scrittura zCoord punto di place pallet 2 box 1
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_RX, PlacePoint_Pallet2_Box1.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 2 box 1
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_RY, PlacePoint_Pallet2_Box1.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 2 box 1
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_RZ, PlacePoint_Pallet2_Box1.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 2 box 1
+
+            var PlacePoint_Pallet2_Box2 = ApplicationConfig.applicationsManager.GetPosition("2201", "RM"); // Get punto di place pallet 2 box 2
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_X, PlacePoint_Pallet2_Box2.x, "FLOAT"); // Scrittura xCoord punto di place pallet 2 box 2
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_Y, PlacePoint_Pallet2_Box2.y, "FLOAT"); // Scrittura yCoord punto di place pallet 2 box 2
+            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_Z, PlacePoint_Pallet2_Box2.z, "FLOAT"); // Scrittura zCoord punto di place pallet 2 box 2
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_RX, PlacePoint_Pallet2_Box2.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 2 box 2
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_RY, PlacePoint_Pallet2_Box2.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 2 box 2
+            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_RZ, PlacePoint_Pallet2_Box2.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 2 box 2
+
             RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, 0, "INT16"); // Reset fase ciclo a PLC
             RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Home, 0, "INT16"); // Reset fase ciclo a PLC
             RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 0, "INT16"); // Reset fase ciclo a PLC
@@ -1277,8 +1354,11 @@ namespace RM.src.RM250619
                         robot.GetRobotRealTimeState(ref robot_state_pkg);
                         mov_robot_state = robot_state_pkg.robot_state;
 
-                        if (mov_robot_state == 3) break;
-
+                        if (mov_robot_state == 3)
+                        {
+                            robotMove_inPause = 1;
+                            break;
+                        }
                         Thread.Sleep(100); // Attendi un po' prima di riprovare
                         attempt++;
 
@@ -1294,8 +1374,7 @@ namespace RM.src.RM250619
                     // Ripresa
                     robot.ResumeMotion();
                     robotIsPaused = false;
-
-                    // (Opzionale) potresti verificare qui che il robot riprenda correttamente
+                    robotMove_inPause = 0;
                 }
 
                 previousBarrierStatus = barrierStatus > 0;
@@ -1604,7 +1683,7 @@ namespace RM.src.RM250619
                 GetPLCErrorCode(alarmValues, alarmDescriptions, now, unixTimestamp,
                     dateTime, formattedDate);
 
-                CheckStepRoutine();
+                SendUpdatesToPLC();
 
                 Thread.Sleep(lowPriorityRefreshPeriod);
             }
@@ -1613,16 +1692,17 @@ namespace RM.src.RM250619
         /// <summary>
         /// Esegue scrittua su plc
         /// </summary>
-        private static void CheckStepRoutine()
+        private static void SendUpdatesToPLC()
         {
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Home, stepHomeRoutine, "INT16"); // Scrittura fase ciclo a PLC
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, step, "INT16"); // Scrittura fase ciclo a PLC
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, stepPick, "INT16"); // Scrittura fase ciclo a PLC
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, stepPlace, "INT16"); // Scrittura fase ciclo a PLC
-            RefresherTask.AddUpdate(PLCTagName.CycleRun_Home, CycleRun_Home, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.CycleRun_Main, CycleRun_Main, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.CycleRun_Pick, CycleRun_Pick, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.CycleRun_Home, CycleRun_Home, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Home, stepHomeRoutine, "INT16"); // Scrittura fase ciclo home a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, step, "INT16"); // Scrittura fase ciclo main a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, stepPick, "INT16"); // Scrittura fase ciclo pick a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, stepPlace, "INT16"); // Scrittura fase ciclo place a PLC
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Home, CycleRun_Home, "INT16"); // Scrittura valore avvio/stop ciclo home
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Main, CycleRun_Main, "INT16"); // Scrittura valore avvio/stop ciclo main
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Pick, CycleRun_Pick, "INT16"); // Scrittura valore avvio/stop ciclo pick
+            RefresherTask.AddUpdate(PLCTagName.CycleRun_Place, CycleRun_Place, "INT16"); // Scrittura valore avvio/stop ciclo place
+            RefresherTask.AddUpdate(PLCTagName.Move_InPause, robotMove_inPause, "INT16"); // Scrittura feedback pausa del robot
         }
         
         /// <summary>

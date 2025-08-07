@@ -641,6 +641,11 @@
             Giorno - versione robot
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Move_InPause">
+            <summary>
+            Feedback in scrittura dello stato di pausa del robot
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.System_error">
             <summary>
             Errore nel sistema
@@ -694,6 +699,276 @@
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CycleRun_Place">
             <summary>
             A 1 quando è avviato il ciclo place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.HomePoint_X">
+            <summary>
+            coord x di home point
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.HomePoint_Y">
+            <summary>
+            coord y di home point
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.HomePoint_Z">
+            <summary>
+            coord z di home point
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.HomePoint_RX">
+            <summary>
+            coord rx di home point
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.HomePoint_RY">
+            <summary>
+            coord ry di home point
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.HomePoint_RZ">
+            <summary>
+            coord rz di home point
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box1_X">
+            <summary>
+            coord x di pick box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box1_Y">
+            <summary>
+            coord y di pick box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box1_Z">
+            <summary>
+            coord z di pick box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box1_RX">
+            <summary>
+            coord rx di pick box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box1_RY">
+            <summary>
+            coord ry di pick box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box1_RZ">
+            <summary>
+            coord rz di pick box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box2_X">
+            <summary>
+            coord x di pick box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box2_Y">
+            <summary>
+            coord y di pick box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box2_Z">
+            <summary>
+            coord z di pick box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box2_RX">
+            <summary>
+            coord rx di pick box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box2_RY">
+            <summary>
+            coord ry di pick box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box2_RZ">
+            <summary>
+            coord rz di pick box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box3_X">
+            <summary>
+            coord x di pick box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box3_Y">
+            <summary>
+            coord y di pick box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box3_Z">
+            <summary>
+            coord z di pick box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box3_RX">
+            <summary>
+            coord rx di pick box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box3_RY">
+            <summary>
+            coord ry di pick box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PickPoint_Box3_RZ">
+            <summary>
+            coord rz di pick box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box1_X">
+            <summary>
+            coord x di place pallet 1 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box1_Y">
+            <summary>
+            coord y di place pallet 1 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box1_Z">
+            <summary>
+            coord z di place pallet 1 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box1_RX">
+            <summary>
+            coord rx di place pallet 1 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box1_RY">
+            <summary>
+            coord ry di place pallet 1 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box1_RZ">
+            <summary>
+            coord rz di place pallet 1 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box2_X">
+            <summary>
+            coord x di place pallet 1 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box2_Y">
+            <summary>
+            coord y di place pallet 1 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box2_Z">
+            <summary>
+            coord z di place pallet 1 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box2_RX">
+            <summary>
+            coord rx di place pallet 1 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box2_RY">
+            <summary>
+            coord ry di place pallet 1 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box2_RZ">
+            <summary>
+            coord rz di place pallet 1 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box3_X">
+            <summary>
+            coord x di place pallet 1 box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box3_Y">
+            <summary>
+            coord y di place pallet 1 box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box3_Z">
+            <summary>
+            coord z di place pallet 1 box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box3_RX">
+            <summary>
+            coord rx di place pallet 1 box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box3_RY">
+            <summary>
+            coord ry di place pallet 1 box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet1_Box3_RZ">
+            <summary>
+            coord rz di place pallet 1 box 3
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box1_X">
+            <summary>
+            coord x di place pallet 2 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box1_Y">
+            <summary>
+            coord y di place pallet 2 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box1_Z">
+            <summary>
+            coord z di place pallet 2 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box1_RX">
+            <summary>
+            coord rx di place pallet 2 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box1_RY">
+            <summary>
+            coord ry di place pallet 2 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box1_RZ">
+            <summary>
+            coord rz di place pallet 2 box 1
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box2_X">
+            <summary>
+            coord x di place pallet 2 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box2_Y">
+            <summary>
+            coord y di place pallet 2 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box2_Z">
+            <summary>
+            coord z di place pallet 2 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box2_RX">
+            <summary>
+            coord rx di place pallet 2 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box2_RY">
+            <summary>
+            coord ry di place pallet 2 box 2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.PlacePoint_Pallet2_Box2_RZ">
+            <summary>
+            coord rz di place pallet 2 box 2
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_CollisionLevel">
@@ -2609,6 +2884,11 @@
             Valore enable now robot
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.RobotManager.robotMove_inPause">
+            <summary>
+            A 1 quando il robot è in pausa
+            </summary>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.TriggerRobotVelocityChangedEvent(System.Int32)">
             <summary>
             Invoca metodo relativo al cambio di velocità del robot
@@ -2744,7 +3024,7 @@
             Thread a priorità bassa che gestisce allarmi robot e PLC
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckStepRoutine">
+        <member name="M:RM.src.RM250619.RobotManager.SendUpdatesToPLC">
             <summary>
             Esegue scrittua su plc
             </summary>
