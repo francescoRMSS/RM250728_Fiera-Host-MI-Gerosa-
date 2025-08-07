@@ -1230,7 +1230,7 @@ namespace RM.src.RM250619
         private static void AuxiliaryWorker()
         {
             // Get del punto di home dal dizionario delle posizioni
-            var pHome = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+            var pHome = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             // Creazione della DescPose del punto di Home
             DescPose homePose = new DescPose(pHome.x, pHome.y, pHome.z, pHome.rx, pHome.ry, pHome.rz);
 
@@ -1547,7 +1547,7 @@ namespace RM.src.RM250619
             // Zone di ingombro
             var pickPose = ApplicationConfig.applicationsManager.GetPosition("pPick","RM");
             var placePose = ApplicationConfig.applicationsManager.GetPosition("pPlace","RM");
-            var homePose = ApplicationConfig.applicationsManager.GetPosition("pHome","RM");
+            var homePose = ApplicationConfig.applicationsManager.GetPosition("1","RM");
 
             DescPose[] startPoints = new DescPose[]
             {
@@ -2862,7 +2862,7 @@ namespace RM.src.RM250619
 
             #region Punto home
 
-            var home = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
 
             #endregion
@@ -3035,7 +3035,7 @@ namespace RM.src.RM250619
 
             #region Punto home
 
-            var home = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
 
             #endregion
@@ -3047,7 +3047,7 @@ namespace RM.src.RM250619
             int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
 
             JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
-            var pick = ApplicationConfig.applicationsManager.GetPosition("pPick", "RM");
+            var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
             DescPose descPosPick = new DescPose(pick.x + xOffset, pick.y + yOffset, pick.z + zOffset, pick.rx, pick.ry, pick.rz);
             RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
 
@@ -3193,7 +3193,7 @@ namespace RM.src.RM250619
         public static async Task HomeRoutine()
         {
             // Get del punto di home
-            var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+            var restPose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
 
             stopHomeRoutine = false; // Reset segnale di stop ciclo home
@@ -3289,7 +3289,7 @@ namespace RM.src.RM250619
 
             #region Punto home
 
-            var home = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
 
             #endregion
@@ -4856,7 +4856,7 @@ namespace RM.src.RM250619
         /// </summary>
         public static void GoToHomePosition()
         {
-            var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+            var restPose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
             int result = robot.MoveCart(pHome, tool, user, vel, acc, ovl, blendT, config);
 
