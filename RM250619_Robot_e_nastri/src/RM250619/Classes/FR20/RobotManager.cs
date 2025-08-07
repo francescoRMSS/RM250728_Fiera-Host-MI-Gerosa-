@@ -4518,7 +4518,7 @@ namespace RM.src.RM250619
             if (isEnabledNow && !prevIsEnable)
             {
                 // Abilitazione del robot
-               int err =  robot.RobotEnable(1);
+                int err = robot.RobotEnable(1);
                 prevIsEnable = true;
                 prevIsNotEnable = false; // Resetta lo stato "non abilitato"
                 AlarmManager.blockingAlarm = false;
@@ -4538,7 +4538,7 @@ namespace RM.src.RM250619
                 currentIndex = -1;
                 UC_FullDragModePage.debugCurrentIndex = -1;
                 robot.StopMotion(); // Cancellazione della coda di punti
-            }
+            }  
         }
 
         /// <summary>
