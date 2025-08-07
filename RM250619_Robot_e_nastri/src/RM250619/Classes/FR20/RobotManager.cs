@@ -2009,6 +2009,19 @@ namespace RM.src.RM250619
                 // Creazione dell'oggetto robotProperties
                 robotProperties = new RobotProperties(speed, velocity, blend, acceleration, ovl, tool, user, weight, velRec);
 
+                /*
+                 DescPose coord = new DescPose(
+                    -1115.359,
+                    212.482,
+                    -541.592,
+                    179.973,
+                    0.010,
+                    0.765
+                    );
+
+               robot.SetWObjCoord(1, coord);
+                */
+
                 log.Info($"SetRobotProperties completata: " +
                          $"\n Speed: {speed}" +
                          $"\n Velocity: {velocity}" +
