@@ -2855,21 +2855,11 @@ namespace RM.src.RM250619
         }
 
         /// <summary>
-        /// Esegue ciclo di pick di una scatola e place dentro al pallet in una determinata posizione
+        /// Esegue metodo che gestisce routine di pick e di place
         /// </summary>
         public static async Task MainCycle()
         {
-
-            #region Parametri movimento
-
-            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
-            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
-            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
-
-            #endregion
-
-            // Indica il codice risultante del movimento del Robot
-            int movementResult = -1;
+            #region Variabili necessarie per funzionamento ciclo
 
             // Reset condizione di stop ciclo
             stopCycleRoutine = false;
@@ -2879,9 +2869,6 @@ namespace RM.src.RM250619
 
             // Reset step routine
             step = 0;
-
-            // Dichiarazione stato della pinza
-            int gripperStatus = -1; 
 
             // Segnale di pick
             int execPick = 0;
@@ -2895,8 +2882,7 @@ namespace RM.src.RM250619
             // Consensi di place
             int enableToPlace = 0;
 
-            // Segnale di place
-            bool appoggiaSuPallet = true;
+            #endregion
 
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
@@ -2909,31 +2895,37 @@ namespace RM.src.RM250619
                     {
                         case 0:
                             #region Check richiesta interruzione ciclo
+                            // In questo step scrivo al plc che il ciclo di main è stato avviato e passo subito allo step successivo
 
+                            // Aggiorno la variabile globale e statica che scrivo al PLC nel metodo SendUpdatesToPLC 
+                            // per informare il plc che il ciclo main è in esecuzione
                             CycleRun_Main = 1;
+
+                            // Passaggio allo step 10
                             step = 10;
 
                             break;
 
                         #endregion
 
-
                         case 10:
                             #region Check richiesta routine
+                            // In questo step leggo dal plc se è arrivata una richiesta di pick o di place e se ci sono i consensi per procedere
+                            // ai relativi step successivi
 
                             #region Pick
 
-                            // Get comando di pick
+                            // Get comando di pick da plc
                             execPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick));
-                            // Get consensi di pick
+
+                            // Get consensi di pick da plc
                             enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
 
                             if (execPick == 1) // Check richiesta di pick routine
                             {
                                 if (enableToPick == 1) // Check consensi pick
                                 {
-                                    // await PickBox(); // Eseguo e attendo sia terminata la routine di pick
-                                    step = 20;
+                                    step = 20; // Passaggio allo step dedicato al pick
                                 }
                             }
 
@@ -2941,17 +2933,17 @@ namespace RM.src.RM250619
 
                             #region Place
 
-                            // Get comando di place
+                            // Get comando di place da plc
                             execPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place));
-                            // Get consensi di place
+
+                            // Get consensi di place da plc
                             enableToPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Place));
 
                             if (execPlace == 1) // Check richiesta di place routine
                             {
                                 if (enableToPlace == 1) // Check consensi place
                                 {
-                                    // await PlaceBox(); // Eseguo e attendo sia terminata la routine di place
-                                    step = 30;
+                                    step = 30; // Passaggio allo step dedicato al place
                                 }
                             }
 
@@ -2962,19 +2954,27 @@ namespace RM.src.RM250619
                         #endregion
 
                         case 20:
-
                             #region Get punto di pick
+                            // In questo step eseguo la get del punto di pick dal dizionario generato tramite database
+                            // e controllo prima se il punto è presente nel dizionario e dopo se le coordinate sono valide
+                            // verificando che tutte siano diverse da 0
 
+                            // Get del punto di pick dal dizionario
                             var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
 
+                            // Check su presenza del punto nel dizionario
                             if (pick != null)
                             {
-                                await PickBox(pick); // Eseguo e attendo sia terminata la routine di pick
-                                step = 10;
+                                // Check validità del punto
+                                if (pick.x != 0 && pick.y != 0 && pick.z != 0 && pick.rx != 0 && pick.ry != 0 && pick.rz != 0)
+                                {
+                                    await PickBox(pick); // Eseguo e attendo sia terminata la routine di pick
+                                    step = 10; // Riavvio del ciclo per controllare nuove richieste di pick o place
+                                }
                             }
-                            else
+                            else // Se il punto non è presente nel dizionario o non ha coordinate valide
                             {
-                                step = 1001;
+                                step = 1001; // Passaggio allo step dedicato all'errore del pick
                             }
 
                             break;
@@ -2982,20 +2982,35 @@ namespace RM.src.RM250619
                         #endregion
 
                         case 30:
-
                             #region Get punto di place
+                            // In questo step eseguo la get del punto di place dal dizionario generato tramite database
+                            // e controllo prima se il punto è presente nel dizionario e dopo se le coordinate sono valide
+                            // verificando che tutte siano diverse da 0
 
+                            // Eseguo get del nome del punto di place che proviene dal plc.
+                            // La codifica è:
+                            // Migliata -> Numero pallet
+                            // Centinaia -> Formato scatola
+                            // Unità -> Numero scatola
+                            // Es: 1101 -> Pallet 1, formato scatola 1, prima scatola
                             int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+
+                            // Eseguo get del punto di place dal dizionario tramite la codifica ricevuta dal plc
                             var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
 
+                            // Check su presenza del punto nel dizionario
                             if (place != null)
                             {
-                                await PlaceBox(place); // Eseguo e attendo sia terminata la routine di place
-                                step = 10;
+                                // Check validità del punto
+                                if (place.x != 0 && place.y != 0 && place.z != 0 && place.rx != 0 && place.ry != 0 && place.rz != 0) // Se il punto è valido
+                                { 
+                                    await PlaceBox(place); // Eseguo e attendo sia terminata la routine di place
+                                    step = 10; // Riavvio del ciclo per controllare nuove richieste di pick o place
+                                }
                             }
-                            else
+                            else // Se il punto non è presente nel dizionario o non ha coordinate valide
                             {
-                                step = 1002;
+                                step = 1002; // Passaggio allo step dedicato all'errore del place
                             }
 
                             break;
@@ -3003,20 +3018,20 @@ namespace RM.src.RM250619
                         #endregion
 
                         case 1001:
-
                             #region Errore punto di pick
+                            // In questa fase stampiamo semplicemente l'errore relativo al punto di pick sul log
 
-                            log.Error("Punto di pick non presente nel dizionario");
+                            log.Error("Punto di pick non presente nel dizionario"); // Stampa messaggio di errore
 
                             break;
 
                         #endregion
 
                         case 1002:
-
                             #region Errore punto di place
+                            // In questa fase stampiamo semplicemente l'errore relativo al punto di place sul log
 
-                            log.Error("Punto di place non presente nel dizionario");
+                            log.Error("Punto di place non presente nel dizionario"); // Stampa messaggio di errore
 
                             break;
 
