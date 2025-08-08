@@ -3136,13 +3136,13 @@
             Esegue ciclo di pick di una scatola e place dentro al pallet in una determinata posizione
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.PickBox">
+        <member name="M:RM.src.RM250619.RobotManager.PickBox(RM.src.RM250619.ApplicationPositions)">
             <summary>
             Esegue il pick della scatola
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.PlaceBox">
+        <member name="M:RM.src.RM250619.RobotManager.PlaceBox(RM.src.RM250619.ApplicationPositions)">
             <summary>
             Esegue il place della scatola
             </summary>

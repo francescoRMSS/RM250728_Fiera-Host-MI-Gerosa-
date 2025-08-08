@@ -18,6 +18,7 @@ using RM.src.RM250619.Forms.DragMode;
 using RM.src.RM250619.Classes.PLC;
 using RM.src.RM250619.Classes.FR20.Jog;
 using RM.src.RM250619.Classes.FR20;
+using System.Diagnostics.Eventing.Reader;
 
 namespace RM.src.RM250619
 {
@@ -2858,50 +2859,6 @@ namespace RM.src.RM250619
         /// </summary>
         public static async Task MainCycle()
         {
-            #region Dichiarazione punti routine
-
-            #region Punto home
-
-            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
-            DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
-
-            #endregion
-
-            #region Punto di pick
-
-            JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
-            var pick = ApplicationConfig.applicationsManager.GetPosition("pPick", "RM");
-            DescPose descPosPick = new DescPose(pick.x, pick.y, pick.z, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
-
-            #endregion
-
-            #region Punto avvicinamento pick
-
-            JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
-            DescPose descPosApproachPick = new DescPose(pick.x, pick.y, pick.z + 200, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
-
-            #endregion
-
-            #region Punto di place
-
-            JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
-            var place = ApplicationConfig.applicationsManager.GetPosition("pPlace", "RM");
-            DescPose descPosPlace = new DescPose(place.x, place.y, place.z, place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
-
-            #endregion
-
-            #region Punto avvicinamento place
-
-            JointPos jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
-            DescPose descPosApproachPlace = new DescPose(place.x, place.y, place.z + 200, place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
-
-            #endregion
-
-            #endregion
 
             #region Parametri movimento
 
@@ -2941,17 +2898,6 @@ namespace RM.src.RM250619
             // Segnale di place
             bool appoggiaSuPallet = true;
 
-
-            int numeroRighe = (int)(larghezzaPallet / larghezzaScatola);
-            int numeroColonne = (int)(lunghezzaPallet / lunghezzaScatola);
-
-            // CalcolaPosizioneFocacce(larghezzaFocaccia,profonditaFocaccia,larghezzaPallet,profonditaPallet);
-
-            DescPose originePallet = descPosPlace;
-            JointPos jointPosPlaceCalculated = new JointPos(0, 0, 0, 0, 0, 0);
-
-            bool stepWritten = false;
-
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
             await Task.Run(async () =>
@@ -2986,7 +2932,8 @@ namespace RM.src.RM250619
                             {
                                 if (enableToPick == 1) // Check consensi pick
                                 {
-                                    await PickBox(); // Eseguo e attendo sia terminata la routine di pick
+                                    // await PickBox(); // Eseguo e attendo sia terminata la routine di pick
+                                    step = 20;
                                 }
                             }
 
@@ -3003,7 +2950,8 @@ namespace RM.src.RM250619
                             {
                                 if (enableToPlace == 1) // Check consensi place
                                 {
-                                    await PlaceBox(); // Eseguo e attendo sia terminata la routine di place
+                                    // await PlaceBox(); // Eseguo e attendo sia terminata la routine di place
+                                    step = 30;
                                 }
                             }
 
@@ -3012,6 +2960,67 @@ namespace RM.src.RM250619
                             break;
 
                         #endregion
+
+                        case 20:
+
+                            #region Get punto di pick
+
+                            var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
+
+                            if (pick != null)
+                            {
+                                await PickBox(pick); // Eseguo e attendo sia terminata la routine di pick
+                                step = 10;
+                            }
+                            else
+                            {
+                                step = 1001;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 30:
+
+                            #region Get punto di place
+
+                            int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                            var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
+
+                            if (place != null)
+                            {
+                                await PlaceBox(place); // Eseguo e attendo sia terminata la routine di place
+                                step = 10;
+                            }
+                            else
+                            {
+                                step = 1002;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 1001:
+
+                            #region Errore punto di pick
+
+                            log.Error("Punto di pick non presente nel dizionario");
+
+                            break;
+
+                        #endregion
+
+                        case 1002:
+
+                            #region Errore punto di place
+
+                            log.Error("Punto di place non presente nel dizionario");
+
+                            break;
+
+                            #endregion
                     }
 
                     Thread.Sleep(100); // Delay routine
@@ -3023,7 +3032,7 @@ namespace RM.src.RM250619
         /// Esegue il pick della scatola
         /// </summary>
         /// <returns></returns>
-        public static async Task PickBox()
+        public static async Task PickBox(ApplicationPositions pick)
         {
             stepPick = 0; // Step ciclo di pick
             int movementResult = 0; // Risultato del movimento del Robot
@@ -3047,7 +3056,7 @@ namespace RM.src.RM250619
             int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
 
             JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
-            var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
+            //var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
             DescPose descPosPick = new DescPose(pick.x + xOffset, pick.y + yOffset, pick.z + zOffset, pick.rx, pick.ry, pick.rz);
             RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
 
@@ -3275,7 +3284,7 @@ namespace RM.src.RM250619
         /// Esegue il place della scatola
         /// </summary>
         /// <returns></returns>
-        public static async Task PlaceBox()
+        public static async Task PlaceBox(ApplicationPositions place)
         {
             stepPlace = 0; // Step ciclo di place
             int movementResult = 0; // Risultato del movimento del Robot
@@ -3296,7 +3305,7 @@ namespace RM.src.RM250619
 
             #region Punto di place
 
-            int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+           // int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
             int rotate180 = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Box_Rotate_180));
 
             int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
@@ -3304,7 +3313,7 @@ namespace RM.src.RM250619
             int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
 
             JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
-            var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
+            //var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
             DescPose descPosPlace = new DescPose(place.x + xOffset, place.y + yOffset, place.z + zOffset, place.rx, place.ry, place.rz);
             RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
 
