@@ -651,6 +651,7 @@
             this.btn_pauseRobot.TabIndex = 294;
             this.btn_pauseRobot.Text = "Barriera attivata";
             this.btn_pauseRobot.UseVisualStyleBackColor = false;
+            this.btn_pauseRobot.Visible = false;
             this.btn_pauseRobot.Click += new System.EventHandler(this.btn_pauseRobot_Click);
             // 
             // btn_resumeRobot
@@ -663,6 +664,7 @@
             this.btn_resumeRobot.TabIndex = 295;
             this.btn_resumeRobot.Text = "Barriera disattivata";
             this.btn_resumeRobot.UseVisualStyleBackColor = false;
+            this.btn_resumeRobot.Visible = false;
             this.btn_resumeRobot.Click += new System.EventHandler(this.btn_resumeRobot_Click);
             // 
             // button1
@@ -673,6 +675,7 @@
             this.button1.TabIndex = 296;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
@@ -683,6 +686,7 @@
             this.button2.TabIndex = 297;
             this.button2.Text = "button2";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
@@ -693,6 +697,7 @@
             this.button3.TabIndex = 298;
             this.button3.Text = "button3";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Visible = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // UC_HomePage

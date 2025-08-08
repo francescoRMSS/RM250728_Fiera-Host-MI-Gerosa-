@@ -646,14 +646,29 @@
             Feedback in scrittura dello stato di pausa del robot
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.System_error">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Robot_error">
             <summary>
-            Errore nel sistema
+            Errore nel robot
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Emergency">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Robot_enable">
             <summary>
-            Emergenza
+            Stato robot abilitato
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Robot_status">
+            <summary>
+            Stato robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_N_Tool">
+            <summary>
+            tool corrente del robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_N_Frame">
+            <summary>
+            user corrente del robot
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SafePos">
@@ -3133,7 +3148,7 @@
         </member>
         <member name="M:RM.src.RM250619.RobotManager.MainCycle">
             <summary>
-            Esegue ciclo di pick di una scatola e place dentro al pallet in una determinata posizione
+            Esegue metodo che gestisce routine di pick e di place
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.PickBox(RM.src.RM250619.ApplicationPositions)">

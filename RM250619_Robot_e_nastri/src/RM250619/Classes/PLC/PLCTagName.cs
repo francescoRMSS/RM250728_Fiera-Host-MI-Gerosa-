@@ -51,14 +51,34 @@ namespace RM.src.RM250619.Classes.PLC
         public const string Move_InPause = "PLC1_" + "Move_InPause";
 
         /// <summary>
-        /// Errore nel sistema
+        /// Errore nel robot
         /// </summary>
-        public const string System_error = "PLC1_" + "System_error";
+        public const string Robot_error = "PLC1_" + "Robot_error";
 
         /// <summary>
-        /// Emergenza
+        /// Stato robot abilitato
         /// </summary>
-        public const string Emergency = "PLC1_" + "Emergency";
+        public const string Robot_enable = "PLC1_" + "Robot_enable";
+
+        /// <summary>
+        /// Stato robot
+        /// </summary>
+        public const string Robot_status = "PLC1_" + "Robot_status";
+
+        /// <summary>
+        /// Livello di collisione corrente del robot
+        /// </summary>
+        //public const string ACT_CollisionLevel = "PLC1_" + "ACT_CollisionLevel";
+
+        /// <summary>
+        /// tool corrente del robot
+        /// </summary>
+        public const string ACT_N_Tool = "PLC1_" + "ACT_N_Tool";
+
+        /// <summary>
+        /// user corrente del robot
+        /// </summary>
+        public const string ACT_N_Frame = "PLC1_" + "ACT_N_Frame";
 
         /// <summary>
         /// Posizione sicura del robot

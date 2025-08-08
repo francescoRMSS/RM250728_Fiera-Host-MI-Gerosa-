@@ -19,6 +19,7 @@ using RM.src.RM250619.Classes.PLC;
 using RM.src.RM250619.Classes.FR20.Jog;
 using RM.src.RM250619.Classes.FR20;
 using System.Diagnostics.Eventing.Reader;
+using System.Windows.Forms;
 
 namespace RM.src.RM250619
 {
@@ -886,6 +887,8 @@ namespace RM.src.RM250619
             }
         }
 
+        public static int robotError = 0;
+
         /// <summary>
         /// Legge allarmi derivanti dal Robot
         /// </summary>
@@ -983,11 +986,13 @@ namespace RM.src.RM250619
 
                     // Segnalo che è presente un allarme bloccante (allarme robot)
                     AlarmManager.blockingAlarm = true;
+                    robotError = 1;
                 }
                 else if (maincode == 0)
                 {
                     // Reimposta la variabile di stato se l'allarme è risolto
                     allarmeSegnalato = false;
+                    robotError = 0;
                 }
             }
 
@@ -1330,7 +1335,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Check su accesso barriere
         /// </summary>
-        private static void CheckBarrierStatus()
+        private static async void CheckBarrierStatus()
         {
             int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
 
@@ -1357,7 +1362,7 @@ namespace RM.src.RM250619
 
                         if (mov_robot_state == 3)
                         {
-                            robotMove_inPause = 1;
+                           // robotMove_inPause = 1;
                             break;
                         }
                         Thread.Sleep(100); // Attendi un po' prima di riprovare
@@ -1373,9 +1378,10 @@ namespace RM.src.RM250619
                 else
                 {
                     // Ripresa
+                    await Task.Delay(1000);
                     robot.ResumeMotion();
                     robotIsPaused = false;
-                    robotMove_inPause = 0;
+                   // robotMove_inPause = 0;
                 }
 
                 previousBarrierStatus = barrierStatus > 0;
@@ -1546,8 +1552,8 @@ namespace RM.src.RM250619
             #region ingombro
 
             // Zone di ingombro
-            var pickPose = ApplicationConfig.applicationsManager.GetPosition("pPick","RM");
-            var placePose = ApplicationConfig.applicationsManager.GetPosition("pPlace","RM");
+            var pickPose = ApplicationConfig.applicationsManager.GetPosition("101","RM");
+            var placePose = ApplicationConfig.applicationsManager.GetPosition("1101","RM");
             var homePose = ApplicationConfig.applicationsManager.GetPosition("1","RM");
 
             DescPose[] startPoints = new DescPose[]
@@ -1558,15 +1564,15 @@ namespace RM.src.RM250619
             };
 
             // Oggetto che rileva ingombro pick
-            double delta_ingombro_pick = 200.0;
+            double delta_ingombro_pick = 500.0;
             checker_ingombro_pick = new PositionChecker(delta_ingombro_pick);
 
             // Oggetto che rileva ingombro place
-            double delta_ingombro_place = 200.0;
+            double delta_ingombro_place = 500.0;
             checker_ingombro_place = new PositionChecker(delta_ingombro_place);
 
             // Oggetto che rileva ingombro home
-            double delta_ingombro_home = 200.0;
+            double delta_ingombro_home = 500.0;
             checker_ingombro_home = new PositionChecker(delta_ingombro_home);
 
             #endregion
@@ -1601,8 +1607,8 @@ namespace RM.src.RM250619
                         CheckIsRobotInSafeZone(pointSafeZone);
                         CheckIsRobotInPos();
                         CheckBarrierStatus();
+                        CheckStatusRobot();
 
-                        // SendUpdatesToPLC(updates);
                     }
                     catch (Exception e)
                     {
@@ -1614,6 +1620,18 @@ namespace RM.src.RM250619
 
                 Thread.Sleep(highPriorityRefreshPeriod);
             }
+        }
+
+        public static int robotStatus = 0;
+       
+        private static void CheckStatusRobot()
+        {
+            ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
+            byte mov_robot_state = 0;
+
+            robot.GetRobotRealTimeState(ref robot_state_pkg);
+            mov_robot_state = robot_state_pkg.robot_state;
+            robotStatus = mov_robot_state;
         }
 
         /// <summary>
@@ -1684,7 +1702,11 @@ namespace RM.src.RM250619
                 GetPLCErrorCode(alarmValues, alarmDescriptions, now, unixTimestamp,
                     dateTime, formattedDate);
 
+                CheckCurrentToolAndUser();
+
                 SendUpdatesToPLC();
+
+               
 
                 Thread.Sleep(lowPriorityRefreshPeriod);
             }
@@ -1703,7 +1725,24 @@ namespace RM.src.RM250619
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Main, CycleRun_Main, "INT16"); // Scrittura valore avvio/stop ciclo main
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Pick, CycleRun_Pick, "INT16"); // Scrittura valore avvio/stop ciclo pick
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Place, CycleRun_Place, "INT16"); // Scrittura valore avvio/stop ciclo place
-            RefresherTask.AddUpdate(PLCTagName.Move_InPause, robotMove_inPause, "INT16"); // Scrittura feedback pausa del robot
+            // RefresherTask.AddUpdate(PLCTagName.Move_InPause, robotMove_inPause, "INT16"); // Scrittura feedback pausa del robot
+            RefresherTask.AddUpdate(PLCTagName.Robot_error, robotError, "INT16"); // Scrittura stato errore del robot
+            RefresherTask.AddUpdate(PLCTagName.Robot_enable, robotEnableStatus, "INT16"); // Scrittura stato enable del robot
+            RefresherTask.AddUpdate(PLCTagName.Robot_status, robotStatus, "INT16"); // Scrittura stato del robot
+            RefresherTask.AddUpdate(PLCTagName.ACT_N_Tool, currentTool, "INT16"); // Scrittura stato del robot
+            RefresherTask.AddUpdate(PLCTagName.ACT_N_Frame, currentUser, "INT16"); // Scrittura stato del robot
+            RefresherTask.AddUpdate(PLCTagName.ACT_CollisionLevel, currentCollisionLevel, "INT16"); // Scrittura stato del robot
+
+        }
+
+        public static int currentTool = 0;
+        public static int currentUser = 0;
+        public static int currentCollisionLevel = 0;
+
+        private static void CheckCurrentToolAndUser()
+        {
+            robot.GetActualTCPNum(1, ref currentTool);
+            robot.GetActualWObjNum(1, ref currentUser);
         }
         
         /// <summary>
@@ -2884,6 +2923,18 @@ namespace RM.src.RM250619
 
             #endregion
 
+            double[] levelCollision1 = new double[] { 1, 1, 1, 1, 1, 1 };
+            double[] levelCollision2 = new double[] { 2, 2, 2, 2, 2, 2 };
+            double[] levelCollision3 = new double[] { 3, 3, 3, 3, 3, 3 };
+            double[] levelCollision4 = new double[] { 4, 4, 4, 4, 4, 4 };
+            double[] levelCollision5 = new double[] { 5, 5, 5, 5, 5, 5 };
+            double[] levelCollision6 = new double[] { 6, 6, 6, 6, 6, 6 };
+            double[] levelCollision7 = new double[] { 7, 7, 7, 7, 7, 7 };
+            double[] levelCollision8 = new double[] { 8, 8, 8, 8, 8, 8 };
+
+            robot.SetAnticollision(0, levelCollision3, 1);
+            currentCollisionLevel = 3;
+
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
             await Task.Run(async () =>
@@ -2913,24 +2964,6 @@ namespace RM.src.RM250619
                             // In questo step leggo dal plc se è arrivata una richiesta di pick o di place e se ci sono i consensi per procedere
                             // ai relativi step successivi
 
-                            #region Pick
-
-                            // Get comando di pick da plc
-                            execPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick));
-
-                            // Get consensi di pick da plc
-                            enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
-
-                            if (execPick == 1) // Check richiesta di pick routine
-                            {
-                                if (enableToPick == 1) // Check consensi pick
-                                {
-                                    step = 20; // Passaggio allo step dedicato al pick
-                                }
-                            }
-
-                            #endregion
-
                             #region Place
 
                             // Get comando di place da plc
@@ -2949,6 +2982,24 @@ namespace RM.src.RM250619
 
                             #endregion
 
+                            #region Pick
+
+                            // Get comando di pick da plc
+                            execPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick));
+
+                            // Get consensi di pick da plc
+                            enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
+
+                            if (execPick == 1) // Check richiesta di pick routine
+                            {
+                                if (enableToPick == 1) // Check consensi pick
+                                {
+                                    step = 20; // Passaggio allo step dedicato al pick
+                                }
+                            }
+
+                            #endregion
+
                             break;
 
                         #endregion
@@ -2959,20 +3010,29 @@ namespace RM.src.RM250619
                             // e controllo prima se il punto è presente nel dizionario e dopo se le coordinate sono valide
                             // verificando che tutte siano diverse da 0
 
-                            // Get del punto di pick dal dizionario
-                            var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
-
-                            // Check su presenza del punto nel dizionario
-                            if (pick != null)
+                            int box = (Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000);
+                            if (box > 100 && box < 302)
                             {
-                                // Check validità del punto
-                                if (pick.x != 0 && pick.y != 0 && pick.z != 0 && pick.rx != 0 && pick.ry != 0 && pick.rz != 0)
+
+                                // Get del punto di pick dal dizionario
+                                var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
+
+                                // Check su presenza del punto nel dizionario
+                                if (pick != null)
                                 {
-                                    await PickBox(pick); // Eseguo e attendo sia terminata la routine di pick
-                                    step = 10; // Riavvio del ciclo per controllare nuove richieste di pick o place
+                                    // Check validità del punto
+                                    if (pick.x != 0 && pick.y != 0 && pick.z != 0 && pick.rx != 0 && pick.ry != 0 && pick.rz != 0)
+                                    {
+                                        await PickBox(pick); // Eseguo e attendo sia terminata la routine di pick
+                                        step = 10; // Riavvio del ciclo per controllare nuove richieste di pick o place
+                                    }
+                                }
+                                else // Se il punto non è presente nel dizionario o non ha coordinate valide
+                                {
+                                    step = 1001; // Passaggio allo step dedicato all'errore del pick
                                 }
                             }
-                            else // Se il punto non è presente nel dizionario o non ha coordinate valide
+                            else
                             {
                                 step = 1001; // Passaggio allo step dedicato all'errore del pick
                             }
@@ -2995,20 +3055,28 @@ namespace RM.src.RM250619
                             // Es: 1101 -> Pallet 1, formato scatola 1, prima scatola
                             int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
 
-                            // Eseguo get del punto di place dal dizionario tramite la codifica ricevuta dal plc
-                            var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
-
-                            // Check su presenza del punto nel dizionario
-                            if (place != null)
+                            if (selectedFormat > 1100 && selectedFormat < 2302)
                             {
-                                // Check validità del punto
-                                if (place.x != 0 && place.y != 0 && place.z != 0 && place.rx != 0 && place.ry != 0 && place.rz != 0) // Se il punto è valido
-                                { 
-                                    await PlaceBox(place); // Eseguo e attendo sia terminata la routine di place
-                                    step = 10; // Riavvio del ciclo per controllare nuove richieste di pick o place
+
+                                // Eseguo get del punto di place dal dizionario tramite la codifica ricevuta dal plc
+                                var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
+
+                                // Check su presenza del punto nel dizionario
+                                if (place != null)
+                                {
+                                    // Check validità del punto
+                                    if (place.x != 0 && place.y != 0 && place.z != 0 && place.rx != 0 && place.ry != 0 && place.rz != 0) // Se il punto è valido
+                                    {
+                                        await PlaceBox(place); // Eseguo e attendo sia terminata la routine di place
+                                        step = 10; // Riavvio del ciclo per controllare nuove richieste di pick o place
+                                    }
+                                }
+                                else // Se il punto non è presente nel dizionario o non ha coordinate valide
+                                {
+                                    step = 1002; // Passaggio allo step dedicato all'errore del place
                                 }
                             }
-                            else // Se il punto non è presente nel dizionario o non ha coordinate valide
+                            else
                             {
                                 step = 1002; // Passaggio allo step dedicato all'errore del place
                             }
@@ -3050,10 +3118,8 @@ namespace RM.src.RM250619
         public static async Task PickBox(ApplicationPositions pick)
         {
             stepPick = 0; // Step ciclo di pick
-            int movementResult = 0; // Risultato del movimento del Robot
-            int gripperStatus = 0; // Stato della ventosa
             stopPickRoutine = false; // Segnale di stop della pick routine
-            bool stepWritten = false;
+            int movementResult = 0; // Risultato del movimento del Robot
 
             #region Dichiarazione punti routine
 
@@ -3095,6 +3161,8 @@ namespace RM.src.RM250619
 
             #endregion
 
+            // Aspetto che il metodo termini, ma senza bloccare il thread principale
+            // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
             await Task.Run(async () =>
             {
                 // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
@@ -3104,22 +3172,27 @@ namespace RM.src.RM250619
                     {
                         case 0:
                             #region Movimento a punto di Pick
+                            // In questo step avviso il plc che il ciclo di pick è avviato, eseguo i punti
+                            // di avvicinamento pick, pick e imposto come ending point il punto di pick
+                            // per il controllo del metodo di inPosition
 
+                            // Aggiorno la variabile globale e statica che scrivo al PLC nel metodo SendUpdatesToPLC 
+                            // per informare il plc che il ciclo pick è in esecuzione
                             CycleRun_Pick = 1;
 
                             inPosition = false; // Reset inPosition
 
                             // Invio punto di avvicinamento Pick
                             movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc, ovl, blendT, config);
-                            GetRobotMovementCode(movementResult);
+                            GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
 
                             // Invio punto di pick
                             movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
-                            GetRobotMovementCode(movementResult);
+                            GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
 
                             endingPoint = descPosPick; // Assegnazione endingPoint
 
-                            stepPick = 10;
+                            stepPick = 10; // Passaggio allo step successivo
 
                             break;
 
@@ -3127,10 +3200,12 @@ namespace RM.src.RM250619
 
                         case 10:
                             #region Delay per calcolo in position punto di pick
+                            // In questo step applico un leggero ritardo per facilitare
+                            // calcolo dell'inPosition
 
-                            Thread.Sleep(500);
+                            Thread.Sleep(500); // Ritardo di 500ms
 
-                            stepPick = 20;
+                            stepPick = 20; // Passaggio allo step successivo
 
                             break;
 
@@ -3138,10 +3213,11 @@ namespace RM.src.RM250619
 
                         case 20:
                             #region Attesa inPosition punto di Pick
+                            // In questo step attendo che il robot arrivi nella posizione di pick
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
-                                stepPick = 30;
+                                stepPick = 30; // Passaggio allo step successivo
                             }
                            
                             break;
@@ -3150,10 +3226,11 @@ namespace RM.src.RM250619
 
                         case 30:
                             #region Check presa ventosa
+                            // In questo step verifico che la ventosa si sia attivata
 
-                            Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
+                            Thread.Sleep(500);
 
-                            stepPick = 40;
+                            stepPick = 40; // Passaggio allo step successivo
 
                             break;
 
@@ -4623,6 +4700,8 @@ namespace RM.src.RM250619
 
             return new DescPose(x, y, z, rx, ry, rz);
         }
+
+        public static int robotEnableStatus = 0;
       
         /// <summary>
         /// Esegue check su Robot enable
@@ -4639,7 +4718,7 @@ namespace RM.src.RM250619
                 prevIsEnable = true;
                 prevIsNotEnable = false; // Resetta lo stato "non abilitato"
                 AlarmManager.blockingAlarm = false;
-
+                robotEnableStatus = 1;
                 currentIndex = -1;
             }
             else if (!isEnabledNow && !prevIsNotEnable)
@@ -4653,6 +4732,7 @@ namespace RM.src.RM250619
                 AlarmManager.blockingAlarm = true;
                 pauseCycleRequested = false;
                 currentIndex = -1;
+                robotEnableStatus = 0;
                 UC_FullDragModePage.debugCurrentIndex = -1;
                 robot.StopMotion(); // Cancellazione della coda di punti
             }  
