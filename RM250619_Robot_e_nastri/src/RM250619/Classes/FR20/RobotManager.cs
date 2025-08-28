@@ -1030,6 +1030,10 @@ namespace RM.src.RM250619
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
             // vel = Convert.ToInt16(PLCConfig.appVariables.getValue("PLC1_" + "speedRobot"));
 
+            RefresherTask.AddUpdate(PLCTagName.VersionYear, 2025, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.VersionMonth, 8, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.VersionDay, 28, "INT16");
+
             // Thread ad alta priorità (zone ingombro e inPosition)
             highPriorityThread = new Thread(new ThreadStart(CheckHighPriority));
             highPriorityThread.IsBackground = true;
