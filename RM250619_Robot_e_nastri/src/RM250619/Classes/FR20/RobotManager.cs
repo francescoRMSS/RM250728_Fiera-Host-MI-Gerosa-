@@ -20,6 +20,7 @@ using RM.src.RM250619.Classes.FR20.Jog;
 using RM.src.RM250619.Classes.FR20;
 using System.Diagnostics.Eventing.Reader;
 using System.Windows.Forms;
+using RMLib.Security;
 
 namespace RM.src.RM250619
 {
@@ -1223,8 +1224,13 @@ namespace RM.src.RM250619
             // Check su cambio di stato
             if (velocity != previousVel)
             {
-                vel = velocity;
-                acc = velocity;
+                RobotDAO.SetRobotVelocity(ConnectionString, Convert.ToInt16(velocity));
+                RobotDAO.SetRobotAcceleration(ConnectionString, Convert.ToInt16(velocity));
+
+                //Invoco metodo per cambiare etichetta velocità in homePage
+                RobotVelocityChanged?.Invoke(velocity, EventArgs.Empty);
+
+                // Aggiornamento della velocità precendete
                 previousVel = velocity;
                 
             }
@@ -1434,8 +1440,8 @@ namespace RM.src.RM250619
         /// Check su comando di reset allarmi derivante da plc
         /// </summary>
         private static void CheckCommandResetAlarms()
-        {/*
-            int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.ResetAlarms));
+        {
+            int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_ResetAlarms));
 
             if (resetAlarmsCommand > 0)
             {
@@ -1443,8 +1449,8 @@ namespace RM.src.RM250619
                 RMLib_AlarmsCleared(null, EventArgs.Empty);
 
                 // Reset valore
-                RefresherTask.AddUpdate(PLCTagName.ResetAlarms, 0, "INT16");
-            }*/
+                RefresherTask.AddUpdate(PLCTagName.CMD_ResetAlarms, 0, "INT16");
+            }
         }
 
         /// <summary>
@@ -4962,6 +4968,19 @@ namespace RM.src.RM250619
         {
             var restPose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
+     
+
+            // test RE #####################################################################################
+            DescPose RE_tool_1 = new DescPose(0, 0, 50, 0, 0, 0);
+            robot.SetToolCoord(1, RE_tool_1,0,0);
+            robot.GetActualTCPNum(0, ref tool);
+
+            DescPose RE_frame_1 = new DescPose(-830.117, 207.966, -620.278, 0.006, 0.009, -147.102);
+            robot.SetWObjCoord(1,RE_frame_1);
+            robot.GetActualWObjNum(0,ref user);
+            // test RE #####################################################################################
+
+
             int result = robot.MoveCart(pHome, tool, user, vel, acc, ovl, blendT, config);
 
             GetRobotMovementCode(result);

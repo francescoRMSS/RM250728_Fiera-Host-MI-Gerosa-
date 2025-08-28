@@ -639,6 +639,7 @@
             this.btn_stopRobot.TabIndex = 292;
             this.btn_stopRobot.Text = "Stop Robot";
             this.btn_stopRobot.UseVisualStyleBackColor = true;
+            this.btn_stopRobot.Visible = false;
             this.btn_stopRobot.Click += new System.EventHandler(this.ClickEvent_stopRobot);
             // 
             // btn_pauseRobot
