@@ -682,9 +682,9 @@ namespace RM.src.RM250619.Classes.PLC
         public static string CMD_ResetAlarms = "PLC1_" + "com_robot_57";
 
         /// <summary>
-        /// A 1 per resettare gli allarmi
+        /// A 1 per far riprendere il movimento al robot
         /// </summary>
-        public static string spare_2_to_read = "PLC1_" + "com_robot_58";
+        public static string CMD_Resume = "PLC1_" + "com_robot_58";
 
         /// <summary>
         /// spare

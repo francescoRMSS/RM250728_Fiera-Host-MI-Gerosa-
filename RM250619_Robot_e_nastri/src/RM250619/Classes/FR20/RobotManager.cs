@@ -1341,9 +1341,10 @@ namespace RM.src.RM250619
         /// <summary>
         /// Check su accesso barriere
         /// </summary>
-        private static async void CheckBarrierStatus()
+        private static async void CheckPauseStatus()
         {
             int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
+            int resumeMov = 0;
 
             ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
             byte mov_robot_state = 0;
@@ -1383,11 +1384,38 @@ namespace RM.src.RM250619
                 }
                 else
                 {
-                    // Ripresa
-                    await Task.Delay(1000);
-                    robot.ResumeMotion();
-                    robotIsPaused = false;
-                   // robotMove_inPause = 0;
+                    resumeMov = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Resume));
+                    if (resumeMov == 1)
+                    {
+                        // Ripresa
+                        await Task.Delay(1000);
+                        robot.ResumeMotion();
+                        robotIsPaused = false;
+
+                        // 🔁 Aspetta che lo stato robot diventi 2 (movimento)
+                        const int maxAttempts = 3;
+                        int attempt = 0;
+
+                        do
+                        {
+                            robot.GetRobotRealTimeState(ref robot_state_pkg);
+                            mov_robot_state = robot_state_pkg.robot_state;
+
+                            if (mov_robot_state == 2)
+                            {
+                                // robotMove_inPause = 1;
+                                break;
+                            }
+                            Thread.Sleep(100); // Attendi un po' prima di riprovare
+                            attempt++;
+
+                        } while (attempt < maxAttempts);
+
+                        if (mov_robot_state != 2)
+                        {
+                            log.Error("ERRORE: Il robot non ha ripreso il movimento.");
+                        }
+                    }
                 }
 
                 previousBarrierStatus = barrierStatus > 0;
@@ -1612,7 +1640,7 @@ namespace RM.src.RM250619
                         CheckIsRobotInObstructionArea(startPoints, updates);
                         CheckIsRobotInSafeZone(pointSafeZone);
                         CheckIsRobotInPos();
-                        CheckBarrierStatus();
+                        CheckPauseStatus();
                         CheckStatusRobot();
 
                     }
