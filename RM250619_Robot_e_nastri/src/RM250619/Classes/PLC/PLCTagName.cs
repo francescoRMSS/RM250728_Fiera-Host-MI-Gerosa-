@@ -702,9 +702,9 @@ namespace RM.src.RM250619.Classes.PLC
         public static string CMD_Box_Rotate_180 = "PLC1_" + "com_robot_61";
 
         /// <summary>
-        /// spare
+        /// Limite massimo prodotto
         /// </summary>
-        public static string spare_to_read = "PLC1_" + "com_robot_62";
+        public static string SET_LimitMaxProdotto = "PLC1_" + "com_robot_62";
 
         /// <summary>
         /// spare
