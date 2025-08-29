@@ -1256,9 +1256,9 @@
             A 1 per resettare gli allarmi
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_2_to_read">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.CMD_Resume">
             <summary>
-            A 1 per resettare gli allarmi
+            A 1 per far riprendere il movimento al robot
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_3_to_read">
@@ -1276,9 +1276,9 @@
             Scatola ruotata/non ruotata
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_to_read">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.SET_LimitMaxProdotto">
             <summary>
-            spare
+            Limite massimo prodotto
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.spare_1_to_read">
@@ -2999,7 +2999,7 @@
             Check su comando di stop derivante da plc
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckBarrierStatus">
+        <member name="M:RM.src.RM250619.RobotManager.CheckPauseStatus">
             <summary>
             Check su accesso barriere
             </summary>
