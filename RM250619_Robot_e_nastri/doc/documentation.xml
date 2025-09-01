@@ -293,6 +293,11 @@
             Costruttore vuoto
             </summary>
         </member>
+        <member name="T:RM.src.RM250619.Classes.FR20.Properties.Collisions">
+            <summary>
+            Gestisce il livello di collisioni del robot
+            </summary>
+        </member>
         <member name="T:RM.src.RM250619.Classes.FR20.FrameStruct">
             <summary>
             Rappresenta un frame pronto per essere inserito nella lista di frame

@@ -21,6 +21,7 @@ using RM.src.RM250619.Classes.FR20;
 using System.Diagnostics.Eventing.Reader;
 using System.Windows.Forms;
 using RMLib.Security;
+using RM.src.RM250619.Classes.FR20.Properties;
 
 namespace RM.src.RM250619
 {
@@ -775,6 +776,8 @@ namespace RM.src.RM250619
         private static Frames frameManager;
 
         private static Tools toolManager;
+
+        private static Collisions collisionManager;
 
         #endregion
 
@@ -5002,7 +5005,8 @@ namespace RM.src.RM250619
         /// <summary>
         /// Metodo che porta il Robot in HomePosition
         /// </summary>
-        public static void GoToHomePosition()
+        public static void GoToHomePosition() 
+            // da form o da plc deve chiamare stesso metodo, unica condizione: no ciclo di run, si deve alzare a una quota fissa
         {
             int frameErr = frameManager.ChangeRobotFrame("frNastro");
             if(frameManager.IsErrorBlocking(frameErr))

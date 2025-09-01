@@ -101,7 +101,7 @@ namespace RM.src.RM250619.Classes.FR20
                 return 1;
 
             if (_data.Value.id == currentTool)
-                return 1;
+                return 2;
 
             _robot.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install);
             _robot.GetActualTCPNum(0, ref _checkNewTool);
@@ -109,7 +109,7 @@ namespace RM.src.RM250619.Classes.FR20
             if (_checkNewTool != toolId)    // ID di risposta diverso da ID settato
                 return 3;
 
-            RobotManager.user = toolId;
+            RobotManager.tool = toolId;
             currentTool = toolId;
             return 10;
         }
