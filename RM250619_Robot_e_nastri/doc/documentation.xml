@@ -293,6 +293,30 @@
             Costruttore vuoto
             </summary>
         </member>
+        <member name="T:RM.src.RM250619.Classes.FR20.FrameStruct">
+            <summary>
+            Rappresenta un frame pronto per essere inserito nella lista di frame
+            </summary>
+        </member>
+        <member name="T:RM.src.RM250619.Classes.FR20.Frames">
+            <summary>
+            Gestisce i frame del robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Frames.ChangeRobotFrame(System.Int32)">
+            <summary>
+            Modifica il frame in uso del robot e controlla che sia stato cambiato effettivamente
+            </summary>
+            <param name="frameId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Frames.ChangeRobotFrame(System.String)">
+            <summary>
+            Modifica il frame in uso del robot e controlla che sia stato cambiato effettivamente
+            </summary>
+            <param name="frameName"></param>
+            <returns></returns>
+        </member>
         <member name="T:RM.src.RM250619.Classes.FR20.Jog.JogMovement">
             <summary>
             Gestisce movimento del Robot in Jog
@@ -600,6 +624,30 @@
             <summary>
             Velocità massima possibile
             </summary>
+        </member>
+        <member name="T:RM.src.RM250619.Classes.FR20.ToolStruct">
+            <summary>
+            Rappresenta un tool pronto per essere inserito nella lista di tool
+            </summary>
+        </member>
+        <member name="T:RM.src.RM250619.Classes.FR20.Tools">
+            <summary>
+            Gstisce i tool del robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Tools.ChangeRobotTool(System.Int32)">
+            <summary>
+            Modifica il tool in uso del robot e controlla che sia stato cambiato effettivamente
+            </summary>
+            <param name="toolId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Tools.ChangeRobotTool(System.String)">
+            <summary>
+            Modifica il tool in uso del robot e controlla che sia stato cambiato effettivamente
+            </summary>
+            <param name="toolName"></param>
+            <returns></returns>
         </member>
         <member name="T:RM.src.RM250619.Classes.PLC.PLCTagName">
             <summary>
@@ -2283,7 +2331,7 @@
         </member>
         <member name="F:RM.src.RM250619.RobotManager.user">
             <summary>
-            Utente che sta usando il robot
+            ID del frame in uso del root
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.weight">

@@ -98,7 +98,7 @@ namespace RM.src.RM250619
         public static int tool = 0;
 
         /// <summary>
-        /// Utente che sta usando il robot
+        /// ID del frame in uso del root
         /// </summary>
         public static int user = 0;
 
@@ -772,6 +772,10 @@ namespace RM.src.RM250619
         /// </summary>
         public static int robotMove_inPause = 0;
 
+        private static Frames frameManager;
+
+        private static Tools toolManager;
+
         #endregion
 
         #region Metodi della classe RobotManager
@@ -1020,6 +1024,8 @@ namespace RM.src.RM250619
             robot.ResumeMotion();
             AlarmManager.isRobotConnected = true;
 
+            frameManager = new Frames(robot);
+            toolManager = new Tools(robot);
 
             if (err == -4)
             {
@@ -4998,10 +5004,23 @@ namespace RM.src.RM250619
         /// </summary>
         public static void GoToHomePosition()
         {
+            int frameErr = frameManager.ChangeRobotFrame("frNastro");
+            if(frameManager.IsErrorBlocking(frameErr))
+            {
+                MessageBox.Show("Allarme - " + frameManager.GetErrorCode(frameErr));
+                return;
+            }
+            int toolErr = toolManager.ChangeRobotTool("tVentosa");
+            if (toolManager.IsErrorBlocking(toolErr))
+            {
+                MessageBox.Show("Allarme - " + frameManager.GetErrorCode(toolErr));
+                return;
+            }
+
             var restPose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
-     
 
+            /*
             // test RE #####################################################################################
             DescPose RE_tool_1 = new DescPose(0, 0, 50, 0, 0, 0);
             robot.SetToolCoord(1, RE_tool_1,0,0);
@@ -5012,7 +5031,7 @@ namespace RM.src.RM250619
             robot.GetActualWObjNum(0,ref user);
             // test RE #####################################################################################
 
-
+            */
             int result = robot.MoveCart(pHome, tool, user, vel, acc, ovl, blendT, config);
 
             GetRobotMovementCode(result);

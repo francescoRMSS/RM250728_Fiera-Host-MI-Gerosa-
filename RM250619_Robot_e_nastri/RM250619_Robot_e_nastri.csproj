@@ -133,6 +133,7 @@
     <Compile Include="src\RM250619\Classes\FR20\Applications\Application\RobotApplication.cs" />
     <Compile Include="src\RM250619\Classes\FR20\Applications\ObservableApplicationsDictionary.cs" />
     <Compile Include="src\RM250619\Classes\FR20\DAO\SQLite\RobotDAOSqlite.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\Frames.cs" />
     <Compile Include="src\RM250619\Classes\FR20\Jog\JogMovement.cs" />
     <Compile Include="src\RM250619\Classes\FR20\Jog\JogRobotProperties.cs" />
     <Compile Include="src\RM250619\Classes\FR20\PointPosition.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="src\RM250619\Classes\FR20\RobotProperties.cs" />
     <Compile Include="src\RM250619\Classes\FR20\RobotSpeed.cs" />
     <Compile Include="src\RM250619\Classes\FR20\SpeedMode.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\Tools.cs" />
     <Compile Include="src\RM250619\Classes\Global.cs" />
     <Compile Include="src\RM250619\Classes\PLC\PLCTagName.cs" />
     <Compile Include="src\RM250619\Classes\Program.cs" />
