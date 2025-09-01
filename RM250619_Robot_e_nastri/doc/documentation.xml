@@ -5808,20 +5808,6 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_openPermissionsPage(System.Object,System.EventArgs)">
-            <summary>
-            Apre la form dei permessi
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_openConfigurationPage(System.Object,System.EventArgs)">
-            <summary>
-            Apre la form delle configurazioni
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
         <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_addVelocity(System.Object,System.EventArgs)">
             <summary>
             Evento attivato quando si vuole aggiungere speed da tasto con incremento di 1
@@ -5881,34 +5867,6 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_manualMode(System.Object,System.EventArgs)">
-            <summary>
-            Imposta la modalità manuale al robot (mode 1)
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_autoMode(System.Object,System.EventArgs)">
-            <summary>
-            Imposta la modalità automatica al robot (mode 0)
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_openDragMode(System.Object,System.EventArgs)">
-            <summary>
-            Apre la pagine di DragMode
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_openApplications(System.Object,System.EventArgs)">
-            <summary>
-            Apre la pagina delle applicazioni
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
         <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_startApp(System.Object,System.EventArgs)">
             <summary>
             Avvio dell'applicazione
@@ -5920,12 +5878,6 @@
             <summary>
             A true quando routine di home avviata
             </summary>
-        </member>
-        <member name="M:RM.src.RM250619.UC_HomePage.CheckRobotIsInHomeZone">
-            <summary>
-            Controlla che il robot si trovi nella home zone
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_GoToHomePosition(System.Object,System.EventArgs)">
             <summary>

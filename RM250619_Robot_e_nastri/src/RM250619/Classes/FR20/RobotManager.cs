@@ -691,22 +691,22 @@ namespace RM.src.RM250619
         /// <summary>
         /// Valore di avvio ciclo main
         /// </summary>
-        static int CycleRun_Main = 0;
+        public static int CycleRun_Main = 0;
 
         /// <summary>
         /// Valore di avvio ciclo pick
         /// </summary>
-        static int CycleRun_Pick = 0;
+        public static int CycleRun_Pick = 0;
 
         /// <summary>
         /// Valore di avvio ciclo place
         /// </summary>
-        static int CycleRun_Place = 0;
+        public static int CycleRun_Place = 0;
 
         /// <summary>
         /// Valore di avvio ciclo home
         /// </summary>
-        static int CycleRun_Home = 0;
+        public static int CycleRun_Home = 0;
 
         public static event EventHandler RobotInHomePosition;
         public static event EventHandler RobotNotInHomePosition;
@@ -3338,11 +3338,27 @@ namespace RM.src.RM250619
             });
         }
 
-        public static async Task HomeRoutine()
+        public static async Task HomeRoutine() //Si deve alzare a un punto fisso prima di andare in home, sempre
         {
+            int frameErr = frameManager.ChangeRobotFrame("frNastro");
+            if (frameManager.IsErrorBlocking(frameErr))
+            {
+                MessageBox.Show("Allarme - " + frameManager.GetErrorCode(frameErr));
+                return;
+            }
+            int toolErr = toolManager.ChangeRobotTool("tVentosa");
+            if (toolManager.IsErrorBlocking(toolErr))
+            {
+                MessageBox.Show("Allarme - " + frameManager.GetErrorCode(toolErr));
+                return;
+            }
+
             // Get del punto di home
             var restPose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
+
+            DescPose pApproach = new DescPose(TCPCurrentPosition.tran.x, TCPCurrentPosition.tran.y, restPose.z,
+                TCPCurrentPosition.rpy.rx, TCPCurrentPosition.rpy.ry, TCPCurrentPosition.rpy.rz);
 
             stopHomeRoutine = false; // Reset segnale di stop ciclo home
             stepHomeRoutine = 0; // Reset degli step della HomeRoutine
@@ -3363,16 +3379,36 @@ namespace RM.src.RM250619
                             SetHomeRoutineSpeed();
                             await Task.Delay(1000);
 
-                            stepHomeRoutine = 10;
+                            stepHomeRoutine = 5;
 
                             break;
 
                         #endregion
 
+                        case 5:
+                            #region Movimento a punto di approach home
+
+                            GoToApproachHomePosition(pApproach);
+                            endingPoint = pApproach;
+
+                            stepHomeRoutine = 6;
+
+                            break;
+                        #endregion
+
+                        case 6:
+                            #region Attesa in position approach home
+
+                            if (inPosition)
+                                stepHomeRoutine = 10;
+
+                            break;
+                        #endregion
+
                         case 10:
                             #region Movimento a punto di home
 
-                            MoveRobotToSafePosition();
+                            //MoveRobotToSafePosition();
                             GoToHomePosition();
                             endingPoint = pHome;
 
@@ -5006,37 +5042,18 @@ namespace RM.src.RM250619
         /// Metodo che porta il Robot in HomePosition
         /// </summary>
         public static void GoToHomePosition() 
-            // da form o da plc deve chiamare stesso metodo, unica condizione: no ciclo di run, si deve alzare a una quota fissa
         {
-            int frameErr = frameManager.ChangeRobotFrame("frNastro");
-            if(frameManager.IsErrorBlocking(frameErr))
-            {
-                MessageBox.Show("Allarme - " + frameManager.GetErrorCode(frameErr));
-                return;
-            }
-            int toolErr = toolManager.ChangeRobotTool("tVentosa");
-            if (toolManager.IsErrorBlocking(toolErr))
-            {
-                MessageBox.Show("Allarme - " + frameManager.GetErrorCode(toolErr));
-                return;
-            }
-
             var restPose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
 
-            /*
-            // test RE #####################################################################################
-            DescPose RE_tool_1 = new DescPose(0, 0, 50, 0, 0, 0);
-            robot.SetToolCoord(1, RE_tool_1,0,0);
-            robot.GetActualTCPNum(0, ref tool);
-
-            DescPose RE_frame_1 = new DescPose(-830.117, 207.966, -620.278, 0.006, 0.009, -147.102);
-            robot.SetWObjCoord(1,RE_frame_1);
-            robot.GetActualWObjNum(0,ref user);
-            // test RE #####################################################################################
-
-            */
             int result = robot.MoveCart(pHome, tool, user, vel, acc, ovl, blendT, config);
+
+            GetRobotMovementCode(result);
+        }
+
+        private static void GoToApproachHomePosition(DescPose target)
+        {
+            int result = robot.MoveCart(target, tool, user, vel, acc, ovl, blendT, config);
 
             GetRobotMovementCode(result);
         }

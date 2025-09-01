@@ -888,48 +888,6 @@ namespace RM.src.RM250619
         }
 
         /// <summary>
-        /// Apre la form dei permessi
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClickEvent_openPermissionsPage(object sender, EventArgs e)
-        {
-            return; 
-
-            UC_permissions uc;
-            if (!FormHomePage.Instance.PnlContainer.Controls.ContainsKey("UC_permissions"))
-            {
-                uc = new UC_permissions()
-                {
-                    Dock = DockStyle.Fill
-                };
-                FormHomePage.Instance.PnlContainer.Controls.Add(uc);
-            }
-            FormHomePage.Instance.PnlContainer.Controls["UC_permissions"].BringToFront();
-        }
-
-        /// <summary>
-        /// Apre la form delle configurazioni
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClickEvent_openConfigurationPage(object sender, EventArgs e)
-        {
-            return;
-
-            UC_configuration uc;
-            if (!FormHomePage.Instance.PnlContainer.Controls.ContainsKey("UC_configuration"))
-            {
-                uc = new UC_configuration()
-                {
-                    Dock = DockStyle.Fill
-                };
-                FormHomePage.Instance.PnlContainer.Controls.Add(uc);
-            }
-            FormHomePage.Instance.PnlContainer.Controls["UC_configuration"].BringToFront();
-        }
-
-        /// <summary>
         /// Evento attivato quando si vuole aggiungere speed da tasto con incremento di 1
         /// </summary>
         private void ClickEvent_addVelocity(object sender, EventArgs e)
@@ -1085,239 +1043,41 @@ namespace RM.src.RM250619
         }
 
         /// <summary>
-        /// Imposta la modalità manuale al robot (mode 1)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClickEvent_manualMode(object sender, EventArgs e)
-        {
-            RobotManager.ClearRobotAlarm();
-            RobotManager.ClearRobotQueue();
-
-            btn_autoMode.BackColor = SystemColors.ControlDark;
-            btn_manualMode.BackColor = Color.LimeGreen;
-            btn_homePosition.Enabled = true;
-            btn_homePosition.BackColor = SystemColors.Control;
-            btn_homePosition.BackgroundImage = Resources.home;
-
-            if (RobotManager.robotInPause)
-            {
-                RobotManager.robot.ResumeMotion();
-
-            }
-
-            RobotManager.SetRobotMode(1);
-            JogMovement.StartJogRobotThread();
-        }
-
-        /// <summary>
-        /// Imposta la modalità automatica al robot (mode 0)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClickEvent_autoMode(object sender, EventArgs e)
-        {
-            //auto mode
-            btn_autoMode.BackColor = Color.DodgerBlue;
-            btn_manualMode.BackColor = SystemColors.ControlDark;
-            btn_homePosition.Enabled = false;
-            btn_homePosition.BackColor = SystemColors.ControlDark;
-            btn_homePosition.BackgroundImage = null;
-
-            RobotManager.robotCycleStopRequested = false;
-            RobotManager.SetRobotMode(0);
-            JogMovement.StopJogRobotThread();
-        }
-
-        /// <summary>
-        /// Apre la pagine di DragMode
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClickEvent_openDragMode(object sender, EventArgs e)
-        {
-            if (!SecurityManager.ActionRequestCheck("dragMode")) return;
-
-            if (homeRoutineStarted)
-            {
-                CustomMessageBox.Show(MessageBoxTypeEnum.WARNING_OK, "Attendi il termine della Home routine");
-                log.Error("Tentativo di accesso a Drag Mode durante home routine");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(RobotManager.applicationName))
-            {
-                CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Selezionare prima un'applicazione da usare");
-                log.Error("Tentativo di accesso a Drag Mode senza nessun'applicazione selezionata");
-                return;
-            }
-
-            /*
-            if (RobotManager.isAutomaticMode)
-            {
-                CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Impostare il robot in modalità manuale");
-                log.Error("Tentativo di accesso a Drag Mode con robot in modalità automatic");
-                return;
-            }
-            */
-
-            UC_FullDragModePage uc;
-            if (!FormHomePage.Instance.PnlContainer.Controls.ContainsKey("UC_FullDragModePage"))
-            {
-                uc = new UC_FullDragModePage()
-                {
-                    Dock = DockStyle.Fill
-                };
-                FormHomePage.Instance.PnlContainer.Controls.Add(uc);
-            }
-            FormHomePage.Instance.PnlContainer.Controls["UC_FullDragModePage"].BringToFront();
-
-            uc = (UC_FullDragModePage)FormHomePage.Instance.PnlContainer.Controls["UC_FullDragModePage"];
-            uc.ShowLoadingScreen();
-        }
-
-        /// <summary>
-        /// Apre la pagina delle applicazioni
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClickEvent_openApplications(object sender, EventArgs e)
-        {
-            UC_ApplicationPage uc;
-            if (!FormHomePage.Instance.PnlContainer.Controls.ContainsKey("UC_ApplicationPage"))
-            {
-                uc = new UC_ApplicationPage()
-                {
-                    Dock = DockStyle.Fill
-                };
-                FormHomePage.Instance.PnlContainer.Controls.Add(uc);
-            }
-            FormHomePage.Instance.PnlContainer.Controls["UC_ApplicationPage"].BringToFront();
-
-            uc = (UC_ApplicationPage)FormHomePage.Instance.PnlContainer.Controls["UC_ApplicationPage"];
-            uc.ShowLoadingScreen();
-        }
-
-        /// <summary>
         /// Avvio dell'applicazione
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ClickEvent_startApp(object sender, EventArgs e)
+        private async void ClickEvent_startApp(object sender, EventArgs e)
         {
             log.Info("Richiesta di avvio ciclo");
-            string application = RobotManager.applicationName; // Get nome applicazione
 
-            // Se il Robot non si trova in home position e non stava riproducendo nessun punto
-            // stampo un messaggio di errore per richiedere di portare il Robot in posizione di Home
-           /* if (!RobotManager.isInHomePosition && RobotManager.currentIndex < 0)
-            {
-                CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Spostare il Robot nella posizione di Home", Resources.safeZone_yellow32);
-                log.Error("Tentativo di avvio applicazione con Robot fuori posizione di Home");
+            // Se il ciclo di main è già in esecuzione non eseguo il metodo
+            if (RobotManager.CycleRun_Main != 0)
                 return;
-            }*/
 
-            /*
-            int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.GripperStatusIn));
-        
-            if (gripperStatus != 1)
-            {
-                CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Aprire la pinza prima di avviare il ciclo", Resources.safeZone_yellow32);
-                log.Error("Tentativo di avvio applicazione con pinza chiusa");
+            // Se la home routine è in esecuzione non eseguo il metodo
+            if (RobotManager.CycleRun_Home != 0)
                 return;
-            }
-            */
 
-            if (!string.IsNullOrEmpty(application)) // Se l'applicazione è stata selezionata
+            // Se l'avvio dell'applicazione parte dal primo punto
+            if (RobotManager.currentIndex < 0)
             {
-                log.Info($"Applicazione scelta: {application}");
-                // Setto della velocità del Robot dalle sue proprietà memorizzate sul database
-                if (RobotManager.robotProperties.Speed > 1)
-                {
-                    int speed = RobotManager.robotProperties.Speed;
-                    RobotManager.robot.SetSpeed(speed);
-                    log.Info($"Velocità Robot: {speed}");
-                }
-
-                if (!AlarmManager.isRobotMoving) // Se il Robot non è in movimento 
-                {
-                    /*
-                    // Get da database delle posizioni dell'applicazione selezionata
-                    DataTable positions = robotDAO.GetPointsPosition(ConnectionString, application);
-
-                    // Se non ci sono posizioni presenti nell'applicazione da riprodurre
-                    if (positions.Rows.Count < 1)
-                    {
-                        CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Nessun punto presente nell'applicazione selezionata");
-                        log.Error("Tentativo di riprodurre un'applicazione senza posizioni");
-                        return;
-                    }*/
-
-                    // Se l'avvio dell'applicazione parte dal primo punto
-                    if (RobotManager.currentIndex < 0)
-                    {
-                        if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Procedere con l'avvio dell'applicazione?") != DialogResult.OK)
-                            return;
-                    }
-                    else // Se l'applicazione riprende da un punto precedente
-                    {
-                        if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Riprendere la riproduzione dell'applicazione?") != DialogResult.OK)
-                            return;
-                    }
-
-                    // Quindi, se il ciclo era stato messo precedentemente in pausa, metto a true il booleano riprendiCiclo
-                    // che fa uscire dallo step di attesa il metodo che riproduce i punti dentro StartApplication
-                    if (RobotManager.pauseCycleRequested)
-                    {
-                       // RobotManager.riprendiCiclo = true;
-                    }
-                    else // Se invece il ciclo deve iniziare dall'inizio, avvio normalmente
-                    {
-                        //RobotManager.StartApplication(application);
-                        // RobotManager.PickAndPlaceScatola();
-                        // RobotManager.PickAndPlaceTeglia();
-                         RobotManager.PickAndPlaceTegliaGiroCompleto();
-                        EnableCycleButton(1); // Disattiva stop, disattiva pause, attiva start
-                    }
-                }
-                else // Se il Robot è in movimento
-                {
-                    log.Error("Impossibile inviare nuovi punti al Robot. Robot in movimento");
-                    CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Impossibile inviare nuovi punti al Robot");
-                }
+                if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Procedere con l'avvio dell'applicazione?") != DialogResult.OK)
+                    return;
             }
-            else // Se l'applicazione non è stata selezionata
+            else // Se l'applicazione riprende da un punto precedente
             {
-                CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Nessuna applicazione caricata da riprodurre");
-                log.Error("Nessuna applicazione caricata da riprodurre");
+                if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Riprendere la riproduzione dell'applicazione?") != DialogResult.OK)
+                    return;
             }
+
+           await RobotManager.MainCycle();
         }
+
         /// <summary>
         /// A true quando routine di home avviata
         /// </summary>
         public static bool homeRoutineStarted = false;
-
-        /// <summary>
-        /// Controlla che il robot si trovi nella home zone
-        /// </summary>
-        /// <returns></returns>
-        private bool CheckRobotIsInHomeZone()
-        {
-            // Oggetto che rileva home zone
-            PositionChecker checker_homeZone;
-            double delta_homeZone = 500.0; // Dichiarazione delta
-            checker_homeZone = new PositionChecker(delta_homeZone); // Creazione oggetto
-
-            // Get del punto di home
-            var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
-            DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
-
-            // Se si trova nella zona
-            if (checker_homeZone.IsInObstruction(pHome, RobotManager.TCPCurrentPosition))
-                return true;
-            else return false; // Se non si trova nella zona
-
-        }
 
         /// <summary>
         /// Ritorno a casa del Robot
@@ -1326,8 +1086,12 @@ namespace RM.src.RM250619
         /// <param name="e"></param>
         private async void ClickEvent_GoToHomePosition(object sender, EventArgs e)
         {
+            // Se il ciclo di main è in esecuzione non eseguo il metodo
+            if (RobotManager.CycleRun_Main != 0)
+                return;
+
             // Se la home routine è già in esecuzione non eseguo il metodo
-            if (homeRoutineStarted)
+            if (RobotManager.CycleRun_Home != 0)
                 return;
 
             // Chiedo conferma per avvio della HomeRoutine
@@ -1336,108 +1100,7 @@ namespace RM.src.RM250619
                 return;
             }
 
-            // Get del punto di home
-            var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
-            DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
-
-            bool stopHomeRoutine = false; // Reset della richiesta di stop HomeRoutine
-            int stepHomeRoutine = 0; // Reset degli step della HomeRoutine
-
-            RobotManager.ClearRobotQueue();
-
-            RobotManager.robot.RobotEnable(1); // Abilito il Robot
-            Thread.Sleep(2000); // Attesa di 2s per stabilizzare il Robot
-            homeRoutineStarted = true; // Segnalo che la home routine è partita
-
-            // Rendo il tasto per andare in HomePosition non cliccabile
-            btn_homePosition.Enabled = false;
-            btn_homePosition.BackColor = SystemColors.ControlDark;
-            btn_homePosition.BackgroundImage = null;
-
-            // Avvia un task separato per il ciclo while
-            await Task.Run(async () =>
-            {
-                while (!stopHomeRoutine) // Fino a quando non termino la home routine
-                {
-                    // Se viene tolta la modalità manuale durante la home routine, questa viene bloccata immediatamente
-                    if (RobotManager.mode != 2)
-                    {
-                        RobotManager.robot.PauseMotion(); // Pausa Robot
-                        Thread.Sleep(200); // Leggero delay per stabilizzare il Robot
-                        RobotManager.robot.StopMotion(); // Stop del Robot
-                        homeRoutineStarted = false; // Reset variabile che indica l'avvio della home routine
-                        stopHomeRoutine = true; // Alzo richiesta per terminare metodo che riproduce home routine
-                    }
-                    else // Altrimenti eseguo la home routine normalmente
-                    {
-                        switch (stepHomeRoutine)
-                        {
-                            case 0:
-                                #region Cancellazione coda Robot e disattivazione tasti applicazione
-
-                                btn_startApp.Enabled = false;
-                                btn_startApp.BackColor = SystemColors.ControlDark;
-                                btn_startApp.BackgroundImage = null;
-
-                                btn_stopApp.Enabled = false;
-                                btn_stopApp.BackColor = SystemColors.ControlDark;
-                                btn_stopApp.BackgroundImage = null;
-
-                                RobotManager.ClearRobotQueue();
-                                RobotManager.SetHomeRoutineSpeed();
-                                await Task.Delay(1000);
-
-                                stepHomeRoutine = 10;
-                                break;
-
-                            #endregion
-
-                            case 10:
-                                #region Movimento a punto di home
-
-                                RobotManager.MoveRobotToSafePosition();
-                                RobotManager.GoToHomePosition();
-                                RobotManager.endingPoint = pHome;
-
-                                stepHomeRoutine = 20;
-                                break;
-
-                            #endregion
-
-                            case 20:
-                                #region Attesa inPosition home
-
-                                if (RobotManager.inPosition)
-                                    stepHomeRoutine = 30;
-                                break;
-
-                            #endregion
-
-                            case 30:
-                                #region Termine ciclo e riattivazione tasti applicazione e tasto home 
-                                RobotManager.ResetHomeRoutineSpeed();
-
-                                homeRoutineStarted = false;
-
-                                btn_homePosition.Enabled = true;
-                                btn_homePosition.BackColor = SystemColors.Control;
-                                btn_homePosition.BackgroundImage = Resources.home;
-
-                                stopHomeRoutine = true;
-
-                                break;
-
-                                #endregion
-                        }
-                    }
-
-                    await Task.Delay(100); // Delay routine
-                }
-            });
-
-            Thread.Sleep(2000); // Attesa di 2s per stabilizzare il Robot
-
-            RobotManager.robot.RobotEnable(0); // Disattivo il Robot
+            await RobotManager.HomeRoutine();
         }
 
 
@@ -1447,22 +1110,7 @@ namespace RM.src.RM250619
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ClickEvent_stopApp(object sender, EventArgs e)
-        {/*
-            RobotManager.stopCycleRoutine = true; // Alzo richiesta per fermare thread di riproduzione ciclo
-                                                  // Imposto a 0 (false) Automatic_Start che resetta anche il contatore dello spostamento della catena
-            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-
-            // Imposto a 1 (true) Auto_Cycle_End che segnala che il ciclo automatico è terminato
-            RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
-
-            EnableCycleButton(0);
-
-            RobotManager.currentIndex = -1; // Reset dell'indice corrente della posizione che riproduce il Robot
-
-            RobotManager.robot.PauseMotion(); // Invio comando di pausa al robot
-            Thread.Sleep(200); // Leggero ritardo per stabilizzare il robot
-            RobotManager.robot.StopMotion(); // Stop Robot con conseguente cancellazione di coda di punti
-            */
+        {
             RobotManager.stopCycleRequested = true;
         }
 
@@ -1477,16 +1125,8 @@ namespace RM.src.RM250619
             RobotManager.pauseCycleRequested = true; // Alzo richiesta di pausa ciclo
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16"); // Reset della variabile che fa partire contatore catena
         }
+
         #endregion
-
-        private void btn_emergencyStop_Click(object sender, EventArgs e)
-        {
-            RobotManager.ClearRobotAlarm();
-            RobotManager.ClearRobotQueue();
-            RobotManager.ResetRobotSteps();
-
-            CustomMessageBox.Show(MessageBoxTypeEnum.WARNING_OK, "Riavviare il robot");
-        }
 
         #region Demo
 
@@ -1847,146 +1487,6 @@ namespace RM.src.RM250619
 
         #endregion
 
-        private void ClickEvent_openCleanPage(object sender, EventArgs e)
-        {
-            #region Punto start
-
-            JointPos jointStart = new JointPos(0, 0, 0, 0, 0, 0);
-            var start = ApplicationConfig.applicationsManager.GetPosition("Start", "RM");
-            DescPose descPosStart = new DescPose(start.x, start.y, start.z, start.rx, start.ry, start.rz);
-            RobotManager.robot.GetInverseKin(0, descPosStart, -1, ref jointStart);
-
-            #endregion
-
-            #region Angolo2
-
-            // ----- Punto StartAngolo2  -----
-            JointPos jointStartAngolo2 = new JointPos(0, 0, 0, 0, 0, 0);
-            var startAngolo2 = ApplicationConfig.applicationsManager.GetPosition("StartAngolo2", "RM");
-            DescPose descPosStartAngolo2 = new DescPose(startAngolo2.x, startAngolo2.y, startAngolo2.z, startAngolo2.rx, startAngolo2.ry, startAngolo2.rz);
-            RobotManager.robot.GetInverseKin(0, descPosStartAngolo2, -1, ref jointStartAngolo2);
-
-            // ----- Punto IntAngolo2  -----
-            JointPos jointIntAngolo2 = new JointPos(0, 0, 0, 0, 0, 0);
-            var IntAngolo2 = ApplicationConfig.applicationsManager.GetPosition("IntAngolo2", "RM");
-            DescPose descPosIntAngolo2 = new DescPose(IntAngolo2.x, IntAngolo2.y, IntAngolo2.z, IntAngolo2.rx, IntAngolo2.ry, IntAngolo2.rz);
-            RobotManager.robot.GetInverseKin(0, descPosIntAngolo2, -1, ref jointIntAngolo2);
-
-            // ----- Punto EndAngolo2  -----
-            JointPos jointEndAngolo2 = new JointPos(0, 0, 0, 0, 0, 0);
-            var endAngolo2 = ApplicationConfig.applicationsManager.GetPosition("EndAngolo2", "RM");
-            DescPose descPosEndAngolo2 = new DescPose(endAngolo2.x, endAngolo2.y, endAngolo2.z, endAngolo2.rx, endAngolo2.ry, endAngolo2.rz);
-            RobotManager.robot.GetInverseKin(0, descPosEndAngolo2, -1, ref jointEndAngolo2);
-
-            #endregion
-
-            #region Angolo3
-
-            // ----- Punto StartAngolo3  -----
-            JointPos jointStartAngolo3 = new JointPos(0, 0, 0, 0, 0, 0);
-            var startAngolo3 = ApplicationConfig.applicationsManager.GetPosition("StartAngolo3", "RM");
-            DescPose descPosStartAngolo3 = new DescPose(startAngolo3.x, startAngolo3.y, startAngolo3.z, startAngolo3.rx, startAngolo3.ry, startAngolo3.rz);
-            RobotManager.robot.GetInverseKin(0, descPosStartAngolo3, -1, ref jointStartAngolo3);
-
-            // ----- Punto IntAngolo3  -----
-            JointPos jointIntAngolo3 = new JointPos(0, 0, 0, 0, 0, 0);
-            var IntAngolo3 = ApplicationConfig.applicationsManager.GetPosition("IntAngolo3", "RM");
-            DescPose descPosIntAngolo3 = new DescPose(IntAngolo3.x, IntAngolo3.y, IntAngolo3.z, IntAngolo3.rx, IntAngolo3.ry, IntAngolo3.rz);
-            RobotManager.robot.GetInverseKin(0, descPosIntAngolo3, -1, ref jointIntAngolo3);
-
-            // ----- Punto EndAngolo3  -----
-            JointPos jointEndAngolo3 = new JointPos(0, 0, 0, 0, 0, 0);
-            var endAngolo3 = ApplicationConfig.applicationsManager.GetPosition("EndAngolo3", "RM");
-            DescPose descPosEndAngolo3 = new DescPose(endAngolo3.x, endAngolo3.y, endAngolo3.z, endAngolo3.rx, endAngolo3.ry, endAngolo3.rz);
-            RobotManager.robot.GetInverseKin(0, descPosEndAngolo3, -1, ref jointEndAngolo3);
-
-            #endregion
-
-            #region Angolo4
-
-            // ----- Punto StartAngolo4  -----
-            JointPos jointStartAngolo4 = new JointPos(0, 0, 0, 0, 0, 0);
-            var startAngolo4 = ApplicationConfig.applicationsManager.GetPosition("StartAngolo4", "RM");
-            DescPose descPosStartAngolo4 = new DescPose(startAngolo4.x, startAngolo4.y, startAngolo4.z, startAngolo4.rx, startAngolo4.ry, startAngolo4.rz);
-            RobotManager.robot.GetInverseKin(0, descPosStartAngolo4, -1, ref jointStartAngolo4);
-
-            // ----- Punto IntAngolo4  -----
-            JointPos jointIntAngolo4 = new JointPos(0, 0, 0, 0, 0, 0);
-            var IntAngolo4 = ApplicationConfig.applicationsManager.GetPosition("IntAngolo4", "RM");
-            DescPose descPosIntAngolo4 = new DescPose(IntAngolo4.x, IntAngolo4.y, IntAngolo4.z, IntAngolo4.rx, IntAngolo4.ry, IntAngolo4.rz);
-            RobotManager.robot.GetInverseKin(0, descPosIntAngolo4, -1, ref jointIntAngolo4);
-
-            // ----- Punto EndAngolo4  -----
-            JointPos jointEndAngolo4 = new JointPos(0, 0, 0, 0, 0, 0);
-            var endAngolo4 = ApplicationConfig.applicationsManager.GetPosition("EndAngolo4", "RM");
-            DescPose descPosEndAngolo4 = new DescPose(endAngolo4.x, endAngolo4.y, endAngolo4.z, endAngolo4.rx, endAngolo4.ry, endAngolo4.rz);
-            RobotManager.robot.GetInverseKin(0, descPosEndAngolo4, -1, ref jointEndAngolo4);
-
-            #endregion
-
-            #region Punto end
-
-            JointPos jointEnd = new JointPos(0, 0, 0, 0, 0, 0);
-            var end = ApplicationConfig.applicationsManager.GetPosition("End", "RM");
-            DescPose descPosEnd = new DescPose(end.x, end.y, end.z, end.rx, end.ry, end.rz);
-            RobotManager.robot.GetInverseKin(0, descPosEnd, -1, ref jointEnd);
-
-            #endregion
-
-            #region Parametri movimento
-
-            int tool = RobotManager.tool;       // Utensile selezionato
-            int user = RobotManager.user;       // Sistema di coordinate del pezzo
-            float vel = RobotManager.vel;  // Velocità del movimento (%)
-            float acc = RobotManager.acc;  // Accelerazione (%)
-            float ovl = RobotManager.ovl; // Override della velocità (%)
-            float blendR = RobotManager.blendT; // Nessun blending (movimento bloccante)
-            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
-            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
-            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
-
-            #endregion
-
-            // Movimento al punto di start
-            RobotManager.robot.MoveCart(descPosStart, tool, user, vel, acc, ovl, blendR, RobotManager.config);
-
-            // Movimento al punto di start di angolo2
-            RobotManager.robot.MoveCart(descPosStartAngolo2, tool, user, vel, acc, ovl, blendR, RobotManager.config);
-
-            // Movimento attorno all'angolo2
-            int err = RobotManager.robot.MoveC(
-               jointIntAngolo2, descPosIntAngolo2, tool, user, vel, acc, epos, offsetFlag, offset,
-               jointEndAngolo2, descPosEndAngolo2, tool, user, vel, acc, epos, offsetFlag, offset,
-               ovl, blendR
-           );
-
-            // Movimento al punto di start di angolo3
-            RobotManager.robot.MoveCart(descPosStartAngolo3, tool, user, vel, acc, ovl, blendR, RobotManager.config);
-
-            // Movimento attorno all'angolo3
-            err = RobotManager.robot.MoveC(
-               jointIntAngolo3, descPosIntAngolo3, tool, user, vel, acc, epos, offsetFlag, offset,
-               jointEndAngolo3, descPosEndAngolo3, tool, user, vel, acc, epos, offsetFlag, offset,
-               ovl, blendR
-           );
-
-            // Movimento al punto di start di angolo4
-            RobotManager.robot.MoveCart(descPosStartAngolo4, tool, user, vel, acc, ovl, blendR, RobotManager.config);
-
-            // Movimento attorno all'angolo4
-            err = RobotManager.robot.MoveC(
-               jointIntAngolo4, descPosIntAngolo4, tool, user, vel, acc, epos, offsetFlag, offset,
-               jointEndAngolo4, descPosEndAngolo4, tool, user, vel, acc, epos, offsetFlag, offset,
-               ovl, blendR
-           );
-
-            // Movimento al punto di end
-            RobotManager.robot.MoveCart(descPosEnd, tool, user, vel, acc, ovl, blendR, RobotManager.config);
-
-
-
-        }
-
         private void ClickEvent_openWeldingParameters(object sender, EventArgs e)
         {
             UC_weldingParameters uc;
@@ -2002,11 +1502,6 @@ namespace RM.src.RM250619
 
             uc = (UC_weldingParameters)FormHomePage.Instance.PnlContainer.Controls["UC_weldingParameters"];
             //uc.ShowLoadingScreen();
-        }
-
-        private void ClickEvent_testFunction(object sender, EventArgs e)
-        {
-            RobotManager.robot.RobotEnable(1);
         }
 
         private void ClickEvent_openGripper(object sender, EventArgs e)
@@ -2035,11 +1530,6 @@ namespace RM.src.RM250619
             RobotManager.robot.PauseMotion(); // Invio comando di pausa al robot
             Thread.Sleep(200); // Leggero ritardo per stabilizzare il robot
             RobotManager.robot.StopMotion(); // Stop Robot con conseguente cancellazione di coda di punti
-        }
-
-        private void ClickEvent_rallentaRobot(object sender, EventArgs e)
-        {
-
         }
 
         private void btn_pauseRobot_Click(object sender, EventArgs e)
