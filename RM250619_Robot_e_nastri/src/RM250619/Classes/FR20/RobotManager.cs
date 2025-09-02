@@ -293,7 +293,7 @@ namespace RM.src.RM250619
         /// Dichiarazione thread a priorità bassa
         /// </summary>
         private static Thread lowPriorityThread;
-        private static int lowPriorityRefreshPeriod = 300;
+        private static int lowPriorityRefreshPeriod = 600;
 
         private static Thread CommandsThrad;
         private static int hmiCommandsThradRefreshPeriod = 200;
@@ -929,7 +929,7 @@ namespace RM.src.RM250619
         {
             if (AlarmManager.isRobotConnected)
             {
-                err = RobotManager.robot.GetRobotErrorCode(ref maincode, ref subcode);
+                err = robot.GetRobotErrorCode(ref maincode, ref subcode);
                 if (maincode != 0 && !IsAlarmAlreadySignaled(maincode.ToString() + subcode.ToString()))
                 {
                     robotAlarm = RobotDAO.GetRobotAlarm(ConnectionString, maincode, subcode);
@@ -1003,9 +1003,6 @@ namespace RM.src.RM250619
                     robotError = 0;
                 }
             }
-
-            Thread.Sleep(1000); // Attendere prima di controllare di nuovo -------------------------------------------------------------
-
         }
 
         /// <summary>
@@ -1753,8 +1750,6 @@ namespace RM.src.RM250619
                 CheckCurrentToolAndUser();
 
                 SendUpdatesToPLC();
-
-               
 
                 Thread.Sleep(lowPriorityRefreshPeriod);
             }
