@@ -1,5 +1,8 @@
 ﻿using fairino;
+using RMLib.DataAccess;
+using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace RM.src.RM250619.Classes.FR20
 {
@@ -18,6 +21,10 @@ namespace RM.src.RM250619.Classes.FR20
     /// </summary>
     public class Frames
     {
+        private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
+        private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
+        private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
+
         private List<FrameStruct> _frames;
         private Robot _robot;
         public int currentFrame = -1;
@@ -32,29 +39,29 @@ namespace RM.src.RM250619.Classes.FR20
 
         private void InitList()
         {
-            FrameStruct frame1 = new FrameStruct
-            {
-                id = 1,
-                name = "frNastro",
-                pose = new DescPose(-830.117, 207.966, -620.278, 0.006, 0.009, -147.102)
-            };
-            _frames.Add(frame1);
+            DataTable _table = RobotDAO.GetRobotFrames(ConnectionString);
+            FrameStruct _frame;
 
-            FrameStruct frame2 = new FrameStruct
+            if(_table != null)
             {
-                id = 2,
-                name = "frPallet1",
-                pose = new DescPose(-815.980, -719.498, -497.565, 0.006, 0.003, 122.472)
-            };
-            _frames.Add(frame2);
-
-            FrameStruct frame3 = new FrameStruct
-            {
-                id = 3,
-                name = "frPallet2",
-                pose = new DescPose(0, 0, 0, 0, 0, 0)
-            };
-            _frames.Add(frame3);
+                foreach (DataRow row in _table.Rows)
+                {
+                    _frame = new FrameStruct
+                    {
+                        id = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_FRAMES_ID_COLUMN_NAME]),
+                        name = row[RobotDAOSqlite.ROBOT_FRAMES_NAME_COLUMN_NAME].ToString(),
+                        pose = new DescPose(
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_X_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_Y_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_Z_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_RX_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_RY_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_RZ_COLUMN_NAME])
+                            )
+                    };
+                    _frames.Add(_frame);
+                }
+            }
         }
 
         private FrameStruct? ReadFrameData(int frameId)

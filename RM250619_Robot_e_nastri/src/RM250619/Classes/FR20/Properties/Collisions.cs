@@ -1,5 +1,8 @@
 ﻿using fairino;
+using RMLib.DataAccess;
+using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace RM.src.RM250619.Classes.FR20.Properties
 {
@@ -16,6 +19,10 @@ namespace RM.src.RM250619.Classes.FR20.Properties
     /// </summary>
     public class Collisions
     {
+        private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
+        private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
+        private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
+
         List<CollisionStruct> _collisions;
         Robot _robot;
         int currentCollisionLevel = -1;
@@ -30,6 +37,31 @@ namespace RM.src.RM250619.Classes.FR20.Properties
 
         private void InitList()
         {
+            DataTable _table = RobotDAO.GetRobotCollisionLevels(ConnectionString);
+            CollisionStruct _collisionLevel;
+
+            if (_table != null)
+            {
+                foreach (DataRow row in _table.Rows)
+                {
+                    _collisionLevel = new CollisionStruct
+                    {
+                        index = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_COLLISION_LEVELS_ID_COLUMN_NAME]),
+                        mode = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_COLLISION_LEVELS_MODE_COLUMN_NAME]),
+                        levels = new double[] {
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_COLLISION_LEVELS_J1_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_COLLISION_LEVELS_J2_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_COLLISION_LEVELS_J3_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_COLLISION_LEVELS_J4_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_COLLISION_LEVELS_J5_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_COLLISION_LEVELS_J6_COLUMN_NAME])
+                            },
+                        config = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_COLLISION_LEVELS_CONFIG_COLUMN_NAME])
+                    };
+                    _collisions.Add(_collisionLevel);
+                }
+            }
+
             CollisionStruct collision1 = new CollisionStruct
             {
                 index = 1,

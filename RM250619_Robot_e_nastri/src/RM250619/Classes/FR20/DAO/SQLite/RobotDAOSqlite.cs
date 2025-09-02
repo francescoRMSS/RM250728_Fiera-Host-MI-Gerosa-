@@ -117,6 +117,51 @@ namespace RM.src.RM250619
 
         #endregion
 
+        #region Variabili tabella robot_frames
+
+        public const string ROBOT_FRAMES_TABLE_NAME = "robot_frames";
+        public const string ROBOT_FRAMES_ID_COLUMN_NAME = "id";
+        public const string ROBOT_FRAMES_NAME_COLUMN_NAME = "name";
+        public const string ROBOT_FRAMES_X_COLUMN_NAME = "x";
+        public const string ROBOT_FRAMES_Y_COLUMN_NAME = "y";
+        public const string ROBOT_FRAMES_Z_COLUMN_NAME = "z";
+        public const string ROBOT_FRAMES_RX_COLUMN_NAME = "rx";
+        public const string ROBOT_FRAMES_RY_COLUMN_NAME = "ry";
+        public const string ROBOT_FRAMES_RZ_COLUMN_NAME = "rz";
+
+        #endregion
+
+        #region Variabili tabella robot_tools
+
+        public const string ROBOT_TOOLS_TABLE_NAME = "robot_tools";
+        public const string ROBOT_TOOLS_ID_COLUMN_NAME = "id";
+        public const string ROBOT_TOOLS_NAME_COLUMN_NAME = "name";
+        public const string ROBOT_TOOLS_X_COLUMN_NAME = "x";
+        public const string ROBOT_TOOLS_Y_COLUMN_NAME = "y";
+        public const string ROBOT_TOOLS_Z_COLUMN_NAME = "z";
+        public const string ROBOT_TOOLS_RX_COLUMN_NAME = "rx";
+        public const string ROBOT_TOOLS_RY_COLUMN_NAME = "ry";
+        public const string ROBOT_TOOLS_RZ_COLUMN_NAME = "rz";
+        public const string ROBOT_TOOLS_TYPE_COLUMN_NAME = "type";
+        public const string ROBOT_TOOLS_INSTALL_COLUMN_NAME = "install";
+
+        #endregion
+
+        #region Variabili tabella robot_collision_levels
+
+        public const string ROBOT_COLLISION_LEVELS_TABLE_NAME = "robot_collision_levels";
+        public const string ROBOT_COLLISION_LEVELS_ID_COLUMN_NAME = "id";
+        public const string ROBOT_COLLISION_LEVELS_MODE_COLUMN_NAME = "mode";
+        public const string ROBOT_COLLISION_LEVELS_J1_COLUMN_NAME = "j1";
+        public const string ROBOT_COLLISION_LEVELS_J2_COLUMN_NAME = "j2";
+        public const string ROBOT_COLLISION_LEVELS_J3_COLUMN_NAME = "j3";
+        public const string ROBOT_COLLISION_LEVELS_J4_COLUMN_NAME = "j4";
+        public const string ROBOT_COLLISION_LEVELS_J5_COLUMN_NAME = "j5";
+        public const string ROBOT_COLLISION_LEVELS_J6_COLUMN_NAME = "j6";
+        public const string ROBOT_COLLISION_LEVELS_CONFIG_COLUMN_NAME = "config";
+
+        #endregion
+
         #endregion
 
         #region Metodi di RobotDAOSqlite
@@ -1887,6 +1932,126 @@ namespace RM.src.RM250619
                 log.Error($"Si è verificata un'eccezione SQL durante la modifica del valore status per indici da {initialIndex} a {finalIndex} :"
                     + ex.ToString());
             }
+        }
+
+        #endregion
+
+        #region Metodi gestione robot frames
+
+        /// <summary>
+        /// Recupera dal database tutti i frame salvati
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        public DataTable GetRobotFrames(String connectionString)
+        {
+            // Dichiaro DataTable da restituire
+            var dt_robot_frames = new DataTable();
+
+            try
+            {
+                using (var con = new SQLiteConnection(connectionString))
+                {
+                    con.Open();
+
+                    string query = "SELECT *" +
+                        "FROM " + ROBOT_FRAMES_TABLE_NAME;
+
+                    using (var cmd = new SQLiteCommand(query, con))
+                    {
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            dt_robot_frames.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Si è verificata un'eccezione SQL durante la query GetRobotFrames: " + ex.ToString());
+            }
+
+            return dt_robot_frames;
+        }
+
+        #endregion
+
+        #region Metodi gestione robot tools
+
+        /// <summary>
+        /// Recupera dal database tutti i tool salvati
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        public DataTable GetRobotTools(String connectionString)
+        {
+            // Dichiaro DataTable da restituire
+            var dt_robot_tools = new DataTable();
+
+            try
+            {
+                using (var con = new SQLiteConnection(connectionString))
+                {
+                    con.Open();
+
+                    string query = "SELECT *" +
+                        "FROM " + ROBOT_TOOLS_TABLE_NAME;
+
+                    using (var cmd = new SQLiteCommand(query, con))
+                    {
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            dt_robot_tools.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Si è verificata un'eccezione SQL durante la query GetRobotTools: " + ex.ToString());
+            }
+
+            return dt_robot_tools;
+        }
+
+        #endregion
+
+        #region Metodi gestione robot collision levels
+
+        /// <summary>
+        /// Recupera dal database tutti i livelli di collisione salvati
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        public DataTable GetRobotCollisionLevels(String connectionString)
+        {
+            // Dichiaro DataTable da restituire
+            var dt_robot_collision_levels = new DataTable();
+
+            try
+            {
+                using (var con = new SQLiteConnection(connectionString))
+                {
+                    con.Open();
+
+                    string query = "SELECT *" +
+                        "FROM " + ROBOT_COLLISION_LEVELS_TABLE_NAME;
+
+                    using (var cmd = new SQLiteCommand(query, con))
+                    {
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            dt_robot_collision_levels.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("Si è verificata un'eccezione SQL durante la query GetRobotTools: " + ex.ToString());
+            }
+
+            return dt_robot_collision_levels;
         }
 
         #endregion

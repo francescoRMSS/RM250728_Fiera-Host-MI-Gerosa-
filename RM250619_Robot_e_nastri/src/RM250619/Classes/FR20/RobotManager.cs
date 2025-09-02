@@ -1004,7 +1004,7 @@ namespace RM.src.RM250619
                 }
             }
 
-            Thread.Sleep(1000); // Attendere prima di controllare di nuovo
+            Thread.Sleep(1000); // Attendere prima di controllare di nuovo -------------------------------------------------------------
 
         }
 
@@ -1029,6 +1029,7 @@ namespace RM.src.RM250619
 
             frameManager = new Frames(robot);
             toolManager = new Tools(robot);
+            collisionManager = new Collisions(robot);
 
             if (err == -4)
             {
@@ -3338,18 +3339,87 @@ namespace RM.src.RM250619
             });
         }
 
+        private static void GenerateAlarm(int maincode, int subcode)
+        {
+            DataRow robotAlarm;
+            DateTime now;
+            long unixTimestamp;
+            DateTime dateTime;
+            string formattedDate;
+            string id, description, timestamp, device, state;
+
+            if (!IsAlarmAlreadySignaled(maincode.ToString() + subcode.ToString()))
+            {
+                robotAlarm = RobotDAO.GetRobotAlarm(ConnectionString, maincode, subcode);
+                if (robotAlarm != null)
+                {
+                    // Ottieni la data e l'ora attuali
+                    now = DateTime.Now;
+
+                    // Calcola il timestamp Unix in millisecondi
+                    unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
+
+                    dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
+                    formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+                    if (robotAlarm["id"].ToString() == "")
+                    {
+                        id = "9999";
+                        description = "Generic/Not found";
+                        timestamp = formattedDate;
+                        device = "Robot";
+                        state = "ON";
+                    }
+                    else
+                    {
+                        id = robotAlarm["id"].ToString();
+                        description = robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString();
+                        timestamp = formattedDate;
+                        device = "Robot";
+                        state = "ON";
+                    }
+                    CreateRobotAlarm(id, description, timestamp, device, state);
+                    MarkAlarmAsSignaled(maincode.ToString() + subcode.ToString());
+                    log.Warn(robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString());
+                }
+                else
+                {
+                    // Ottieni la data e l'ora attuali
+                    now = DateTime.Now;
+
+                    // Calcola il timestamp Unix in millisecondi
+                    unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
+
+                    dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
+                    formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+                    id = "9999";
+                    description = "Generic/Not found";
+                    timestamp = formattedDate;
+                    device = "Robot";
+                    state = "ON";
+
+                    CreateRobotAlarm(id, description, timestamp, device, state);
+                }
+
+                // Segnalo che è presente un allarme bloccante (allarme robot)
+                AlarmManager.blockingAlarm = true;
+                robotError = 1;
+            }
+        }
+
         public static async Task HomeRoutine() //Si deve alzare a un punto fisso prima di andare in home, sempre
         {
-            int frameErr = frameManager.ChangeRobotFrame("frNastro");
+            int frameErr = frameManager.ChangeRobotFrame("frNastroo");
             if (frameManager.IsErrorBlocking(frameErr))
             {
-                MessageBox.Show("Allarme - " + frameManager.GetErrorCode(frameErr));
+                GenerateAlarm(0, 1);
                 return;
             }
             int toolErr = toolManager.ChangeRobotTool("tVentosa");
             if (toolManager.IsErrorBlocking(toolErr))
             {
-                MessageBox.Show("Allarme - " + frameManager.GetErrorCode(toolErr));
+                GenerateAlarm(0, 2);
                 return;
             }
 

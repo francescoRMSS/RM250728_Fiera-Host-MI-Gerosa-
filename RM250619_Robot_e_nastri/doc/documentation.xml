@@ -2028,6 +2028,27 @@
             <param name="finalIndex"></param>
             <param name="value"></param>
         </member>
+        <member name="M:RM.src.RM250619.RobotDAOSqlite.GetRobotFrames(System.String)">
+            <summary>
+            Recupera dal database tutti i frame salvati
+            </summary>
+            <param name="connectionString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotDAOSqlite.GetRobotTools(System.String)">
+            <summary>
+            Recupera dal database tutti i tool salvati
+            </summary>
+            <param name="connectionString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotDAOSqlite.GetRobotCollisionLevels(System.String)">
+            <summary>
+            Recupera dal database tutti i livelli di collisione salvati
+            </summary>
+            <param name="connectionString"></param>
+            <returns></returns>
+        </member>
         <member name="T:RM.src.RM250619.PointPosition">
             <summary>
             Definisce una posizione di un punto con il relativo timestamp, 

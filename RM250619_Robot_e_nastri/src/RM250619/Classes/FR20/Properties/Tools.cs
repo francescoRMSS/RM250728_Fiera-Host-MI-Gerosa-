@@ -1,5 +1,8 @@
 ﻿using fairino;
+using RMLib.DataAccess;
+using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace RM.src.RM250619.Classes.FR20
 {
@@ -20,6 +23,10 @@ namespace RM.src.RM250619.Classes.FR20
     /// </summary>
     public class Tools
     {
+        private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
+        private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
+        private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
+
         private List<ToolStruct> _tools;
         private Robot _robot;
         public int currentTool = -1;
@@ -34,15 +41,31 @@ namespace RM.src.RM250619.Classes.FR20
 
         private void InitList()
         {
-            ToolStruct tool1 = new ToolStruct
+            DataTable _table = RobotDAO.GetRobotTools(ConnectionString);
+            ToolStruct _tool;
+
+            if (_table != null)
             {
-                id = 1,
-                name = "tVentosa",
-                pose = new DescPose(0, 0, 50, 0, 0, 0),
-                type = 0,
-                install = 0
-            };
-            _tools.Add(tool1);
+                foreach (DataRow row in _table.Rows)
+                {
+                    _tool = new ToolStruct
+                    {
+                        id = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_TOOLS_ID_COLUMN_NAME]),
+                        name = row[RobotDAOSqlite.ROBOT_TOOLS_NAME_COLUMN_NAME].ToString(),
+                        pose = new DescPose(
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_X_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_Y_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_Z_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_RX_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_RY_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_RZ_COLUMN_NAME])
+                            ),
+                        type = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_TOOLS_TYPE_COLUMN_NAME]),
+                        install = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_TOOLS_INSTALL_COLUMN_NAME])
+                    };
+                    _tools.Add(_tool);
+                }
+            }
         }
 
         private ToolStruct? ReadToolData(int toolId)
