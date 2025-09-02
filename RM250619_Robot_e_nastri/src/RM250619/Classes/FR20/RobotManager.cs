@@ -3405,7 +3405,7 @@ namespace RM.src.RM250619
 
         public static async Task HomeRoutine() //Si deve alzare a un punto fisso prima di andare in home, sempre
         {
-            int frameErr = frameManager.ChangeRobotFrame("frNastroo");
+            int frameErr = frameManager.ChangeRobotFrame("frNastro");
             if (frameManager.IsErrorBlocking(frameErr))
             {
                 GenerateAlarm(0, 1);
