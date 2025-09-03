@@ -2728,7 +2728,12 @@
             Memorizza lo stato precedente della variabile open/close grippers dal PLC
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.RobotManager.previousBarrierStatus">
+        <member name="F:RM.src.RM250619.RobotManager.previousBarrierPauseStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile on/off barrier status dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousBarrierResumeStatus">
             <summary>
             Memorizza lo stato precedente della variabile on/off barrier status dal PLC
             </summary>
@@ -3076,6 +3081,11 @@
         <member name="M:RM.src.RM250619.RobotManager.CheckPauseStatus">
             <summary>
             Check su accesso barriere
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckResumeStatus">
+            <summary>
+            Check su uscita barriere
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckCommandRecordPoint">
