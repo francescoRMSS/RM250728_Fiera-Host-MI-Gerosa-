@@ -146,6 +146,9 @@
     <Compile Include="src\RM250619\Classes\FR20\RobotSpeed.cs" />
     <Compile Include="src\RM250619\Classes\FR20\SpeedMode.cs" />
     <Compile Include="src\RM250619\Classes\FR20\Properties\Tools.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\TaskManager\TaskManager.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\TaskManager\TaskModel.cs" />
+    <Compile Include="src\RM250619\Classes\FR20\TaskManager\TaskType.cs" />
     <Compile Include="src\RM250619\Classes\Global.cs" />
     <Compile Include="src\RM250619\Classes\PLC\PLCTagName.cs" />
     <Compile Include="src\RM250619\Classes\Program.cs" />

@@ -1,6 +1,5 @@
 ﻿using RM.src.RM250619.Classes.FR20.Jog;
 using RM.src.RM250619.Classes.PLC;
-using RM.src.RM250619.Forms.ScreenSaver;
 using RMLib.Alarms;
 using RMLib.DataAccess;
 using RMLib.Environment;
@@ -185,11 +184,22 @@ namespace RM.src.RM250619
                     //MessageBox.Show("Error during applications loading", "Error applications loading", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            if (!RobotManager.InitRobot(RobotManager.RobotIpAddress))
+
+            string robotIp = string.Empty;
+            foreach (DataRow row in configurationProperties.Rows)
+            {
+                // Controlla il valore nella colonna "key" 
+                if (row["key"] != null && row["key"].ToString() == "ROBOT_IP")
+                {
+                    robotIp = row[Environment.GetEnvironment().ToString().ToLower()].ToString();
+                    break;
+                }
+            }
+
+            if ((string.IsNullOrEmpty(robotIp)) || !RobotManager.InitRobot(robotIp))
             {
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Errore durante configurazione del Robot");
-                //MessageBox.Show("Errore durante configurazione del Robot", "Error Robot configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //Application.Exit();
+                Application.Exit();
             }
 
             if (!JogMovement.InitJog())
@@ -201,12 +211,6 @@ namespace RM.src.RM250619
             //ProgressBar a 85%
             progressBar1.Increment(5);
             lb_ProgressBar.Text = "Start Robot monitoring...";
-
-            /* if (!RobotManager.StartRobotMonitoring())
-             {
-                 MessageBox.Show("Errore durante avvio monitoring del Robot", "Error Robot configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                 //Application.Exit();
-             }*/
 
             //ProgressBar a 90%
             progressBar1.Increment(10);
@@ -227,8 +231,6 @@ namespace RM.src.RM250619
             progressBar1.Increment(10);
             await Task.Delay(ProjectVariables.ProgressBarDelay);
 
-            //CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "ciao");
-            //CustomMessageBox.ShowTranslated(MessageBoxTypeEnum.ERROR, "BTN_SAVE");
 #if DEBUG
             SecurityManager.SetActualUser(new User("debug", "debug", 10, "psw", "mai", "mai"));
 #endif

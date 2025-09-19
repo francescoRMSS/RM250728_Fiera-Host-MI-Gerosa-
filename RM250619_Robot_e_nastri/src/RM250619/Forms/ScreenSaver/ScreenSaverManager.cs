@@ -320,7 +320,7 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         {
             if(useScreenSaver)
             {
-                log.Info("Richiesta aggiunta automatica degli eventi click per screen saver da: " + form.Name);
+                //log.Info("Richiesta aggiunta automatica degli eventi click per screen saver da: " + form.Name);
                 foreach (Control control in form.Controls)
                 {
                     control.Click += (sender, e) => ResetTimer();
@@ -332,7 +332,7 @@ namespace RM.src.RM250619.Forms.ScreenSaver
             }
             else
             {
-                log.Warn("Richiesta aggiunta automatica degli eventi click per screen saver da: " + form.Name + " annullata");
+                //log.Warn("Richiesta aggiunta automatica degli eventi click per screen saver da: " + form.Name + " annullata");
             }
         }
 
@@ -344,7 +344,7 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         {
             if (useScreenSaver)
             {
-                log.Info("Richiesta aggiunta automatica degli eventi click per screen saver da: " + UC.Name);
+                //log.Info("Richiesta aggiunta automatica degli eventi click per screen saver da: " + UC.Name);
                 foreach (Control control in UC.Controls)
                 {
                     control.Click += (sender, e) => ResetTimer();
@@ -356,7 +356,7 @@ namespace RM.src.RM250619.Forms.ScreenSaver
             }
             else
             {
-                log.Warn("Richiesta aggiunta automatica degli eventi click per screen saver da: " + UC.Name + " annullata");
+                //log.Warn("Richiesta aggiunta automatica degli eventi click per screen saver da: " + UC.Name + " annullata");
             }
         }
 
@@ -368,7 +368,7 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         {
             if(useScreenSaver)
             {
-                log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + form.Name);
+                //log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + form.Name);
                 foreach (Control control in form.Controls)
                 {
                     control.Click -= (sender, e) => ResetTimer();
@@ -380,7 +380,7 @@ namespace RM.src.RM250619.Forms.ScreenSaver
             }
             else
             {
-                log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + form.Name + " annullata");
+                //log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + form.Name + " annullata");
             } 
         }
 
@@ -392,7 +392,7 @@ namespace RM.src.RM250619.Forms.ScreenSaver
         {
             if(useScreenSaver)
             {
-                log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + uc.Name);
+                //log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + uc.Name);
                 foreach (Control control in uc.Controls)
                 {
                     control.Click -= (sender, e) => ResetTimer();
@@ -404,7 +404,7 @@ namespace RM.src.RM250619.Forms.ScreenSaver
             }
             else
             {
-                log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + uc.Name + " annullata");
+                //log.Info("Richiesta rimozione automatica degli eventi click per screen saver da: " + uc.Name + " annullata");
             }
         }
 

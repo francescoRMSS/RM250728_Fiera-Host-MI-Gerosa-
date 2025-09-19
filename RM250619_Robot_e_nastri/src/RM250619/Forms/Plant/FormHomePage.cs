@@ -6,7 +6,6 @@ using RM.Properties;
 using System.Diagnostics;
 using RMLib.Logger;
 using RMLib.PLC;
-using System.Threading.Tasks;
 using RMLib.Versions;
 using RMLib.Keyboards;
 using RMLib.MessageBox;
@@ -16,6 +15,8 @@ using RMLib.View;
 using RMLib.Security;
 using System.Collections.Generic;
 using RM.src.RM250619.Forms.ScreenSaver;
+using RM.src.RM250619.Classes.FR20;
+using System.Threading.Tasks;
 
 namespace RM.src.RM250619
 {
@@ -41,14 +42,14 @@ namespace RM.src.RM250619
                 return _obj;
             }
         }
-
+        /*
         /// <summary>
         /// Restituisce il riferimento alla form screen saver
         /// </summary>
         public ScreenSaverManager ScreenSaverManagerForm
         {
             get { return screenSaverManager; }
-        }
+        }*/
 
         /// <summary>
         /// Definisce una variabile per settare e ottenere la pagina corrente della form
@@ -131,7 +132,7 @@ namespace RM.src.RM250619
         /// </summary>
         private bool emergencyOK = false;
 
-        private ScreenSaverManager screenSaverManager;
+        //private ScreenSaverManager screenSaverManager;
 
         #endregion
 
@@ -244,6 +245,9 @@ namespace RM.src.RM250619
             };
 
             Instance.PnlContainer.Controls.Add(HomePage);
+
+            RobotManager.taskManager.OneTaskChangedStatus += ChangeTaskStatus;
+            RobotManager.taskManager.StartTaskChecker();
         }
 
         /// <summary>
@@ -257,7 +261,7 @@ namespace RM.src.RM250619
             AlarmManager.isFormReady = true;
 
             //Configurazione screen saver manager - 5m
-            screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4", false);
+            //screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4", false);
         }
 
         /// <summary>
@@ -279,9 +283,9 @@ namespace RM.src.RM250619
         {
             Dictionary<string, string> versions = new Dictionary<string, string>
             {
-                { "Project", "RM250619 - Robot pallettizzatore" },
+                { "Project", "RM240513 - Robot verniciatura" },
                 //{ "Hmi", "2024/12/05 - V1.0" },
-                { "Software", "2025/07/04 - V0.1 - DEMO" },
+                { "Software", "2025/01/29 - V1.2" },
                 { "Alarms", AlarmManager.Version },
                 { "DataAccess", RMLib.DataAccess.SqlConnectionConfiguration.DataAccessManager.Version },
                 { "Environment", RMLib.Environment.Environment.Version },
@@ -295,10 +299,31 @@ namespace RM.src.RM250619
                 { "Utils", RMLib.Utils.ProjectVariables.Version },
                 { "VatView", VATViewManager.Version },
                 { "Versions", VersionManager.Version },
-                { "View", CustomViewManager.Version }
+                { "View", CustomViewManager.Version },
+                { "RobotSdk", RobotManager.RobotSdkVer },
+                { "RobotCurrentIP", RobotManager.RobotCurrentIP },
+                { "RobotModelVer", RobotManager.RobotModelVer },
+                { "RobotWebVer", RobotManager.RobotWebVer },
+                { "RobotControllerVer", RobotManager.RobotControllerVer },
+                { "RobotFwBoxBoardVer", RobotManager.RobotFwBoxBoardVer },
+                { "RobotFwDriver1Ver", RobotManager.RobotFwDriver1Ver },
+                { "RobotFwDriver2Ver", RobotManager.RobotFwDriver2Ver },
+                { "RobotFwDriver3Ver", RobotManager.RobotFwDriver3Ver },
+                { "RobotFwDriver4Ver", RobotManager.RobotFwDriver4Ver },
+                { "RobotFwDriver5Ver", RobotManager.RobotFwDriver5Ver },
+                { "RobotFwDriver6Ver", RobotManager.RobotFwDriver6Ver },
+                { "RobotFwEndBoardVer", RobotManager.RobotFwEndBoardVer },
+                { "RobotHwBoxBoardVer", RobotManager.RobotHwBoxBoardVer },
+                { "RobotHwDriver1Ver", RobotManager.RobotHwDriver1Ver },
+                { "RobotHwDriver2Ver", RobotManager.RobotHwDriver2Ver },
+                { "RobotHwDriver3Ver", RobotManager.RobotHwDriver3Ver },
+                { "RobotHwDriver4Ver", RobotManager.RobotHwDriver4Ver },
+                { "RobotHwDriver5Ver", RobotManager.RobotHwDriver5Ver },
+                { "RobotHwDriver6Ver", RobotManager.RobotHwDriver6Ver },
+                { "RobotHwEndBoardVer", RobotManager.RobotHwEndBoardVer }
             };
 
-            VersionManager.ShowVersions(versions);
+            VersionManager.ShowVersions(versions, VersionsAppType.ROBOT_FAIRINO);
         }
 
         /// <summary>
@@ -327,6 +352,94 @@ namespace RM.src.RM250619
             if (!RobotManager.formDiagnostics.Visible)
             {
                 RobotManager.formDiagnostics.Visible = true;
+            }
+        }
+
+        /// <summary>
+        /// Contiene i nomi dei task gestiti di cui si osserva lo stato per le spie a schermo
+        /// </summary>
+        private readonly HashSet<string> allowedNames = new HashSet<string>
+        {
+            "CheckHighPriority",
+            "CheckLowPriority",
+            "AuxiliaryWorker",
+            "CheckRobotConnection",
+            "ApplicationTaskManager"
+        };
+
+        private void ChangeTaskStatus(object sender, EventArgs e)
+        {
+            Invoke((MethodInvoker)delegate
+            {
+                pnl_highTask.Visible = false;
+                pnl_lowTask.Visible = false;
+                pnl_auxTask.Visible = false;
+                pnl_comRobotTask.Visible = false;
+                pnl_appTask.Visible = false;
+            });
+
+            List<TaskModel> taskStructs = RobotManager.taskManager.GetTaskList();
+
+            foreach (TaskModel taskStruct in taskStructs)
+            {
+                if (!allowedNames.Contains(taskStruct.Name)) //Se il nome non è nel set di nomi osservati
+                    continue;
+
+                Color fill_color = Color.White; //0:canceled/red, -1:faulted/black, 1:running/green, 2:completed/orange
+                bool taskCreated = taskStruct.Task != null;
+
+                //Impostazione colori
+                if (taskCreated)
+                {
+                    switch (taskStruct.Task.Status)
+                    {
+                        case TaskStatus.WaitingForActivation:
+                            fill_color = Color.LimeGreen;
+                            break;
+                        case TaskStatus.Running:
+                            fill_color = Color.LimeGreen;
+                            break;
+                        case TaskStatus.Canceled:
+                            fill_color = Color.Crimson;
+                            break;
+                        case TaskStatus.Faulted:
+                            fill_color = Color.Black;
+                            break;
+                        case TaskStatus.RanToCompletion:
+                            fill_color = Color.DarkOrange;
+                            break;
+                        default:
+                            fill_color = Color.White;
+                            break;
+                    }
+                }
+                Invoke((MethodInvoker)delegate
+                {
+                    //Impostazioni visibilità
+                    switch (taskStruct.Name)
+                    {
+                        case "CheckHighPriority":
+                            pnl_highTask.Visible = taskCreated;
+                            pnl_highTaskStatus.BackColor = fill_color;
+                            break;
+                        case "CheckLowPriority":
+                            pnl_lowTask.Visible = taskCreated;
+                            pnl_lowTaskStatus.BackColor = fill_color;
+                            break;
+                        case "AuxiliaryWorker":
+                            pnl_auxTask.Visible = taskCreated;
+                            pnl_auxTaskStatus.BackColor = fill_color;
+                            break;
+                        case "CheckRobotConnection":
+                            pnl_comRobotTask.Visible = taskCreated;
+                            pnl_comRobotTaskStatus.BackColor = fill_color;
+                            break;
+                        case "ApplicationTaskManager":
+                            pnl_appTask.Visible = taskCreated;
+                            pnl_appTaskStatus.BackColor = fill_color;
+                            break;
+                    }
+                });
             }
         }
 

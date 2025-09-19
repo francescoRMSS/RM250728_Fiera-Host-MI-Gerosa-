@@ -14,15 +14,11 @@ using RM.src.RM250619.Forms.Plant;
 using RM.Properties;
 using System.Drawing;
 using RMLib.VATView;
-using RM.src.RM250619.Forms.DragMode;
 using fairino;
-using RM.src.RM250619.Classes.FR20.Jog;
-using System.Data;
 using RM.src.RM250619.Classes.PLC;
-using RM.src.RM250619.Classes.FR20.Applications.Application;
-using System.Drawing.Drawing2D;
 using RM.src.RM250619.Forms.Plant.DragMode;
 using RM.src.RM250619.Forms.ScreenSaver;
+using RM.src.RM250619.Classes.FR20;
 
 namespace RM.src.RM250619
 {
@@ -70,26 +66,16 @@ namespace RM.src.RM250619
         /// Timer per salvare velocità Robot
         /// </summary>
         private System.Timers.Timer VelocitySaverTimer;
-       
-        /// <summary>
-        /// Specifica se il robot è in modalità automatica, altrimenti sarà in manuale
-        /// </summary>
-        private bool isAutomaticMode = false;
 
         // Variabili per aumentare o decrementare la velocità del Robot
-        private System.Windows.Forms.Timer continuousAddSpeedTimer;
-        private System.Windows.Forms.Timer continuousRemoveSpeedTimer;
+        private readonly System.Windows.Forms.Timer continuousAddSpeedTimer;
+        private readonly System.Windows.Forms.Timer continuousRemoveSpeedTimer;
         private bool isMouseDown = false;
 
         /// <summary>
         /// Indice della posizione da selezionare su lw_positions
         /// </summary>
         public static int index = 0;
-
-        /// <summary>
-        /// Indice del punto da aggiungere a lw_positions
-        /// </summary>
-        static int pointIndex = 0;
 
         #endregion
 
@@ -114,11 +100,12 @@ namespace RM.src.RM250619
         /// <summary>
         /// Serve per aggiornate la textBox della velocità
         /// </summary>
-      public string UpdateSpeed
+        public string UpdateSpeed
         {
             get { return lbl_velocity.Text; }
             set { lbl_velocity.Text = value; }
         }
+
         #endregion
 
         #region Metodi di UC_HomePage
@@ -132,13 +119,6 @@ namespace RM.src.RM250619
 
             // Imposta l'intestazione della homepage
             FormHomePage.Instance.LabelHeader = "HOME PAGE";
-
-            // Avvia il caricamento asincrono dei parametri
-            /*
-            if (AlarmManager.isPlcConnected)
-            {
-                Task.Run(() => InitParameters());
-            }*/
 
             // Collegamento evento ValueChanged del dizionario al metodo HandleDictionaryChange
             //PLCConfig.appVariables.ValueChanged += RefreshVariables;
@@ -186,7 +166,7 @@ namespace RM.src.RM250619
             // SynchronizeMode();
 
             // Avvia il thread per l'applicazione della trasparenza
-            Task.Run(() => ApplyPanelTransparency());
+            //Task.Run(() => ApplyPanelTransparency());
 
             InitRobotModeButtons();
 
@@ -195,22 +175,34 @@ namespace RM.src.RM250619
 
         private void GripperStatusOFFEvent(object sender, EventArgs e)
         {
-            pnl_pinzeStatus.BackColor = Color.SeaGreen;
+            Invoke((MethodInvoker)delegate
+            {
+                pnl_pinzeStatus.BackColor = Color.SeaGreen;
+            });
         }
 
         private void GripperStatusONEvent(object sender, EventArgs e) 
         {
-            pnl_pinzeStatus.BackColor = Color.Firebrick;
+            Invoke((MethodInvoker)delegate
+            {
+                pnl_pinzeStatus.BackColor = Color.Firebrick;
+            });
         }
 
         private void RobotInHomePositionEvent(object sender, EventArgs e)
         {
-            pnl_homeStatus.BackColor = Color.SeaGreen;
+            Invoke((MethodInvoker)delegate
+            {
+                pnl_homeStatus.BackColor = Color.SeaGreen;
+            });
         }
 
         private void RobotNotInHomePositionEvent(object sender, EventArgs e)
         {
-            pnl_homeStatus.BackColor = Color.Firebrick;
+            Invoke((MethodInvoker)delegate
+            {
+                pnl_homeStatus.BackColor = Color.Firebrick;
+            });
         }
 
         /// <summary>
@@ -322,159 +314,130 @@ namespace RM.src.RM250619
         /// <param name="e"></param>
         private void SelectRobotModeButton(object sender, EventArgs e)
         {
-            int mode = Convert.ToInt16(sender.ToString());
-
-            switch (mode)
+            Invoke((MethodInvoker)delegate
             {
-                case 0:
-                    #region Manuale
+                int mode = Convert.ToInt16(sender.ToString());
 
-                    btn_autoMode.BackColor = SystemColors.ControlDark;
-                    btn_manualMode.BackColor = Color.LimeGreen;
+                switch (mode)
+                {
+                    case 0:
+                        #region Manuale
 
-                    btn_homePosition.Enabled = true;
-                    btn_homePosition.BackColor = SystemColors.Control;
-                    btn_homePosition.BackgroundImage = Resources.home;
+                        btn_autoMode.BackColor = SystemColors.ControlDark;
+                        btn_manualMode.BackColor = Color.LimeGreen;
 
-                    btn_openGripper.Enabled = true;
-                    btn_openGripper.BackColor = SystemColors.Control;
-                    btn_openGripper.BackgroundImage = Resources.gripper;
+                        btn_homePosition.Enabled = true;
+                        btn_homePosition.BackColor = SystemColors.Control;
+                        btn_homePosition.BackgroundImage = Resources.home;
 
-                    btn_startApp.Enabled = false;
-                    btn_startApp.BackColor = SystemColors.ControlDark;
-                    btn_startApp.BackgroundImage = null;
+                        btn_openGripper.Enabled = true;
+                        btn_openGripper.BackColor = SystemColors.Control;
+                        btn_openGripper.BackgroundImage = Resources.gripper;
 
-                    btn_stopApp.Enabled = false;
-                    btn_stopApp.BackColor = SystemColors.ControlDark;
-                    btn_stopApp.BackgroundImage = null;
+                        btn_startApp.Enabled = false;
+                        btn_startApp.BackColor = SystemColors.ControlDark;
+                        btn_startApp.BackgroundImage = null;
 
-                    btn_pauseApp.Enabled = false;
-                    btn_pauseApp.BackColor = SystemColors.ControlDark;
-                    btn_pauseApp.BackgroundImage = null;
+                        btn_stopApp.Enabled = false;
+                        btn_stopApp.BackColor = SystemColors.ControlDark;
+                        btn_stopApp.BackgroundImage = null;
 
-                    break;
+                        btn_pauseApp.Enabled = false;
+                        btn_pauseApp.BackColor = SystemColors.ControlDark;
+                        btn_pauseApp.BackgroundImage = null;
 
-                #endregion
-
-                case 1:
-                    #region Automatico
-
-                    btn_autoMode.BackColor = Color.DodgerBlue;
-                    btn_manualMode.BackColor = SystemColors.ControlDark;
-
-                    btn_homePosition.Enabled = false;
-                    btn_homePosition.BackColor = SystemColors.ControlDark;
-                    btn_homePosition.BackgroundImage = null;
-
-                    btn_openGripper.Enabled = false;
-                    btn_openGripper.BackColor = SystemColors.ControlDark;
-                    btn_openGripper.BackgroundImage = null;
-
-                    btn_startApp.Enabled = true;
-                    btn_startApp.BackColor = SystemColors.Control;
-                    btn_startApp.BackgroundImage = Resources.play32;
-
-                    btn_stopApp.Enabled = false;
-                    btn_stopApp.BackColor = SystemColors.ControlDark;
-                    btn_stopApp.BackgroundImage = null;
-
-                    btn_pauseApp.Enabled = false;
-                    btn_pauseApp.BackColor = SystemColors.ControlDark;
-                    btn_pauseApp.BackgroundImage = null;
-
-                    break;
-
-                #endregion
-
-                case 3:
-                    #region Off
-
-                    btn_autoMode.BackColor = SystemColors.ControlDark;
-                    btn_manualMode.BackColor = SystemColors.ControlDark;
-
-                    btn_homePosition.Enabled = false;
-                    btn_homePosition.BackColor = SystemColors.ControlDark;
-                    btn_homePosition.BackgroundImage = null;
-
-                    btn_startApp.Enabled = false;
-                    btn_startApp.BackColor = SystemColors.ControlDark;
-                    btn_startApp.BackgroundImage = null;
-
-                    btn_openGripper.Enabled = false;
-                    btn_openGripper.BackColor = SystemColors.ControlDark;
-                    btn_openGripper.BackgroundImage = null;
-
-                    btn_stopApp.Enabled = false;
-                    btn_stopApp.BackColor = SystemColors.ControlDark;
-                    btn_stopApp.BackgroundImage = null;
-
-                    btn_pauseApp.Enabled = false;
-                    btn_pauseApp.BackColor = SystemColors.ControlDark;
-                    btn_pauseApp.BackgroundImage = null;
-
-                    break;
+                        break;
 
                     #endregion
-            }
 
+                    case 1:
+                        #region Automatico
+
+                        btn_autoMode.BackColor = Color.DodgerBlue;
+                        btn_manualMode.BackColor = SystemColors.ControlDark;
+
+                        btn_homePosition.Enabled = false;
+                        btn_homePosition.BackColor = SystemColors.ControlDark;
+                        btn_homePosition.BackgroundImage = null;
+
+                        btn_openGripper.Enabled = false;
+                        btn_openGripper.BackColor = SystemColors.ControlDark;
+                        btn_openGripper.BackgroundImage = null;
+
+                        btn_startApp.Enabled = true;
+                        btn_startApp.BackColor = SystemColors.Control;
+                        btn_startApp.BackgroundImage = Resources.play32;
+
+                        btn_stopApp.Enabled = false;
+                        btn_stopApp.BackColor = SystemColors.ControlDark;
+                        btn_stopApp.BackgroundImage = null;
+
+                        btn_pauseApp.Enabled = false;
+                        btn_pauseApp.BackColor = SystemColors.ControlDark;
+                        btn_pauseApp.BackgroundImage = null;
+
+                        break;
+
+                    #endregion
+
+                    case 3:
+                        #region Off
+
+                        btn_autoMode.BackColor = SystemColors.ControlDark;
+                        btn_manualMode.BackColor = SystemColors.ControlDark;
+
+                        btn_homePosition.Enabled = false;
+                        btn_homePosition.BackColor = SystemColors.ControlDark;
+                        btn_homePosition.BackgroundImage = null;
+
+                        btn_startApp.Enabled = false;
+                        btn_startApp.BackColor = SystemColors.ControlDark;
+                        btn_startApp.BackgroundImage = null;
+
+                        btn_openGripper.Enabled = false;
+                        btn_openGripper.BackColor = SystemColors.ControlDark;
+                        btn_openGripper.BackgroundImage = null;
+
+                        btn_stopApp.Enabled = false;
+                        btn_stopApp.BackColor = SystemColors.ControlDark;
+                        btn_stopApp.BackgroundImage = null;
+
+                        btn_pauseApp.Enabled = false;
+                        btn_pauseApp.BackColor = SystemColors.ControlDark;
+                        btn_pauseApp.BackgroundImage = null;
+
+                        break;
+
+                        #endregion
+                }
+            });
         }
 
         private void ChangeLblVelocity(object sender, EventArgs e)
         {
-            lbl_velocity.Text = sender.ToString();
-        }
-
-        private void RobotManager_RobotVelocityChanged(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RobotManger_EnableButtonsCycle(object sender, EventArgs e)
-        {
-            if (Convert.ToInt16(sender) == 1)
+            Invoke((MethodInvoker)delegate
             {
-                btn_stopApp.Enabled = true;
-                btn_stopApp.BackColor = SystemColors.Control;
-                btn_stopApp.BackgroundImage = Resources.stop;
-
-                btn_pauseApp.Enabled = true;
-                btn_pauseApp.BackColor = SystemColors.Control;
-                btn_pauseApp.BackgroundImage = Resources.pausemonitoringRed_32;
-
-                btn_startApp.Enabled = false;
-                btn_startApp.BackColor = SystemColors.ControlDark;
-                btn_startApp.BackgroundImage = null;
-            }
-            else if (Convert.ToInt16(sender) == 0)
-            {
-                btn_startApp.Enabled = false;
-                btn_startApp.BackColor = SystemColors.ControlDark;
-                btn_startApp.BackgroundImage = null;
-
-                btn_pauseApp.Enabled = false;
-                btn_pauseApp.BackColor = SystemColors.ControlDark;
-                btn_pauseApp.BackgroundImage = null;
-
-                btn_stopApp.Enabled = false;
-                btn_stopApp.BackColor = SystemColors.ControlDark;
-                btn_stopApp.BackgroundImage = null;
-            }
+                lbl_velocity.Text = sender.ToString();
+            });
         }
 
         private void RobotManager_EnableButtonHome(object sender, EventArgs e)
         {
-            if (Convert.ToInt16(sender) == 1)
+            Invoke((MethodInvoker)delegate
             {
-                btn_homePosition.Enabled = true;
-                btn_homePosition.BackColor = SystemColors.Control;
-                btn_homePosition.BackgroundImage = Resources.home;
-            }
-            else if (Convert.ToInt16(sender) == 0)
-            {
-                btn_homePosition.Enabled = false;
-                btn_homePosition.BackColor = SystemColors.ControlDark;
-                btn_homePosition.BackgroundImage = null;
-            }
+                if (Convert.ToInt16(sender) == 1)
+                {
+                    btn_homePosition.Enabled = true;
+                    btn_homePosition.BackColor = SystemColors.Control;
+                    btn_homePosition.BackgroundImage = Resources.home;
+                }
+                else if (Convert.ToInt16(sender) == 0)
+                {
+                    btn_homePosition.Enabled = false;
+                    btn_homePosition.BackColor = SystemColors.ControlDark;
+                    btn_homePosition.BackgroundImage = null;
+                }
+            });
         }
 
         /// <summary>
@@ -484,35 +447,38 @@ namespace RM.src.RM250619
         /// <param name="e"></param>
         private void RobotManager_EnableButtonCycleEvent(object sender, EventArgs e)
         {
-            if (Convert.ToInt16(sender) == 1) // Attiva start, disattiva pausa e stop
+            Invoke((MethodInvoker)delegate
             {
-                btn_stopApp.Enabled = false;
-                btn_stopApp.BackColor = SystemColors.ControlDark;
-                btn_stopApp.BackgroundImage = null;
+                if (Convert.ToInt16(sender) == 1) // Attiva start, disattiva pausa e stop
+                {
+                    btn_stopApp.Enabled = false;
+                    btn_stopApp.BackColor = SystemColors.ControlDark;
+                    btn_stopApp.BackgroundImage = null;
 
-                btn_pauseApp.Enabled = false;
-                btn_pauseApp.BackColor = SystemColors.ControlDark;
-                btn_pauseApp.BackgroundImage = null;
+                    btn_pauseApp.Enabled = false;
+                    btn_pauseApp.BackColor = SystemColors.ControlDark;
+                    btn_pauseApp.BackgroundImage = null;
 
-                btn_startApp.Enabled = true;
-                btn_startApp.BackColor = SystemColors.Control;
-                btn_startApp.BackgroundImage = Resources.play32;
-            }
-            else
+                    btn_startApp.Enabled = true;
+                    btn_startApp.BackColor = SystemColors.Control;
+                    btn_startApp.BackgroundImage = Resources.play32;
+                }
+                else
             if (Convert.ToInt16(sender) == 0) // Disattiva start, attiva pausa e stop
-            {
-                btn_stopApp.Enabled = true;
-                btn_stopApp.BackColor = SystemColors.Control;
-                btn_stopApp.BackgroundImage = Resources.stop;
+                {
+                    btn_stopApp.Enabled = true;
+                    btn_stopApp.BackColor = SystemColors.Control;
+                    btn_stopApp.BackgroundImage = Resources.stop;
 
-                btn_pauseApp.Enabled = true;
-                btn_pauseApp.BackColor = SystemColors.Control;
-                btn_pauseApp.BackgroundImage = Resources.pausemonitoringRed_32;
+                    btn_pauseApp.Enabled = true;
+                    btn_pauseApp.BackColor = SystemColors.Control;
+                    btn_pauseApp.BackgroundImage = Resources.pausemonitoringRed_32;
 
-                btn_startApp.Enabled = false;
-                btn_startApp.BackColor = SystemColors.ControlDark;
-                btn_startApp.BackgroundImage = null;
-            }
+                    btn_startApp.Enabled = false;
+                    btn_startApp.BackColor = SystemColors.ControlDark;
+                    btn_startApp.BackgroundImage = null;
+                }
+            });  
         }
 
         /// <summary>
@@ -574,7 +540,7 @@ namespace RM.src.RM250619
             ApplyTransparency(pnl_buttonVAT, opacity0);*/
 
             // Riprendi il layout dei controlli
-            Invoke(new Action(() => ResumeLayout()));
+            //Invoke(new Action(() => ResumeLayout()));
         }
 
         /// <summary>
@@ -603,58 +569,6 @@ namespace RM.src.RM250619
             VelocitySaverTimer.Elapsed += OnSaveTimerElapsed;
             VelocitySaverTimer.AutoReset = false; // il timer non si resetta automaticamente
         }
-
-        /// <summary>
-        /// Inizializza i valori dei controlli presenti nell'interfaccia
-        /// </summary>
-        private async Task InitParameters()
-        {
-            object operatingMode;
-
-            operatingMode = PLCConfig.appVariables.getValue(PLCTagName.Operating_Mode);
-
-            await Task.Delay(100);
-
-            // Aggiorna la UI nel thread della UI
-            if (InvokeRequired)
-            {
-                Invoke(new Action(() =>
-                {
-                    UpdateUI(operatingMode);
-                }));
-            }
-            else
-            {
-                UpdateUI(operatingMode);
-            }
-        }
-
-        private void UpdateUI(object operatingMode)
-        {
-            if (Convert.ToInt16(operatingMode) == 1)
-            {
-                // Manuale
-
-                btn_autoMode.BackColor = SystemColors.ControlDark;
-                btn_manualMode.BackColor = Color.LimeGreen;
-                btn_homePosition.Enabled = true;
-                btn_homePosition.BackColor = SystemColors.Control;
-                btn_homePosition.BackgroundImage = Resources.home;
-            }
-
-            if (Convert.ToInt16(operatingMode) == 0)
-            {
-                // Automatico
-
-                btn_autoMode.BackColor = Color.DodgerBlue;
-                btn_manualMode.BackColor = SystemColors.ControlDark;
-                btn_homePosition.Enabled = false;
-                btn_homePosition.BackColor = SystemColors.ControlDark;
-                btn_homePosition.BackgroundImage = null;
-            }
-
-        }
-
 
         /// <summary>
         /// TODO
@@ -701,55 +615,18 @@ namespace RM.src.RM250619
         }
 
         /// <summary>
-        /// Metodo richiamato dall'evento ValueChanged del dizionario delle variabili PLC
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void RefreshVariables(object sender, DictionaryChangedEventArgs e)
-        {
-            if (AlarmManager.isPlcConnected)
-            {
-                switch (e.Key)
-                {
-                    case PLCTagName.Operating_Mode:
-
-                        if (Convert.ToInt16(e.NewValue) == 2)
-                        {
-                            // Manuale
-
-                            btn_autoMode.BackColor = SystemColors.ControlDark;
-                            btn_manualMode.BackColor = Color.LimeGreen;
-                            btn_homePosition.Enabled = true;
-                            btn_homePosition.BackColor = SystemColors.Control;
-                            btn_homePosition.BackgroundImage = Resources.home;
-                        }
-
-                        if (Convert.ToInt16(e.NewValue) == 1)
-                        {
-                            // Automatico
-
-                            btn_autoMode.BackColor = Color.DodgerBlue;
-                            btn_manualMode.BackColor = SystemColors.ControlDark;
-                            btn_homePosition.Enabled = false;
-                            btn_homePosition.BackColor = SystemColors.ControlDark;
-                            btn_homePosition.BackgroundImage = null;
-                        }
-
-                        break;
-                }
-            }
-        }
-
-        /// <summary>
         /// Evento generato quando ci si logga con un account di livello 3 o superiore
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OnRMLogin(object sender, EventArgs e)
         {
-            //pnl_buttonVAT.Visible = true;
-            btn_VAT.Visible = true;
-            lbl_buttonVAT.Visible = true;
+            Invoke((MethodInvoker)delegate
+            {
+                //pnl_buttonVAT.Visible = true;
+                btn_VAT.Visible = true;
+                lbl_buttonVAT.Visible = true;
+            });
         }
 
         /// <summary>
@@ -759,10 +636,13 @@ namespace RM.src.RM250619
         /// <param name="e"></param>
         private void OnRMLogout(object sender, EventArgs e)
         {
-            //pnl_buttonVAT.Visible = false;
-            btn_VAT.Visible = false;
-            lbl_buttonVAT.Visible = false;
-            VATViewManager.CloseAll();
+            Invoke((MethodInvoker)delegate
+            {
+                //pnl_buttonVAT.Visible = false;
+                btn_VAT.Visible = false;
+                lbl_buttonVAT.Visible = false;
+                VATViewManager.CloseAll();
+            });
         }
 
         /// <summary>
@@ -1047,7 +927,7 @@ namespace RM.src.RM250619
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ClickEvent_startApp(object sender, EventArgs e)
+        private void ClickEvent_startApp(object sender, EventArgs e)
         {
             log.Info("Richiesta di avvio ciclo");
 
@@ -1071,7 +951,9 @@ namespace RM.src.RM250619
                     return;
             }
 
-           await RobotManager.MainCycle();
+            //Start ciclo  --> bisogna scrivere su PLC?
+            //await RobotManager.MainCycle();
+            RobotManager.taskManager.AddAndStartTask(nameof(RobotManager.MainCycle), RobotManager.MainCycle, TaskType.Default, false);
         }
 
         /// <summary>
@@ -1084,7 +966,7 @@ namespace RM.src.RM250619
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ClickEvent_GoToHomePosition(object sender, EventArgs e)
+        private void ClickEvent_GoToHomePosition(object sender, EventArgs e)
         {
             // Se il ciclo di main è in esecuzione non eseguo il metodo
             if (RobotManager.CycleRun_Main != 0)
@@ -1100,9 +982,10 @@ namespace RM.src.RM250619
                 return;
             }
 
-            await RobotManager.HomeRoutine();
+            // Start home routine --> bisogna scrivere a plc il comando?
+            //await RobotManager.HomeRoutine();
+            RobotManager.taskManager.AddAndStartTask(nameof(RobotManager.HomeRoutine), RobotManager.HomeRoutine, TaskType.Short, false);
         }
-
 
         /// <summary>
         /// Stop applicazione
@@ -1114,7 +997,6 @@ namespace RM.src.RM250619
             RobotManager.stopCycleRequested = true;
         }
 
-
         /// <summary>
         ///  Alza richiesta per mettere in pausa il ciclo del Robot
         /// </summary>
@@ -1124,365 +1006,6 @@ namespace RM.src.RM250619
         {
             RobotManager.pauseCycleRequested = true; // Alzo richiesta di pausa ciclo
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16"); // Reset della variabile che fa partire contatore catena
-        }
-
-        #endregion
-
-        #region Demo
-
-        /// <summary>
-        /// A true quando il thread demo è stato avviato
-        /// </summary>
-        private static bool demoThreadStarted = false;
-
-        /// <summary>
-        /// Thread che esegue metodo DemoRoutine
-        /// </summary>
-        private static Thread demoThread;
-
-        /// <summary>
-        /// Avvia il thread di demo
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btn_startDemo_Click(object sender, EventArgs e)
-        {
-            // Controllo che il thread demo non stia già girando
-            if (!demoThreadStarted)
-            {
-                // Thread a priorità normale
-                demoThread = new Thread(new ThreadStart(DemoRoutine));
-                demoThread.IsBackground = true;
-                demoThread.Priority = ThreadPriority.Normal;
-                demoThread.Start();
-
-                demoThreadStarted = true;
-
-                log.Info("Demo avviata");
-            }
-        }
-
-        /// <summary>
-        /// Metodo che esegue la routine di demo
-        /// </summary>
-        private static async void DemoRoutine()
-        {
-            #region Variabili necessarie alla routine
-
-            // Parametri ciclo
-            int stepDemo = 0;
-            int refreshDemoDelay = 50;
-
-            //Riferimenti movimento robot
-            ExaxisPos ePos = new ExaxisPos(0,0,0,0);
-            DescPose pose = new DescPose(0,0,0,0,0,0);
-            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0);
-
-            // Parametri movimento robot
-            int tool = 0;
-            int user = 0;
-            float vel = 5.0f;
-            float acc = 100.0f;
-            float ovl = 100.0f;
-            float blendT = 500.0f;
-            byte flag = 0;
-
-            #endregion
-
-            #region Dichiarazione punti necessari alla routine
-
-            var pullPose = ApplicationConfig.applicationsManager.GetPosition("pPull","RM");
-            var pickPose = ApplicationConfig.applicationsManager.GetPosition("pPick", "RM");
-            var placePose = ApplicationConfig.applicationsManager.GetPosition("pPlace", "RM");
-            var placeHome = ApplicationConfig.applicationsManager.GetPosition("pHomeDemo", "RM");
-
-            #region Pull
-            
-            DescPose pPreApproachPull = new DescPose(pullPose.x - 200.0, pullPose.y, pullPose.z, pullPose.rx, pullPose.ry, pullPose.rz);
-            JointPos jPreApproachPull = new JointPos(0, 0, 0, 0, 0, 0);
-           
-            DescPose pApproachPull = new DescPose(pullPose.x, pullPose.y, pullPose.z, pullPose.rx, pullPose.ry, pullPose.rz);
-            DescPose pTakeTray = new DescPose(pApproachPull.tran.x, pApproachPull.tran.y, pApproachPull.tran.z - 30.0, pApproachPull.rpy.rx, pApproachPull.rpy.ry, pApproachPull.rpy.rz);
-            DescPose pPull = new DescPose(pTakeTray.tran.x - 320.0, pTakeTray.tran.y, pTakeTray.tran.z, pTakeTray.rpy.rx, pTakeTray.rpy.ry, pTakeTray.rpy.rz);
-
-            #endregion
-
-            #region Pick
-
-            DescPose pRetract1 = new DescPose(pPull.tran.x, pPull.tran.y, pPull.tran.z + 30, pPull.rpy.rx, pPull.rpy.ry, pPull.rpy.rz);
-            DescPose pRetract2 = new DescPose(pRetract1.tran.x - 50, pRetract1.tran.y, pRetract1.tran.z, pRetract1.rpy.rx, pRetract1.rpy.ry, pRetract1.rpy.rz);
-            DescPose pRetract3 = new DescPose(pRetract2.tran.x, pRetract2.tran.y, pRetract2.tran.z + 100, pRetract2.rpy.rx, pRetract2.rpy.ry, pRetract2.rpy.rz);
-            
-            DescPose pApproachPick = new DescPose(pickPose.x, pickPose.y - 50, pickPose.z + 100, pickPose.rx, pickPose.ry, pickPose.rz);
-            JointPos jApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-            DescPose pPrePick = new DescPose(pApproachPick.tran.x, pApproachPick.tran.y, pApproachPick.tran.z - 100, pApproachPick.rpy.rx, pApproachPick.rpy.ry, pApproachPick.rpy.rz);
-            DescPose pPick = new DescPose(pickPose.x, pickPose.y, pickPose.z, pickPose.rx, pickPose.ry, pickPose.rz);
-            DescPose pMovePick = new DescPose(pickPose.x - 800, pickPose.y, pickPose.z, pickPose.rx, pickPose.ry, pickPose.rz);
-
-            #endregion
-
-            #region Place
-
-            DescPose pPrePlace = new DescPose(placePose.x, placePose.y, placePose.z + 50, placePose.rx, placePose.ry, placePose.rz);
-            DescPose pPlace = new DescPose(placePose.x, placePose.y, placePose.z, placePose.rx, placePose.ry, placePose.rz);
-            DescPose pRetractPlace = new DescPose(placePose.x, placePose.y, placePose.z + 80, placePose.rx, placePose.ry, placePose.rz);
-            DescPose pPush = new DescPose(pRetractPlace.tran.x, pRetractPlace.tran.y + 100, pRetractPlace.tran.z, pRetractPlace.rpy.rx, pRetractPlace.rpy.ry, pRetractPlace.rpy.rz);
-            DescPose pHome = new DescPose(placeHome.x, placeHome.y, placeHome.z, placeHome.rx, placeHome.ry, placeHome.rz);
-
-            #endregion
-
-            #endregion
-
-            while (true)
-            {
-                switch (stepDemo)
-                {
-                    case 0:
-                        #region Avvicinamento al punto di Pull
-
-                        // Cambio velocità ed accelerazione
-                        acc = 100;
-                        vel = 90;
-                        Thread.Sleep(250);
-
-                        // Movimento in Joint
-                        RobotManager.robot.GetInverseKin(0, pPreApproachPull, -1, ref jPreApproachPull);
-                        int ret = RobotManager.robot.GetForwardKin(jPreApproachPull, ref pose);
-                        RobotManager.robot.MoveJ(jPreApproachPull, pose, tool, user, vel, acc, ovl, ePos, blendT, flag, offset);
-
-                        // Assegno l'ending point
-                        RobotManager.inPosition = false;
-                        RobotManager.endingPoint = pPreApproachPull;
-                        stepDemo = 5;
-
-                        break;
-
-                    #endregion
-
-                    case 1:
-                        #region Attesa inPosition
-
-                        if (RobotManager.inPosition)
-                        {
-                            vel = 20;
-
-                            stepDemo = 5;
-                        }
-                        break;
-
-                    #endregion
-
-                    case 5:
-                        #region Posizionamento sopra la teglia
-
-                        vel = 20;
-                        RobotManager.robot.MoveCart(pApproachPull, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-                        stepDemo = 10;
-                        
-                        break;
-
-                    #endregion
-
-                    case 10:
-                        #region Presa della teglia
-
-                        vel = 10;
-
-                        RobotManager.robot.MoveCart(pTakeTray, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-
-                        // Assegnazione ending point
-                        RobotManager.inPosition = false;
-                        RobotManager.endingPoint = pTakeTray;
-                        stepDemo = 20;
-
-                        break;
-
-                    #endregion
-
-                    case 20:
-                        #region Attesa inPosition
-
-                        if (RobotManager.inPosition)
-                        {
-                            await Task.Delay(250);
-                            vel = 70;
-                            stepDemo = 30;
-                        }
-
-                        break;
-
-                    #endregion
-
-                    case 30:
-                        #region Pull della teglia
-                        
-                        RobotManager.robot.MoveCart(pPull, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-
-                        // Assegnazione ending point
-                        RobotManager.inPosition = false;
-                        RobotManager.endingPoint = pPull;
-                        
-                        stepDemo = 50;
-
-                        break;
-
-                    #endregion
-
-                    case 35:
-                        #region Attesa inPosition
-
-                        if (RobotManager.inPosition)
-                            stepDemo = 50;
-
-                        break;
-
-                    #endregion
-
-                    case 50:
-                        #region Spostamento dalla teglia
-
-                        vel = 8;
-
-                        RobotManager.robot.MoveCart(pRetract1, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-                        RobotManager.robot.MoveCart(pRetract2, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-                        RobotManager.robot.MoveCart(pRetract3, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-                        stepDemo = 55;
-
-                        break;
-
-                    #endregion
-
-                    case 55:
-                        #region Movimento al punto di pick
-
-                        vel = 90;
-
-                        // Movimento in joint al punto di avvicinamento Pick
-                        RobotManager.robot.GetInverseKin(0, pApproachPick, -1, ref jApproachPick);
-                        ret = RobotManager.robot.GetForwardKin(jApproachPick, ref pose);
-                        RobotManager.robot.MoveJ(jApproachPick, pose, tool, user, vel, acc, ovl, ePos, blendT, flag, offset);
-
-                        vel = 70;
-
-                        RobotManager.robot.MoveCart(pPick, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-                        
-                        // Assegnazione ending point
-                        RobotManager.inPosition = false;
-                        RobotManager.endingPoint = pPick;
-                        stepDemo = 120;
-                        break;
-
-                    #endregion
-
-                    case 120:
-                        #region Attesa inPosition
-
-                        if (RobotManager.inPosition)
-                        {
-                            await Task.Delay(500);
-                            stepDemo = 130;
-                        }
-                        break;
-
-                    #endregion
-
-                    case 130:
-                        #region Estrazione teglia
-
-                        RobotManager.robot.MoveCart(pMovePick, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-                        
-                        // Assegnazione ending point
-                        RobotManager.inPosition = false;
-                        RobotManager.endingPoint = pMovePick;
-
-                        stepDemo = 150;
-
-                        break;
-
-                    #endregion
-
-                    case 140:
-                        #region Attesa inPosition
-
-                        if (RobotManager.inPosition)
-                        {
-                            vel = 70;
-                            stepDemo = 150;
-                           
-                        }
-
-                        break;
-
-                    #endregion
-
-                    case 150:
-                        #region Movimento a punto di place
-
-                        RobotManager.robot.MoveCart(pPrePlace, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-
-                        vel = 5;
-
-                        RobotManager.robot.MoveCart(pPlace, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-                        
-                        // Assegnazione ending point
-                        RobotManager.inPosition = false;
-                        RobotManager.endingPoint = pPlace;
-
-                        stepDemo = 155;
-
-                        break;
-
-                    #endregion
-
-                    case 155:
-                        #region Attesa inPosition
-
-                        if (RobotManager.inPosition)
-                        {
-                            await Task.Delay(500);
-                            vel = 20;
-                            stepDemo = 160;
-                        }
-
-                        break;
-
-                    #endregion
-
-                    case 160:
-                        #region Place
-                       
-                        RobotManager.robot.MoveCart(pRetractPlace, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-                        // Scommentando questa riga di codice il robot esegue anche la spinta della teglia dopo il place
-                        //RobotManager.robot.MoveCart(pPush, RobotManager.tool, RobotManager.user, vel, RobotManager.acc, RobotManager.ovl, RobotManager.blendT, RobotManager.config);
-
-                        acc = 100;
-                        vel = 100;
-                       // Thread.Sleep(250);
-                        RobotManager.robot.MoveCart(pHome, tool, user, vel, acc, ovl, blendT, RobotManager.config);
-
-                        // Assegnazione ending point
-                        RobotManager.inPosition = false;
-                        RobotManager.endingPoint = pHome;
-                        stepDemo = 200;
-
-                        break;
-
-                    #endregion
-
-                    case 200:
-                        #region Attesa inPosition e riavvio ciclo
-
-                        if (RobotManager.inPosition)
-                        {
-                            stepDemo = 0;
-                        }
-                        break;
-
-                        #endregion
-                }
-                await Task.Delay(refreshDemoDelay);
-            }
         }
 
         #endregion
@@ -1511,7 +1034,7 @@ namespace RM.src.RM250619
 
         private void ClickEvent_restoreScreenSaverManager(object sender, EventArgs e)
         {
-            FormHomePage.Instance.ScreenSaverManagerForm.RestoreLocation();
+            //FormHomePage.Instance.ScreenSaverManagerForm.RestoreLocation();
         }
 
         private void ClickEvent_stopRobot(object sender, EventArgs e)
@@ -1557,88 +1080,6 @@ namespace RM.src.RM250619
                 RobotManager.robot.ResumeMotion();
                 RobotManager.robotIsPaused = false; // Imposto a false il booleano che segnala che il robot è in pausa
             }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {/*
-            for (int i = 0; i < 8; i++)
-            {
-                RobotManager.robot.SetDO(i, 0, 1, 1);
-            }
-
-            MessageBox.Show("A zero");
-
-           
-
-            */
-
-            RobotManager.robot.SetDO(0, 1, 0, 0);
-           //  RobotManager.robot.GetDI(0, 1, ref ris);
-          /*  byte ris = 0;
-
-            RobotManager.robot.GetDI(0, 1, ref ris);
-            MessageBox.Show(ris.ToString());*/
-
-            /*
-            for (int i = 0; i < 15; i++)
-            {
-                RobotManager.robot.SetDO(i, 0, 1, 1);
-            }
-            */
-            /*
-            RobotManager.robot.SetDO(0, 1, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(1, 1, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(2, 1, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(3, 1, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(4, 1, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(5, 1, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(6, 1, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(7, 1, 1, 1);
-            */
-            /*
-            MessageBox.Show("A zero");
-            RobotManager.robot.SetDO(0, 0, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(1, 0, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(2, 0, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(3, 0, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(4, 0, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(5, 0, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(6, 0, 1, 1);
-            MessageBox.Show("Vai avanti");
-            RobotManager.robot.SetDO(7, 0, 1, 1);
-            */
-            /*
-            int h = 0;
-            int l = 0;
-            RobotManager.robot.GetDO(ref h, ref l);
-            MessageBox.Show("H: " + h.ToString() + " L: " + l.ToString());
-            */
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            RobotManager.robot.SetDO(0, 0, 0, 0);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            byte ris = 0;
-
-            RobotManager.robot.GetDI(0, 1, ref ris);
-            MessageBox.Show(ris.ToString());
         }
     } 
 }
