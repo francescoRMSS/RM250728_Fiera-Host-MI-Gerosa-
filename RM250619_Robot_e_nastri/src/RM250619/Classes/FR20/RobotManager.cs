@@ -511,19 +511,19 @@ namespace RM.src.RM250619
         /// <summary>
         /// Memorizza lo stato precedente della variabile open/close grippers dal PLC
         /// </summary>
-        private static bool? previousGripperStatus = null;
+        private static bool previousGripperStatus = false;
         /// <summary>
         /// Memorizza lo stato precedente della variabile on/off barrier status dal PLC
         /// </summary>
-        private static bool? previousBarrierStatus = false;
+        private static bool previousBarrierStatus = false;
         /// <summary>
         /// Memorizza lo stato precedente della variabile start ciclo dal PLC
         /// </summary>
-        private static bool? previousStartCommandStatus = null;
+        private static bool previousStartCommandStatus = false;
         /// <summary>
         /// Memorizza lo stato precedente della variabile stop ciclo dal PLC
         /// </summary>
-        private static int? previousStopCommandStatus = null;
+        private static int previousStopCommandStatus = 0;
         /// <summary>
         /// Memorizza lo stato precedente della variabile go to home position dal PLC
         /// </summary>
@@ -1422,6 +1422,7 @@ namespace RM.src.RM250619
                     CheckCommandRecordPoint();
                     CheckCommandResetAlarms();
                     CheckVelCommand();
+                    CheckCloseGripper();
                     //SetRobotMode();
                     //ManageTasks();
                     await Task.Delay(applicationTaskManagerRefreshPeriod);
@@ -1450,6 +1451,27 @@ namespace RM.src.RM250619
         #endregion
 
         #region Comandi interfaccia
+
+        private static void CheckCloseGripper()
+        {
+            int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_MAN_closeGrippers));
+            if (gripperStatus == 1 && !previousGripperStatus) //Chiusura 
+            {
+                previousGripperStatus = true;
+                robot.SetDO(0, 0, 0, 0);
+                //int h = 0, i = 0;
+                //robot.GetDO(ref h,ref i);
+                //log.Info($"H: {h}, I: {i}");
+            }
+            else if(gripperStatus == 0 && previousGripperStatus) //Apertura
+            {
+                previousGripperStatus = false;
+                robot.SetDO(0, 1, 0, 0);
+                //int h = 0, i = 0;
+                //robot.GetDO(ref h, ref i);
+                //log.Info($"H: {h}, I: {i}");
+            }
+        }
 
         /// <summary>
         /// Gestione comando di stop derivante da plc
@@ -2223,7 +2245,6 @@ namespace RM.src.RM250619
                     {
                         case 0:
                             #region Cancellazione coda Robot e disattivazione tasti applicazione
-
                             CycleRun_Home = 1;
 
                             SetHomeRoutineSpeed();
@@ -2237,12 +2258,18 @@ namespace RM.src.RM250619
 
                         case 5:
                             #region Movimento a punto di approach home
+                            try
+                            {
+                                GoToApproachHomePosition(pApproach);
+                                endingPoint = pApproach;
 
-                            GoToApproachHomePosition(pApproach);
-                            endingPoint = pApproach;
-
-                            stepHomeRoutine = 6;
-
+                                stepHomeRoutine = 6;
+                            }
+                            catch(Exception e)
+                            {
+                                log.Error("Errore durante movimento robot : " + e.Message);
+                                throw;
+                            }
                             break;
                         #endregion
 
@@ -2256,13 +2283,21 @@ namespace RM.src.RM250619
                         #endregion
 
                         case 10:
+
                             #region Movimento a punto di home
+                            try
+                            {
+                                //MoveRobotToSafePosition();
+                                GoToHomePosition();
+                                endingPoint = pHome;
 
-                            //MoveRobotToSafePosition();
-                            GoToHomePosition();
-                            endingPoint = pHome;
-
-                            stepHomeRoutine = 20;
+                                stepHomeRoutine = 20;
+                            }
+                            catch(Exception e)
+                            {
+                                log.Error("Errore durante movimento robot : " + e.Message);
+                                throw;
+                            }
 
                             break;
 
@@ -2311,7 +2346,7 @@ namespace RM.src.RM250619
             }
             finally
             {
-
+                previousHomeCommandStatus = false;
             }
         }
 
@@ -2578,6 +2613,9 @@ namespace RM.src.RM250619
             int result = robot.MoveCart(pHome, tool, user, vel, acc, ovl, blendT, config);
 
             GetRobotMovementCode(result);
+
+            if (result != 0)
+                throw new Exception("Err code: " + result);
         }
 
         private static void GoToApproachHomePosition(DescPose target)
@@ -2585,6 +2623,9 @@ namespace RM.src.RM250619
             int result = robot.MoveCart(target, tool, user, vel, acc, ovl, blendT, config);
 
             GetRobotMovementCode(result);
+
+            if (result != 0)
+                throw new Exception("Err code: " + result);
         }
 
         #endregion

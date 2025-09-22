@@ -256,7 +256,8 @@ namespace RM.src.RM250619
                         using (var reader = cmd.ExecuteReader())
                         {
                             robot_movement_code.Load(reader);
-                            code = robot_movement_code.Rows[0];
+                            if(robot_movement_code.Rows.Count > 0) 
+                                code = robot_movement_code.Rows[0];
                         }
                     }
                 }
