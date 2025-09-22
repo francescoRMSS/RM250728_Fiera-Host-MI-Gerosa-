@@ -173,9 +173,9 @@ namespace RM.src.RM250619
         /// </summary>
         private void EnterFullScreenMode()
         {
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.WindowState = FormWindowState.Maximized;
-            this.Bounds = Screen.PrimaryScreen.Bounds; // Imposta i confini della finestra sui confini dello schermo
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
+            Bounds = Screen.PrimaryScreen.Bounds; // Imposta i confini della finestra sui confini dello schermo
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace RM.src.RM250619
             Instance.PnlContainer.Controls.Add(HomePage);
 
             RobotManager.taskManager.OneTaskChangedStatus += ChangeTaskStatus;
-            RobotManager.taskManager.StartTaskChecker();
+            //RobotManager.taskManager.StartTaskChecker();
         }
 
         /// <summary>
@@ -262,6 +262,8 @@ namespace RM.src.RM250619
 
             //Configurazione screen saver manager - 5m
             //screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4", false);
+
+            ChangeTaskStatus(this, EventArgs.Empty); // Chiamo il metodo per aggiornare l'interfaccia la prima volta
         }
 
         /// <summary>
@@ -364,7 +366,8 @@ namespace RM.src.RM250619
             "CheckLowPriority",
             "AuxiliaryWorker",
             "CheckRobotConnection",
-            "ApplicationTaskManager"
+            "ApplicationTaskManager",
+            "PlcComHandler"
         };
 
         private void ChangeTaskStatus(object sender, EventArgs e)
@@ -437,6 +440,10 @@ namespace RM.src.RM250619
                         case "ApplicationTaskManager":
                             pnl_appTask.Visible = taskCreated;
                             pnl_appTaskStatus.BackColor = fill_color;
+                            break;
+                        case "PlcComHandler":
+                            pnl_plcTask.Visible = taskCreated;
+                            pnl_plcTaskStatus.BackColor = fill_color;
                             break;
                     }
                 });

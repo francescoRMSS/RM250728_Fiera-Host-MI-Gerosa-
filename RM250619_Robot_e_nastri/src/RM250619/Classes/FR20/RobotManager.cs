@@ -9,7 +9,6 @@ using RMLib.Logger;
 using RMLib.DataAccess;
 using RMLib.PLC;
 using RMLib.Alarms;
-using System.Net.NetworkInformation;
 using RM.src.RM250619.Forms.Plant;
 using RM.Properties;
 using RMLib.MessageBox;
@@ -19,7 +18,6 @@ using RM.src.RM250619.Classes.FR20.Jog;
 using RM.src.RM250619.Classes.FR20;
 using RM.src.RM250619.Classes.FR20.Properties;
 using CookComputing.XmlRpc;
-using static System.Windows.Forms.AxHost;
 
 namespace RM.src.RM250619
 {
@@ -450,6 +448,10 @@ namespace RM.src.RM250619
         /// Periodo di refresh per il task a bassa priorità.
         /// </summary>
         private readonly static int lowPriorityRefreshPeriod = 200;
+        /// <summary>
+        /// Periodo di refresh per il task che comunica al plc
+        /// </summary>
+        private readonly static int plcComTaskRefreshPeriod = 600;
         /// <summary>
         /// Tempo di refresh all'interno del metodo CheckPosition del thread positionCheckerThread.
         /// </summary>
@@ -972,7 +974,7 @@ namespace RM.src.RM250619
         static RobotManager()
         {
             taskManager = new TaskManager();
-            //taskManager.StartTaskChecker();
+            taskManager.StartTaskChecker();
         }
 
         /// <summary>
@@ -1010,12 +1012,14 @@ namespace RM.src.RM250619
             taskManager.AddTask(nameof(AuxiliaryWorker), AuxiliaryWorker, TaskType.LongRunning, true);
             taskManager.AddTask(nameof(CheckLowPriority), CheckLowPriority, TaskType.LongRunning, true);
             taskManager.AddTask(nameof(ApplicationTaskManager), ApplicationTaskManager, TaskType.LongRunning, true);
+            taskManager.AddTask(nameof(PlcComHandler), PlcComHandler, TaskType.LongRunning, true);
 
             taskManager.StartTask(nameof(CheckRobotConnection));
             taskManager.StartTask(nameof(CheckHighPriority));
             taskManager.StartTask(nameof(AuxiliaryWorker));
             taskManager.StartTask(nameof(CheckLowPriority));
             taskManager.StartTask(nameof(ApplicationTaskManager));
+            taskManager.StartTask(nameof(PlcComHandler));
 
             //taskManager.StartTaskChecker();
 
@@ -1182,24 +1186,8 @@ namespace RM.src.RM250619
             }
         }
 
-        /// <summary>
-        /// Thread a priorità bassa che gestisce allarmi robot e PLC
-        /// </summary>
-        private async static Task CheckLowPriority(CancellationToken token)
+        private async static Task PlcComHandler(CancellationToken token)
         {
-            // Lista di aggiornamenti da inviare al PLC
-            List<(string key, bool value, string type)> updates = new List<(string, bool, string)>();
-
-            DataRow robotAlarm = null;
-
-            bool allarmeSegnalato = false;
-
-            string id = "";
-            string description = "";
-            string timestamp = "";
-            string device = "";
-            string state = "";
-
             DateTime now = DateTime.Now;
             long unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
             DateTime dateTime = DateTime.Now;
@@ -1207,20 +1195,20 @@ namespace RM.src.RM250619
 
             Dictionary<string, object> alarmValues = new Dictionary<string, object>();
             Dictionary<string, string> alarmDescriptions = new Dictionary<string, string>
-    {
-        { "Safety NOK", "Ausiliari non pronti" },
-        { "Modbus robot error", "Errore comunicazione modbus robot" },
-        { "Robot Cycle Paused", "Ciclo robot in pausa" },
-        { "Error plates full", "Teglie piene" },
-        { "Check open gr.failed", "Controllo pinza aperta fallito" },
-        { "Check pos_Dx gr. failed", "Controllo pinza chiusa fallito" },
-        { "Robot fault present", "Errore robot" },
-        { "US_Dx_Error", "Errore ultrasuono" },
-        { "US_Dx_Enabled", "Ultrasuono abilitato" },
-        { "US_Dx_Started", "Ultrasuono avviato" },
-        { "US_Dx_Error_Disconnect", "Ultrasuono disconnesso" },
-        { "Errore_Drive_Destro", "Mancata presa pinza robot" },
-    };
+            {
+                { "Safety NOK", "Ausiliari non pronti" },
+                { "Modbus robot error", "Errore comunicazione modbus robot" },
+                { "Robot Cycle Paused", "Ciclo robot in pausa" },
+                { "Error plates full", "Teglie piene" },
+                { "Check open gr.failed", "Controllo pinza aperta fallito" },
+                { "Check pos_Dx gr. failed", "Controllo pinza chiusa fallito" },
+                { "Robot fault present", "Errore robot" },
+                { "US_Dx_Error", "Errore ultrasuono" },
+                { "US_Dx_Enabled", "Ultrasuono abilitato" },
+                { "US_Dx_Started", "Ultrasuono avviato" },
+                { "US_Dx_Error_Disconnect", "Ultrasuono disconnesso" },
+                { "Errore_Drive_Destro", "Mancata presa pinza robot" },
+            };
 
             JointPos jPos = new JointPos(0, 0, 0, 0, 0, 0);
             JointPos j1_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
@@ -1229,23 +1217,48 @@ namespace RM.src.RM250619
             JointPos j4_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
             JointPos j5_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
             JointPos j6_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
-
             try
             {
                 while (!token.IsCancellationRequested)
                 {
-                    CheckPLCConnection();
-                    GetRobotErrorCode(updates, allarmeSegnalato, robotAlarm, now, id, description, timestamp,
-                        device, state, unixTimestamp, dateTime, formattedDate);
-
                     CheckRobotPosition(jPos, j1_actual_pos, j2_actual_pos, j3_actual_pos, j4_actual_pos, j5_actual_pos, j6_actual_pos);
 
                     GetPLCErrorCode(alarmValues, alarmDescriptions, now, unixTimestamp,
                         dateTime, formattedDate);
 
-                    CheckCurrentToolAndUser();
-
                     SendUpdatesToPLC();
+
+                    await Task.Delay(600, token);
+                }
+                token.ThrowIfCancellationRequested();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                log.Error($"[TASK] {nameof(PlcComHandler)}: {ex}");
+                throw;
+            }
+            finally
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Thread a priorità bassa che gestisce allarmi robot e PLC
+        /// </summary>
+        private async static Task CheckLowPriority(CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    CheckPLCConnection();
+
+                    CheckCurrentToolAndUser();
 
                     await Task.Delay(lowPriorityRefreshPeriod, token);
                 }
@@ -1428,7 +1441,11 @@ namespace RM.src.RM250619
             {
 
             }
-        }  
+        }
+
+        #endregion
+
+        #region Altri task
 
         #endregion
 
@@ -1786,7 +1803,7 @@ namespace RM.src.RM250619
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
             try
             {
-                await Task.Run(() => robot.SetAnticollision(0, levelCollision3, 1));
+                await Task.Run(() => robot.SetAnticollision(0, levelCollision3, 1)); //------------------------ usare collision manager
                 currentCollisionLevel = 3;
                 // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
                 while (!stopCycleRoutine && !AlarmManager.blockingAlarm && !token.IsCancellationRequested)
@@ -1860,9 +1877,8 @@ namespace RM.src.RM250619
                             // verificando che tutte siano diverse da 0
 
                             int box = (Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000);
-                            if (box > 100 && box < 302)
+                            if (box > 100 && box < 302) // Controllo non dinamico-------------------
                             {
-
                                 // Get del punto di pick dal dizionario
                                 var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
 
@@ -1911,7 +1927,7 @@ namespace RM.src.RM250619
                             // Es: 1101 -> Pallet 1, formato scatola 1, prima scatola
                             int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
 
-                            if (selectedFormat > 1100 && selectedFormat < 2302)
+                            if (selectedFormat > 1100 && selectedFormat < 2302) // controllo non dinamico-----------------------------
                             {
 
                                 // Eseguo get del punto di place dal dizionario tramite la codifica ricevuta dal plc
@@ -2528,6 +2544,10 @@ namespace RM.src.RM250619
 
         #endregion
 
+        #region Metodi interni
+
+        #endregion
+
         #region Metodi movimento
 
         /// <summary>
@@ -2658,7 +2678,6 @@ namespace RM.src.RM250619
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Main, CycleRun_Main, "INT16"); // Scrittura valore avvio/stop ciclo main
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Pick, CycleRun_Pick, "INT16"); // Scrittura valore avvio/stop ciclo pick
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Place, CycleRun_Place, "INT16"); // Scrittura valore avvio/stop ciclo place
-            // RefresherTask.AddUpdate(PLCTagName.Move_InPause, robotMove_inPause, "INT16"); // Scrittura feedback pausa del robot
             RefresherTask.AddUpdate(PLCTagName.Robot_error, robotError, "INT16"); // Scrittura stato errore del robot
             RefresherTask.AddUpdate(PLCTagName.Robot_enable, robotEnableStatus, "INT16"); // Scrittura stato enable del robot
             RefresherTask.AddUpdate(PLCTagName.Robot_status, robotStatus, "INT16"); // Scrittura stato del robot
@@ -2666,6 +2685,7 @@ namespace RM.src.RM250619
             RefresherTask.AddUpdate(PLCTagName.ACT_N_Frame, currentUser, "INT16"); // Scrittura stato del robot
             RefresherTask.AddUpdate(PLCTagName.ACT_CollisionLevel, currentCollisionLevel, "INT16"); // Scrittura stato del robot
 
+            // RefresherTask.AddUpdate(PLCTagName.Move_InPause, robotMove_inPause, "INT16"); // Scrittura feedback pausa del robot
         }
 
         /// <summary>

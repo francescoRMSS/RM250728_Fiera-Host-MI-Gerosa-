@@ -954,12 +954,8 @@ namespace RM.src.RM250619
             //Start ciclo  --> bisogna scrivere su PLC?
             //await RobotManager.MainCycle();
             RobotManager.taskManager.AddAndStartTask(nameof(RobotManager.MainCycle), RobotManager.MainCycle, TaskType.Default, false);
+            //RefresherTask.AddUpdate(PLCTagName.CMD_StartCicloAuto, 1, "INT16");
         }
-
-        /// <summary>
-        /// A true quando routine di home avviata
-        /// </summary>
-        public static bool homeRoutineStarted = false;
 
         /// <summary>
         /// Ritorno a casa del Robot
@@ -985,6 +981,7 @@ namespace RM.src.RM250619
             // Start home routine --> bisogna scrivere a plc il comando?
             //await RobotManager.HomeRoutine();
             RobotManager.taskManager.AddAndStartTask(nameof(RobotManager.HomeRoutine), RobotManager.HomeRoutine, TaskType.Short, false);
+            //RefresherTask.AddUpdate(PLCTagName.CMD_GoHome, 1, "INT16");
         }
 
         /// <summary>
@@ -995,6 +992,7 @@ namespace RM.src.RM250619
         private void ClickEvent_stopApp(object sender, EventArgs e)
         {
             RobotManager.stopCycleRequested = true;
+            //RefresherTask.AddUpdate(PLCTagName.CMD_StopCicloAuto, 1, "INT16");
         }
 
         /// <summary>
@@ -1006,6 +1004,7 @@ namespace RM.src.RM250619
         {
             RobotManager.pauseCycleRequested = true; // Alzo richiesta di pausa ciclo
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16"); // Reset della variabile che fa partire contatore catena
+            //RefresherTask.AddUpdate(PLCTagName.MovePause, 1, "INT16");
         }
 
         #endregion

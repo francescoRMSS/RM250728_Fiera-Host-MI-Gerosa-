@@ -2981,6 +2981,11 @@
             Periodo di refresh per il task a bassa priorità.
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.RobotManager.plcComTaskRefreshPeriod">
+            <summary>
+            Periodo di refresh per il task che comunica al plc
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.RobotManager.positionCheckerThreadRefreshPeriod">
             <summary>
             Tempo di refresh all'interno del metodo CheckPosition del thread positionCheckerThread.
@@ -6485,11 +6490,6 @@
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
-        </member>
-        <member name="F:RM.src.RM250619.UC_HomePage.homeRoutineStarted">
-            <summary>
-            A true quando routine di home avviata
-            </summary>
         </member>
         <member name="M:RM.src.RM250619.UC_HomePage.ClickEvent_GoToHomePosition(System.Object,System.EventArgs)">
             <summary>

@@ -58,6 +58,9 @@
             this.Pnl_MOVROBOT_alarm = new System.Windows.Forms.Panel();
             this.lbl_pageTitle = new System.Windows.Forms.Label();
             this.lbl_dateTime = new System.Windows.Forms.Label();
+            this.pnl_plcTask = new System.Windows.Forms.Panel();
+            this.pnl_plcTaskStatus = new RMLib.View.CustomPanel();
+            this.label3 = new System.Windows.Forms.Label();
             this.pnl_header.SuspendLayout();
             this.pnl_appTask.SuspendLayout();
             this.pnl_comRobotTask.SuspendLayout();
@@ -65,6 +68,7 @@
             this.pnl_lowTask.SuspendLayout();
             this.pnl_highTask.SuspendLayout();
             this.PnlLogoContainer.SuspendLayout();
+            this.pnl_plcTask.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnl_pageContainer
@@ -82,6 +86,7 @@
             this.pnl_header.BorderColor = System.Drawing.Color.Black;
             this.pnl_header.BorderRadius = 0;
             this.pnl_header.BorderSize = 0;
+            this.pnl_header.Controls.Add(this.pnl_plcTask);
             this.pnl_header.Controls.Add(this.pnl_appTask);
             this.pnl_header.Controls.Add(this.pnl_safeZone);
             this.pnl_header.Controls.Add(this.pnl_comRobotTask);
@@ -418,6 +423,44 @@
             this.lbl_dateTime.Text = "12:34:56";
             this.lbl_dateTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // pnl_plcTask
+            // 
+            this.pnl_plcTask.Controls.Add(this.pnl_plcTaskStatus);
+            this.pnl_plcTask.Controls.Add(this.label3);
+            this.pnl_plcTask.Location = new System.Drawing.Point(733, 74);
+            this.pnl_plcTask.Name = "pnl_plcTask";
+            this.pnl_plcTask.Size = new System.Drawing.Size(41, 42);
+            this.pnl_plcTask.TabIndex = 40;
+            // 
+            // pnl_plcTaskStatus
+            // 
+            this.pnl_plcTaskStatus.BackColor = System.Drawing.Color.White;
+            this.pnl_plcTaskStatus.BackgroundColor = System.Drawing.Color.White;
+            this.pnl_plcTaskStatus.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pnl_plcTaskStatus.BorderColor = System.Drawing.Color.Black;
+            this.pnl_plcTaskStatus.BorderRadius = 10;
+            this.pnl_plcTaskStatus.BorderSize = 0;
+            this.pnl_plcTaskStatus.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.pnl_plcTaskStatus.ForeColor = System.Drawing.Color.White;
+            this.pnl_plcTaskStatus.Location = new System.Drawing.Point(10, 4);
+            this.pnl_plcTaskStatus.Margin = new System.Windows.Forms.Padding(0);
+            this.pnl_plcTaskStatus.Name = "pnl_plcTaskStatus";
+            this.pnl_plcTaskStatus.Size = new System.Drawing.Size(20, 20);
+            this.pnl_plcTaskStatus.TabIndex = 30;
+            this.pnl_plcTaskStatus.TextColor = System.Drawing.Color.White;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.Transparent;
+            this.label3.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(4, 27);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(32, 16);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "PLC";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // FormHomePage
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -447,6 +490,8 @@
             this.pnl_highTask.ResumeLayout(false);
             this.pnl_highTask.PerformLayout();
             this.PnlLogoContainer.ResumeLayout(false);
+            this.pnl_plcTask.ResumeLayout(false);
+            this.pnl_plcTask.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -481,6 +526,9 @@
         private System.Windows.Forms.Panel pnl_highTask;
         private RMLib.View.CustomPanel pnl_highTaskStatus;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Panel pnl_plcTask;
+        private RMLib.View.CustomPanel pnl_plcTaskStatus;
+        private System.Windows.Forms.Label label3;
     }
 }
 
