@@ -1250,6 +1250,21 @@
             coord rz di place pallet 2 box 2
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Hmi_startCycle">
+            <summary>
+            bit di controllo per start ciclo
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Hmi_stopCycle">
+            <summary>
+            bit di controllo per stop ciclo
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Hmi_homeRoutine">
+            <summary>
+            bit di controllo per go to home position
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ACT_CollisionLevel">
             <summary>
             Livello collisione robot

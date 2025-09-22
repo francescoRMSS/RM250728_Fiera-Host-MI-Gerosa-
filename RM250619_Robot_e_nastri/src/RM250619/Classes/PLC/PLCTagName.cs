@@ -395,6 +395,21 @@ namespace RM.src.RM250619.Classes.PLC
         /// </summary>
         public const string PlacePoint_Pallet2_Box2_RZ = "PLC1_" + "PlacePoint_Pallet2_Box2_RZ";
 
+        /// <summary>
+        /// bit di controllo per start ciclo
+        /// </summary>
+        public const string Hmi_startCycle = "PLC1_" + "Hmi_startCycle";
+
+        /// <summary>
+        /// bit di controllo per stop ciclo
+        /// </summary>
+        public const string Hmi_stopCycle = "PLC1_" + "Hmi_stopCycle";
+
+        /// <summary>
+        /// bit di controllo per go to home position
+        /// </summary>
+        public const string Hmi_homeRoutine = "PLC1_" + "Hmi_homeRoutine";
+
         #endregion
 
         #region HMI
