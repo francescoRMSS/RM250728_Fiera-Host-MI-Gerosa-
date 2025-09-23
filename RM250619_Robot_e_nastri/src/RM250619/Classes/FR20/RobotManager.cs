@@ -2000,7 +2000,7 @@ namespace RM.src.RM250619
             }
             finally
             {
-                previousHomeCommandStatus = false;
+                //previousHomeCommandStatus = false;   // viene resettato da plc il comando dopo 20 secondi
             }
         }
 
@@ -2202,6 +2202,8 @@ namespace RM.src.RM250619
             int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_MAN_closeGrippers));
             if (gripperStatus == 1 && !previousGripperStatus) //Chiusura 
             {
+                log.Warn("Richiesto comando chiusura ventose");
+
                 previousGripperStatus = true;
                 await Task.Run(() => robot.SetDO(0, 0, 0, 0));
                 //int h = 0, i = 0;
@@ -2210,6 +2212,8 @@ namespace RM.src.RM250619
             }
             else if(gripperStatus == 0 && previousGripperStatus) //Apertura
             {
+                log.Warn("Richiesto comando apertura ventose");
+
                 previousGripperStatus = false;
                 await Task.Run(() => robot.SetDO(0, 1, 0, 0));
                 //int h = 0, i = 0;
@@ -2228,6 +2232,8 @@ namespace RM.src.RM250619
 
             if (stopStatus == 1 && previousStopCommandStatus != 1)
             {
+                log.Warn("Richiesto comando STOP");
+
                 stopCycleRoutine = true; // Alzo segnale di stop ciclo main
                 CycleRun_Main = 0; // Segnalo interruzione ciclo main
                 step = 0; // reset step ciclo main
@@ -2250,7 +2256,7 @@ namespace RM.src.RM250619
 
                 previousStopCommandStatus = 1;
             }
-            else
+            else if(stopStatus == 0)
             {
                 previousStopCommandStatus = 0;
             }
@@ -2267,6 +2273,8 @@ namespace RM.src.RM250619
             // Check su cambio di stato
             if (velocity != previousVel)
             {
+                log.Warn("Richiesto comando cambio override speed con : " + velocity);
+
                 await Task.Run(() => RobotDAO.SetRobotVelocity(ConnectionString, Convert.ToInt16(velocity)));
                 await Task.Run(() => RobotDAO.SetRobotAcceleration(ConnectionString, Convert.ToInt16(velocity)));
 
@@ -2293,6 +2301,8 @@ namespace RM.src.RM250619
             // Check su cambio di stato
             if (Convert.ToBoolean(startStatus) != previousStartCommandStatus)
             {
+                log.Warn("Richiesto comando START");
+
                 if (startStatus == 1 && stopStatus != 1) // Start
                 {
                     // Controllo che il robot sia in automatico
@@ -2340,6 +2350,10 @@ namespace RM.src.RM250619
 
                 previousStartCommandStatus = startStatus > 0;
             }
+            else if(!Convert.ToBoolean(startStatus))
+            {
+                previousStartCommandStatus = false;
+            }
         }
 
         /// <summary>
@@ -2351,6 +2365,8 @@ namespace RM.src.RM250619
 
             if (homeStatus == 1 && !previousHomeCommandStatus) // Go to home
             {
+                log.Warn("Richiesto comando GO TO HOME")
+                    ;
                 previousHomeCommandStatus = true;
                 taskManager.AddAndStartTask(nameof(HomeRoutine), HomeRoutine, TaskType.Default, false);
             }
@@ -2377,6 +2393,8 @@ namespace RM.src.RM250619
             {
                 if (barrierStatus == 1)
                 {
+                    log.Warn("Richiesto comando PAUSA");
+
                     // Richiesta di pausa
                     await Task.Run(() => robot.PauseMotion());
                     robotIsPaused = true;
@@ -2409,6 +2427,10 @@ namespace RM.src.RM250619
 
                 previousBarrierPauseStatus = barrierStatus > 0;
             }
+            else if (!Convert.ToBoolean(barrierStatus))
+            {
+                previousBarrierPauseStatus = false;
+            }
         }
 
         /// <summary>
@@ -2434,6 +2456,8 @@ namespace RM.src.RM250619
                 // Se la richiesta di pausa è 0 e la richiesta di resume è a 1
                 if (barrierStatus == 0 && resumeMov == 1)
                 {
+                    log.Warn("Richiesto comando RESUME");
+
                     // Ripresa
                     await Task.Run(() => robot.ResumeMotion());
                     robotIsPaused = false;
@@ -2465,6 +2489,10 @@ namespace RM.src.RM250619
                     previousBarrierResumeStatus = barrierStatus > 0;
                 }
             }
+            else if (!Convert.ToBoolean(barrierStatus))
+            {
+                previousBarrierResumeStatus = false;
+            }
         }
 
         /// <summary>
@@ -2476,8 +2504,10 @@ namespace RM.src.RM250619
 
             int recordPointCommand = 0;
 
-            if (recordPointCommand > 0)
+            if (recordPointCommand > 0) // aggiungere stato precedente
             {
+                log.Warn("Richiesto comando RECORD");
+
                 // Registrazione punto 
 
                 DescPose newPoint = await Task.Run(() => RecPoint());
@@ -2516,8 +2546,9 @@ namespace RM.src.RM250619
         {
             int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_ResetAlarms));
 
-            if (resetAlarmsCommand > 0)
+            if (resetAlarmsCommand > 0) // Agigungere stato precedente
             {
+                log.Warn("Richiesto comando RESET allarmi");
                 try
                 {
                     // Reset allarme
@@ -2529,6 +2560,10 @@ namespace RM.src.RM250619
                 {
                     log.Error("Eccezione generata durante reset allarmi");
                 }
+            }
+            else if(resetAlarmsCommand == 0)
+            {
+
             }
         }
 
