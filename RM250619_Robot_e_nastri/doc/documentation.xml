@@ -875,7 +875,7 @@
             Clock da scrivere ogni secondo (il clock su PLC gira ogni 2s)
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Hardware_Ready_To_Start">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Com_robot_attiva">
             <summary>
             Se il valore è 1, indica che la lista di lavoro del robot contiene almeno un programma
             </summary>
@@ -1665,7 +1665,11 @@
             Errore comunicazione pulsantiera
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:RM.src.RM250619.Classes.PLC.PLCTagName.OFFSET_Pick_X" -->
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.OFFSET_Pick_X">
+            <summary>
+            xOffset punto di pick
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.OFFSET_Pick_Y">
             <summary>
             yOffset punto di pick
@@ -3001,6 +3005,11 @@
             Periodo di refresh all'interno del metodo ApplicationTaskManager
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.RobotManager.safetyTaskManagerRefreshPeriod">
+            <summary>
+            Periodo di refresh all'interno del metodo SafetyYaskManager
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.RobotManager.riga">
             <summary>
             Riga della matrice di carico del pallet
@@ -3632,17 +3641,34 @@
             <param name="token"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.AttemptReconnect">
-            <summary>
-            Metodo helper che tenta di ricreare e riconnettere l'oggetto robot.
-            Non è in un loop, viene chiamato dal Guardian quando necessario.
-            </summary>
-        </member>
         <member name="M:RM.src.RM250619.RobotManager.ApplicationTaskManager(System.Threading.CancellationToken)">
             <summary>
             Esegue controlli su modalità robot, task in uso e sceglie quali task fermare/partire
             </summary>
             <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.MainCycle(System.Threading.CancellationToken)">
+            <summary>
+            Esegue metodo che gestisce routine di pick e di place
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.PickBox(RM.src.RM250619.ApplicationPositions)">
+            <summary>
+            Esegue il pick della scatola
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.HomeRoutine(System.Threading.CancellationToken)">
+            <summary>
+            Routine di go to home position
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.PlaceBox(RM.src.RM250619.ApplicationPositions)">
+            <summary>
+            Esegue il place della scatola
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckCommandStop">
@@ -3685,28 +3711,89 @@
             Check su comando di reset allarmi derivante da plc
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.MainCycle(System.Threading.CancellationToken)">
+        <member name="M:RM.src.RM250619.RobotManager.AttemptReconnect">
             <summary>
-            Esegue metodo che gestisce routine di pick e di place
+            Metodo helper che tenta di ricreare e riconnettere l'oggetto robot.
+            Non è in un loop, viene chiamato dal Guardian quando necessario.
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.PickBox(RM.src.RM250619.ApplicationPositions)">
+        <member name="M:RM.src.RM250619.RobotManager.SendUpdatesToPLC">
             <summary>
-            Esegue il pick della scatola
+            Esegue scrittua su plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.TriggerRobotVelocityChangedEvent(System.Int32)">
+            <summary>
+            Invoca metodo relativo al cambio di velocità del robot
+            </summary>
+            <param name="vel">Velocità impostata al Robot</param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.TriggerRobotModeChangedEvent(System.Int32)">
+            <summary>
+            Invoca metodo relativo al cambio di modalità del robot
+            </summary>
+            <param name="mode"></param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.RecPoint">
+            <summary>
+            Registra e restituisce punto posizione attuale del Robot
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.HomeRoutine(System.Threading.CancellationToken)">
+        <member name="M:RM.src.RM250619.RobotManager.SetHomeRoutineSpeed">
             <summary>
-            Routine di go to home position
+            Imposta la velocità predefinita per eseguire la home routine
             </summary>
-            <returns></returns>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.PlaceBox(RM.src.RM250619.ApplicationPositions)">
+        <member name="M:RM.src.RM250619.RobotManager.ResetHomeRoutineSpeed">
             <summary>
-            Esegue il place della scatola
+            Resetta la velocità utilizzata per la home routine
             </summary>
-            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.ClearRobotAlarm">
+            <summary>
+            Metodo per reset errori Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.SetRobotMode(System.Int32)">
+            <summary>
+            Imposta la modalità operativa del robot: 
+            <para>0 = automatico</para>
+            <para>1 = manuale</para>
+            </summary>
+            <param name="mode"></param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotEnable">
+            <summary>
+            Esegue check su Robot enable
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.ClearRobotQueue">
+            <summary>
+            Metodo che ferma il robot e cancella la coda di punti
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CreateRobotAlarm(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Creazione di un allarme quando il robot si ferma
+            </summary>
+            <param name="id">ID allarme</param>
+            <param name="description">Descrizione allarme</param>
+            <param name="timestamp">Timestamp allarme</param>
+            <param name="device">Device da cui deriva l'allarme</param>
+            <param name="state">ON-OFF</param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.OnRobotAlarm(RMLib.Alarms.RobotAlarmsEventArgs)">
+            <summary>
+            Metodo che aggiunge alla lista degli allarmi l'allarme
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotMoving(System.Collections.Generic.List{System.ValueTuple{System.String,System.Boolean,System.String}})">
+            <summary>
+            Check su movimento del Robot
+            </summary>
+            <param name="updates"></param>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.PauseMotion">
             <summary>
@@ -3756,27 +3843,10 @@
             <param name="maincode"></param>
             <param name="subcode"></param>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.SendUpdatesToPLC">
-            <summary>
-            Esegue scrittua su plc
-            </summary>
-        </member>
         <member name="M:RM.src.RM250619.RobotManager.GetRobotInfo">
             <summary>
             Ottiene le informazioni del robot attraverso i metodi bloccanti della libreria
             </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.TriggerRobotVelocityChangedEvent(System.Int32)">
-            <summary>
-            Invoca metodo relativo al cambio di velocità del robot
-            </summary>
-            <param name="vel">Velocità impostata al Robot</param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.TriggerRobotModeChangedEvent(System.Int32)">
-            <summary>
-            Invoca metodo relativo al cambio di modalità del robot
-            </summary>
-            <param name="mode"></param>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.GetPLCErrorCode(System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.Dictionary{System.String,System.String},System.DateTime,System.Int64,System.DateTime,System.String)">
             <summary>
@@ -3834,9 +3904,19 @@
             Esegue check su modalità Robot
             </summary>
         </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckStatusRobot">
+            <summary>
+            Legge lo stato del robot
+            </summary>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.ResetRobotSteps">
             <summary>
             Esegue reset del contatore degli step delle routine
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.CheckCurrentToolAndUser">
+            <summary>
+            Controlla il tool e user correnti
             </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckPLCConnection">
@@ -3867,12 +3947,6 @@
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.RecPoint">
-            <summary>
-            Registra e restituisce punto posizione attuale del Robot
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.GetRobotMovementCode(System.Int32)">
             <summary>
@@ -3915,34 +3989,6 @@
             <param name="angle"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.SetHomeRoutineSpeed">
-            <summary>
-            Imposta la velocità predefinita per eseguire la home routine
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.ResetHomeRoutineSpeed">
-            <summary>
-            Resetta la velocità utilizzata per la home routine
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.ClearRobotAlarm">
-            <summary>
-            Metodo per reset errori Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.SetRobotMode(System.Int32)">
-            <summary>
-            Imposta la modalità operativa del robot: 
-            <para>0 = automatico</para>
-            <para>1 = manuale</para>
-            </summary>
-            <param name="mode"></param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotEnable">
-            <summary>
-            Esegue check su Robot enable
-            </summary>
-        </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckRobotPosition(fairino.JointPos,fairino.JointPos,fairino.JointPos,fairino.JointPos,fairino.JointPos,fairino.JointPos,fairino.JointPos)">
             <summary>
             Invia posizioni al PLC in formato cartesiano e joint
@@ -3955,39 +4001,12 @@
             <param name="j5_actual_pos">Posizione del giunto 5</param>
             <param name="j6_actual_pos">Posizione del giunto 6</param>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckIsRobotMoving(System.Collections.Generic.List{System.ValueTuple{System.String,System.Boolean,System.String}})">
-            <summary>
-            Check su movimento del Robot
-            </summary>
-            <param name="updates"></param>
-        </member>
         <member name="M:RM.src.RM250619.RobotManager.RoundPositionDecimals(fairino.DescPose@,System.Int32)">
             <summary>
             Approssima i valori delle posizioni a n cifre decimali
             </summary>
             <param name="dp">Contiene il riferimento allo struct che contiene i valori da approssimare</param>
             <param name="digits">Numero di cifre decimali desiderate</param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.ClearRobotQueue">
-            <summary>
-            Metodo che ferma il robot e cancella la coda di punti
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.CreateRobotAlarm(System.String,System.String,System.String,System.String,System.String)">
-            <summary>
-            Creazione di un allarme quando il robot si ferma
-            </summary>
-            <param name="id">ID allarme</param>
-            <param name="description">Descrizione allarme</param>
-            <param name="timestamp">Timestamp allarme</param>
-            <param name="device">Device da cui deriva l'allarme</param>
-            <param name="state">ON-OFF</param>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.OnRobotAlarm(RMLib.Alarms.RobotAlarmsEventArgs)">
-            <summary>
-            Metodo che aggiunge alla lista degli allarmi l'allarme
-            </summary>
-            <param name="e"></param>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.PickAndPlaceTeglia">
             <summary>

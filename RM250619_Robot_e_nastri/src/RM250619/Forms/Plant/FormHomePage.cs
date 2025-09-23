@@ -388,7 +388,8 @@ namespace RM.src.RM250619
             "AuxiliaryWorker",
             "CheckRobotConnection",
             "ApplicationTaskManager",
-            "PlcComHandler"
+            "PlcComHandler",
+            "SafetyTaskManager"
         };
 
         private void ChangeTaskStatus(object sender, EventArgs e)
@@ -400,6 +401,7 @@ namespace RM.src.RM250619
                 pnl_auxTask.Visible = false;
                 pnl_comRobotTask.Visible = false;
                 pnl_appTask.Visible = false;
+                pnl_safetyTask.Visible = false;
             });
 
             List<TaskModel> taskStructs = RobotManager.taskManager.GetTaskList();
@@ -465,6 +467,10 @@ namespace RM.src.RM250619
                         case "PlcComHandler":
                             pnl_plcTask.Visible = taskCreated;
                             pnl_plcTaskStatus.BackColor = fill_color;
+                            break;
+                        case "SafetyTaskManager":
+                            pnl_safetyTask.Visible = taskCreated;
+                            pnl_safetyTaskStatus.BackColor = fill_color;
                             break;
                     }
                 });

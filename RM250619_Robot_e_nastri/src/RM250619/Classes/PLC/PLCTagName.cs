@@ -18,7 +18,7 @@ namespace RM.src.RM250619.Classes.PLC
         /// <summary>
         /// Se il valore è 1, indica che la lista di lavoro del robot contiene almeno un programma
         /// </summary>
-        public const string Hardware_Ready_To_Start = "PLC1_" + "Hardware_Redy_To_Start";
+        public const string Com_robot_attiva = "PLC1_" + "Com_robot_attiva";
 
         /// <summary>
         /// A 1 quando quando il robot lavora in modalità automatico
@@ -65,10 +65,11 @@ namespace RM.src.RM250619.Classes.PLC
         /// </summary>
         public const string Robot_status = "PLC1_" + "Robot_status";
 
+        /*
         /// <summary>
         /// Livello di collisione corrente del robot
         /// </summary>
-        //public const string ACT_CollisionLevel = "PLC1_" + "ACT_CollisionLevel";
+        public const string ACT_CollisionLevel = "PLC1_" + "ACT_CollisionLevel";*/
 
         /// <summary>
         /// tool corrente del robot
@@ -826,6 +827,7 @@ namespace RM.src.RM250619.Classes.PLC
         /// </summary>
         public static string MobilePanel_CommError = "PLC1_" + "com_robot_83";
 
+        /// <summary>
         /// xOffset punto di pick
         /// </summary>
         public static string OFFSET_Pick_X = "PLC1_" + "com_robot_94";
