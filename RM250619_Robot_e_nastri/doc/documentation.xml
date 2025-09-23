@@ -2986,11 +2986,6 @@
             Periodo di refresh per il task degli ausiliari.
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.RobotManager.demoThreadRefreshPeriod">
-            <summary>
-            Periodo di refresh per il task di demo.
-            </summary>
-        </member>
         <member name="F:RM.src.RM250619.RobotManager.lowPriorityRefreshPeriod">
             <summary>
             Periodo di refresh per il task a bassa priorità.
@@ -2999,11 +2994,6 @@
         <member name="F:RM.src.RM250619.RobotManager.plcComTaskRefreshPeriod">
             <summary>
             Periodo di refresh per il task che comunica al plc
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.positionCheckerThreadRefreshPeriod">
-            <summary>
-            Tempo di refresh all'interno del metodo CheckPosition del thread positionCheckerThread.
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.applicationTaskManagerRefreshPeriod">
@@ -3619,6 +3609,13 @@
             Thread ad alta priorità che tiene monitorato movimento robot e zone di ingombro
             </summary>
         </member>
+        <member name="M:RM.src.RM250619.RobotManager.PlcComHandler(System.Threading.CancellationToken)">
+            <summary>
+            Thread che gestisce il controllo connessione plc e la scrittura degli aggiornamenti delle variabili
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.CheckLowPriority(System.Threading.CancellationToken)">
             <summary>
             Thread a priorità bassa che gestisce allarmi robot e PLC
@@ -3711,6 +3708,28 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RM.src.RM250619.RobotManager.PauseMotion">
+            <summary>
+            Metodo che mette in pausa il Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.ResumeMotion">
+            <summary>
+            Metodo che riprende movimento Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.GoToHomePosition">
+            <summary>
+            Metodo che porta il Robot in HomePosition
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.GoToApproachHomePosition(fairino.DescPose)">
+            <summary>
+            Sposta il robot alla posizione definita
+            </summary>
+            <param name="target"></param>
+            <exception cref="T:System.Exception"></exception>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.CalcolaPosizioneScatola(System.Int32,System.Int32,System.Int32,System.Double,System.Double,System.Double,fairino.DescPose)">
             <summary>
             Calcola la  pose in cui mettere la scatola nel pallet. <br/>
@@ -3729,21 +3748,6 @@
             <param name="altezzaScatola">Altezza della scatola(mm)</param>
             <param name="originePallet">Punto di origine del pallet, cioè il punto dell'angolo in alto a sinistra. Posizionare il TCP proprio sopra di esso.</param>
             <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.PauseMotion">
-            <summary>
-            Metodo che mette in pausa il Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.ResumeMotion">
-            <summary>
-            Metodo che riprende movimento Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.GoToHomePosition">
-            <summary>
-            Metodo che porta il Robot in HomePosition
-            </summary>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.GenerateAlarm(System.Int32,System.Int32)">
             <summary>

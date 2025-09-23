@@ -1082,5 +1082,16 @@ namespace RM.src.RM250619
                 RobotManager.robotIsPaused = false; // Imposto a false il booleano che segnala che il robot è in pausa
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            var restPose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
+            DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
+
+            int result = RobotManager.robot.MoveCart(pHome, RobotManager.tool, RobotManager.user, RobotManager.vel,
+                RobotManager.acc, RobotManager.ovl, RobotManager.blendT, RobotManager.config);
+        }
+
     } 
 }

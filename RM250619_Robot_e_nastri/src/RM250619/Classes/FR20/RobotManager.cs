@@ -441,10 +441,6 @@ namespace RM.src.RM250619
         /// </summary>
         private readonly static int auxiliaryThreadRefreshPeriod = 200;
         /// <summary>
-        /// Periodo di refresh per il task di demo.
-        /// </summary>
-        private readonly static int demoThreadRefreshPeriod = 50;
-        /// <summary>
         /// Periodo di refresh per il task a bassa priorità.
         /// </summary>
         private readonly static int lowPriorityRefreshPeriod = 200;
@@ -453,13 +449,9 @@ namespace RM.src.RM250619
         /// </summary>
         private readonly static int plcComTaskRefreshPeriod = 600;
         /// <summary>
-        /// Tempo di refresh all'interno del metodo CheckPosition del thread positionCheckerThread.
-        /// </summary>
-        private readonly static int positionCheckerThreadRefreshPeriod = 50;
-        /// <summary>
         /// Periodo di refresh all'interno del metodo ApplicationTaskManager
         /// </summary>
-        private readonly static int applicationTaskManagerRefreshPeriod = 100;
+        private readonly static int applicationTaskManagerRefreshPeriod = 200;
 
         #endregion
 
@@ -1155,9 +1147,11 @@ namespace RM.src.RM250619
                             CheckIsRobotInObstructionArea(startPoints, updates);
                             CheckIsRobotInSafeZone(pointSafeZone);
                             CheckIsRobotInPos();
-                            CheckPauseStatus();
-                            CheckResumeStatus();
                             CheckStatusRobot();
+
+                            await CheckCommandStop();
+                            await CheckPauseStatus();
+                            await CheckResumeStatus();
                         }
                         catch (Exception e)
                         {
@@ -1186,6 +1180,11 @@ namespace RM.src.RM250619
             }
         }
 
+        /// <summary>
+        /// Thread che gestisce il controllo connessione plc e la scrittura degli aggiornamenti delle variabili
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         private async static Task PlcComHandler(CancellationToken token)
         {
             DateTime now = DateTime.Now;
@@ -1310,7 +1309,7 @@ namespace RM.src.RM250619
                         await Task.Run(() => connectionProxy.GetRobotErrorCode(), token);
                         isProxyConnected = true;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         // Qualsiasi eccezione (XmlRpcException, WebException) significa che non siamo connessi.
                         isProxyConnected = false;
@@ -1416,15 +1415,17 @@ namespace RM.src.RM250619
 
                 while (!token.IsCancellationRequested)
                 {
-                    CheckCommandStart();
-                    CheckCommandStop();
-                    CheckCommandGoToHome();
-                    CheckCommandRecordPoint();
+                    await CheckCommandStart();
+                    await CheckCommandGoToHome();
+
+                    await CheckCommandRecordPoint();
+                    await CheckVelCommand();
+                    await CheckCloseGripper();
                     CheckCommandResetAlarms();
-                    CheckVelCommand();
-                    CheckCloseGripper();
+
                     //SetRobotMode();
                     //ManageTasks();
+
                     await Task.Delay(applicationTaskManagerRefreshPeriod);
                 }
                 token.ThrowIfCancellationRequested();
@@ -1452,13 +1453,13 @@ namespace RM.src.RM250619
 
         #region Comandi interfaccia
 
-        private static void CheckCloseGripper()
+        private static async Task CheckCloseGripper()
         {
             int gripperStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_MAN_closeGrippers));
             if (gripperStatus == 1 && !previousGripperStatus) //Chiusura 
             {
                 previousGripperStatus = true;
-                robot.SetDO(0, 0, 0, 0);
+                await Task.Run(() => robot.SetDO(0, 0, 0, 0));
                 //int h = 0, i = 0;
                 //robot.GetDO(ref h,ref i);
                 //log.Info($"H: {h}, I: {i}");
@@ -1466,7 +1467,7 @@ namespace RM.src.RM250619
             else if(gripperStatus == 0 && previousGripperStatus) //Apertura
             {
                 previousGripperStatus = false;
-                robot.SetDO(0, 1, 0, 0);
+                await Task.Run(() => robot.SetDO(0, 1, 0, 0));
                 //int h = 0, i = 0;
                 //robot.GetDO(ref h, ref i);
                 //log.Info($"H: {h}, I: {i}");
@@ -1476,7 +1477,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Gestione comando di stop derivante da plc
         /// </summary>
-        private static async void CheckCommandStop()
+        private static async Task CheckCommandStop()
         {
             // Get valore variabile di stop ciclo robot
             int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopCicloAuto));
@@ -1514,7 +1515,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Esegue check su cambio velocità derivante dal plc
         /// </summary>
-        private static void CheckVelCommand()
+        private static async Task CheckVelCommand()
         {
             // Get valore variabile di stop ciclo robot
             int velocity = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_OverrideAuto));
@@ -1522,8 +1523,8 @@ namespace RM.src.RM250619
             // Check su cambio di stato
             if (velocity != previousVel)
             {
-                RobotDAO.SetRobotVelocity(ConnectionString, Convert.ToInt16(velocity));
-                RobotDAO.SetRobotAcceleration(ConnectionString, Convert.ToInt16(velocity));
+                await Task.Run(() => RobotDAO.SetRobotVelocity(ConnectionString, Convert.ToInt16(velocity)));
+                await Task.Run(() => RobotDAO.SetRobotAcceleration(ConnectionString, Convert.ToInt16(velocity)));
 
                 //Invoco metodo per cambiare etichetta velocità in homePage
                 RobotVelocityChanged?.Invoke(velocity, EventArgs.Empty);
@@ -1537,7 +1538,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Check su comando di start derivante da plc
         /// </summary>
-        private static void CheckCommandStart()
+        private static async Task CheckCommandStart()
         {
             // Get valore variabile di avvio ciclo robot
             int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StartCicloAuto));
@@ -1570,7 +1571,7 @@ namespace RM.src.RM250619
                     if (robotProperties.Speed > 1)
                     {
                         int speed = robotProperties.Speed;
-                        robot.SetSpeed(speed);
+                        await Task.Run(() => robot.SetSpeed(speed));
                         log.Info($"Velocità Robot: {speed}");
                     }
 
@@ -1578,7 +1579,7 @@ namespace RM.src.RM250619
                     {
                         // separa pick, place e routine di home, sono indipendenti
                         //await MainCycle();
-                        taskManager.AddAndStartTask(nameof(MainCycle), MainCycle, TaskType.Default, false);
+                        taskManager.AddAndStartTask(nameof(MainCycle), MainCycle, TaskType.LongRunning, false);
                         EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
 
                     }
@@ -1600,7 +1601,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Check su comando di stop derivante da plc
         /// </summary>
-        private static void CheckCommandGoToHome()
+        private static async Task CheckCommandGoToHome()
         {
             int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_GoHome));
 
@@ -1609,18 +1610,18 @@ namespace RM.src.RM250619
                 previousHomeCommandStatus = true;
                 taskManager.AddAndStartTask(nameof(HomeRoutine), HomeRoutine, TaskType.Default, false);
             }
-
-            if (homeStatus == 0)
+            else if (homeStatus == 0)
             {
                 previousHomeCommandStatus = false; // reset status
             }
 
+            await Task.Delay(10);
         }
 
         /// <summary>
         /// Check su accesso barriere
         /// </summary>
-        private static async void CheckPauseStatus()
+        private static async Task CheckPauseStatus()
         {
             int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
 
@@ -1633,7 +1634,7 @@ namespace RM.src.RM250619
                 if (barrierStatus == 1)
                 {
                     // Richiesta di pausa
-                    robot.PauseMotion();
+                    await Task.Run(() => robot.PauseMotion());
                     robotIsPaused = true;
 
                     // 🔁 Aspetta che lo stato robot diventi 3 (pausa)
@@ -1645,7 +1646,7 @@ namespace RM.src.RM250619
                         robot.GetRobotRealTimeState(ref robot_state_pkg);
                         mov_robot_state = robot_state_pkg.robot_state;
 
-                        if (mov_robot_state == 3)
+                        if (mov_robot_state == 3 || mov_robot_state == 1)
                         {
                             // robotMove_inPause = 1;
                             break;
@@ -1655,7 +1656,7 @@ namespace RM.src.RM250619
 
                     } while (attempt < maxAttempts);
 
-                    if (mov_robot_state != 3)
+                    if (mov_robot_state != 3 && mov_robot_state != 1)
                     {
                         log.Error("ERRORE: Il robot non si è messo in pausa correttamente.");
                     }
@@ -1669,7 +1670,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Check su uscita barriere
         /// </summary>
-        private static async void CheckResumeStatus()
+        private static async Task CheckResumeStatus()
         {
             // Get valore richiesta di pausa
             int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
@@ -1690,7 +1691,7 @@ namespace RM.src.RM250619
                 if (barrierStatus == 0 && resumeMov == 1)
                 {
                     // Ripresa
-                    robot.ResumeMotion();
+                    await Task.Run(() => robot.ResumeMotion());
                     robotIsPaused = false;
 
                     // 🔁 Aspetta che lo stato robot diventi 2 (movimento)
@@ -1725,7 +1726,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Check su comando di registrazione punto derivante da plc
         /// </summary>
-        private static void CheckCommandRecordPoint()
+        private static async Task CheckCommandRecordPoint()
         {
             // int recordPointCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPointRecordCommandIn));
 
@@ -1735,7 +1736,7 @@ namespace RM.src.RM250619
             {
                 // Registrazione punto 
 
-                DescPose newPoint = RecPoint();
+                DescPose newPoint = await Task.Run(() => RecPoint());
                 RecordPoint?.Invoke(null, new RobotPointRecordingEventArgs(recordPointCommand, newPoint));
 
                 //Scrivo sul PLC i nuovi valori
@@ -1773,11 +1774,17 @@ namespace RM.src.RM250619
 
             if (resetAlarmsCommand > 0)
             {
-                // Reset allarme
-                RMLib_AlarmsCleared(null, EventArgs.Empty);
-
-                // Reset valore
-                RefresherTask.AddUpdate(PLCTagName.CMD_ResetAlarms, 0, "INT16");
+                try
+                {
+                    // Reset allarme
+                    RMLib_AlarmsCleared(null, EventArgs.Empty);
+                    // Reset valore
+                    RefresherTask.AddUpdate(PLCTagName.CMD_ResetAlarms, 0, "INT16");
+                }
+                catch(Exception)
+                {
+                    log.Error("Eccezione generata durante reset allarmi");
+                }
             }
         }
 
@@ -1911,7 +1918,7 @@ namespace RM.src.RM250619
                                     if (pick.x != 0 && pick.y != 0 && pick.z != 0 && pick.rx != 0 && pick.ry != 0 && pick.rz != 0)
                                     {
                                         // Eseguo e attendo sia terminata la routine di pick
-                                        PickBox(pick);
+                                        await PickBox(pick);
                                         /*taskManager.AddAndStartTask(
                                             nameof(PickBox),
                                             (token) => PickBox(pick, token),
@@ -1961,7 +1968,7 @@ namespace RM.src.RM250619
                                     // Check validità del punto
                                     if (place.x != 0 && place.y != 0 && place.z != 0 && place.rx != 0 && place.ry != 0 && place.rz != 0) // Se il punto è valido
                                     {
-                                        PlaceBox(place); // Eseguo e attendo sia terminata la routine di place
+                                        await PlaceBox(place); // Eseguo e attendo sia terminata la routine di place
                                         step = 10; // Riavvio del ciclo per controllare nuove richieste di pick o place
                                     }
                                 }
@@ -2023,7 +2030,7 @@ namespace RM.src.RM250619
         /// Esegue il pick della scatola
         /// </summary>
         /// <returns></returns>
-        public static async void PickBox(ApplicationPositions pick)
+        public static async Task PickBox(ApplicationPositions pick)
         {
             #region Dichiarazione punti routine
 
@@ -2354,7 +2361,7 @@ namespace RM.src.RM250619
         /// Esegue il place della scatola
         /// </summary>
         /// <returns></returns>
-        public static async void PlaceBox(ApplicationPositions place)
+        public static async Task PlaceBox(ApplicationPositions place)
         {
             stepPlace = 0; // Step ciclo di place
             int movementResult = 0; // Risultato del movimento del Robot
@@ -2539,44 +2546,6 @@ namespace RM.src.RM250619
             }
         }
 
-        /// <summary>
-        /// Calcola la  pose in cui mettere la scatola nel pallet. <br/>
-        /// Il calcolo si basa sulla divisione del pallet (messo per il lato lungo in basso) in una matrice di place in questa maniera: <br/>
-        /// /  (Larghezza) = Divisione in colonne <br/>
-        /// -- (Lunghezza) = Divisione in righe <br/>
-        /// I  (Altezza)   = Divisione in strati <br/>
-        /// Inoltre sono necessiarie le misure Larg,Lung,Alt della scatola <br/>
-        /// NB: le scatole devono essere necessariamente tutte grandi uguali nello stesso pallet <br/>
-        /// </summary>
-        /// <param name="riga">Riga che identifica il posto in cui mettere la nuova scatola</param>
-        /// <param name="colonna">Colonna che identifica il posto in cui mettere la nuova scatola</param>
-        /// <param name="strato">Strato in cui mettere la nuova scatola</param>
-        /// <param name="larghezzaScatola">Larghezza della scatola(mm)</param>
-        /// <param name="profonditaScatola">Lunghezza della scatola(mm)</param>
-        /// <param name="altezzaScatola">Altezza della scatola(mm)</param>
-        /// <param name="originePallet">Punto di origine del pallet, cioè il punto dell'angolo in alto a sinistra. Posizionare il TCP proprio sopra di esso.</param>
-        /// <returns></returns>
-        static DescPose CalcolaPosizioneScatola(
-            int riga,
-            int colonna,
-            int strato,
-            double larghezzaScatola,
-            double profonditaScatola,
-            double altezzaScatola,
-            DescPose originePallet
-            )
-        {
-            double x = originePallet.tran.x + (colonna * larghezzaScatola) + (larghezzaScatola / 2.0);
-            double y = originePallet.tran.y + (riga * profonditaScatola) + (profonditaScatola / 2.0);
-            double z = originePallet.tran.z + (strato * altezzaScatola);
-
-            double rx = originePallet.rpy.rx;
-            double ry = originePallet.rpy.ry;
-            double rz = originePallet.rpy.rz;
-
-            return new DescPose(x, y, z, rx, ry, rz);
-        }
-
         #endregion
 
         #region Metodi interni
@@ -2618,6 +2587,11 @@ namespace RM.src.RM250619
                 throw new Exception("Err code: " + result);
         }
 
+        /// <summary>
+        /// Sposta il robot alla posizione definita
+        /// </summary>
+        /// <param name="target"></param>
+        /// <exception cref="Exception"></exception>
         private static void GoToApproachHomePosition(DescPose target)
         {
             int result = robot.MoveCart(target, tool, user, vel, acc, ovl, blendT, config);
@@ -2631,6 +2605,44 @@ namespace RM.src.RM250619
         #endregion
 
         #region Metodi helper
+
+        /// <summary>
+        /// Calcola la  pose in cui mettere la scatola nel pallet. <br/>
+        /// Il calcolo si basa sulla divisione del pallet (messo per il lato lungo in basso) in una matrice di place in questa maniera: <br/>
+        /// /  (Larghezza) = Divisione in colonne <br/>
+        /// -- (Lunghezza) = Divisione in righe <br/>
+        /// I  (Altezza)   = Divisione in strati <br/>
+        /// Inoltre sono necessiarie le misure Larg,Lung,Alt della scatola <br/>
+        /// NB: le scatole devono essere necessariamente tutte grandi uguali nello stesso pallet <br/>
+        /// </summary>
+        /// <param name="riga">Riga che identifica il posto in cui mettere la nuova scatola</param>
+        /// <param name="colonna">Colonna che identifica il posto in cui mettere la nuova scatola</param>
+        /// <param name="strato">Strato in cui mettere la nuova scatola</param>
+        /// <param name="larghezzaScatola">Larghezza della scatola(mm)</param>
+        /// <param name="profonditaScatola">Lunghezza della scatola(mm)</param>
+        /// <param name="altezzaScatola">Altezza della scatola(mm)</param>
+        /// <param name="originePallet">Punto di origine del pallet, cioè il punto dell'angolo in alto a sinistra. Posizionare il TCP proprio sopra di esso.</param>
+        /// <returns></returns>
+        static DescPose CalcolaPosizioneScatola(
+            int riga,
+            int colonna,
+            int strato,
+            double larghezzaScatola,
+            double profonditaScatola,
+            double altezzaScatola,
+            DescPose originePallet
+            )
+        {
+            double x = originePallet.tran.x + (colonna * larghezzaScatola) + (larghezzaScatola / 2.0);
+            double y = originePallet.tran.y + (riga * profonditaScatola) + (profonditaScatola / 2.0);
+            double z = originePallet.tran.z + (strato * altezzaScatola);
+
+            double rx = originePallet.rpy.rx;
+            double ry = originePallet.rpy.ry;
+            double rz = originePallet.rpy.rz;
+
+            return new DescPose(x, y, z, rx, ry, rz);
+        }
 
         /// <summary>
         /// Gnerazione di un allarme
@@ -3342,7 +3354,6 @@ namespace RM.src.RM250619
 
             if (isBlocking)
             {
-
                 ClearRobotAlarm();
                 ClearRobotQueue();
 
@@ -3354,20 +3365,15 @@ namespace RM.src.RM250619
 
                 // Abilito i tasti relativi al monitoring
                 EnableDragModeButtons?.Invoke(null, EventArgs.Empty);
-
-
             }
 
             TriggerAllarmeResettato();
-
-
 
             // Reset degli allarmi segnalati
             foreach (var key in allarmiSegnalati.Keys.ToList())
             {
                 allarmiSegnalati[key] = false;
             }
-
         }
 
         /// <summary>
@@ -3866,7 +3872,7 @@ namespace RM.src.RM250619
             JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
             var pick = ApplicationConfig.applicationsManager.GetPosition("pPickTeglia", "RM");
             DescPose descPosPick = new DescPose(pick.x, pick.y, pick.z, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
+            robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
 
             #endregion
 
@@ -3875,7 +3881,7 @@ namespace RM.src.RM250619
             // Prima fase del ciclo
             JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPick = new DescPose(pick.x, pick.y - offsetAllontamento, pick.z - 40, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
+            robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
 
             #endregion
 
@@ -3883,7 +3889,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosPostPick = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPostPick = new DescPose(pick.x, pick.y, pick.z + 20, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPostPick, -1, ref jointPosPostPick);
+            robot.GetInverseKin(0, descPosPostPick, -1, ref jointPosPostPick);
 
             #endregion
 
@@ -3892,7 +3898,7 @@ namespace RM.src.RM250619
             JointPos jointPosAllontanamentoPick = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosAllontanamentoPick = new DescPose(descPosApproachPick.tran.x, descPosApproachPick.tran.y,
                 descPosApproachPick.tran.z + 80, descPosApproachPick.rpy.rx, descPosApproachPick.rpy.ry, descPosApproachPick.rpy.rz);
-            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPick, -1, ref jointPosAllontanamentoPick);
+            robot.GetInverseKin(0, descPosAllontanamentoPick, -1, ref jointPosAllontanamentoPick);
 
             #endregion
 
@@ -3902,7 +3908,7 @@ namespace RM.src.RM250619
             JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
             var place = ApplicationConfig.applicationsManager.GetPosition("pPlaceTeglia", "RM");
             DescPose descPosPlace = new DescPose(place.x, place.y, place.z, place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
+            robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
 
             #endregion
 
@@ -3911,7 +3917,7 @@ namespace RM.src.RM250619
             JointPos jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPlace = new DescPose(place.x + 10, place.y - offsetAllontamento, place.z + 50,
                 place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
+            robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
 
             #endregion
 
@@ -3920,7 +3926,7 @@ namespace RM.src.RM250619
             JointPos jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPostPlace = new DescPose(place.x, place.y, place.z,
                 place.rx - 3, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPostPlace, -1, ref jointPosPostPlace);
+            robot.GetInverseKin(0, descPosPostPlace, -1, ref jointPosPostPlace);
 
             #endregion
 
@@ -3929,7 +3935,7 @@ namespace RM.src.RM250619
             JointPos jointPosAllontanamentoPlace = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosAllontanamentoPlace = new DescPose(place.x, place.y - offsetAllontamento, place.z,
                 place.rx - 3, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPlace, -1, ref jointPosAllontanamentoPlace);
+            robot.GetInverseKin(0, descPosAllontanamentoPlace, -1, ref jointPosAllontanamentoPlace);
 
             #endregion
 
@@ -3942,7 +3948,7 @@ namespace RM.src.RM250619
             // Prima fase del ciclo
             JointPos jointPosApproachPick2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPick2 = new DescPose(place.x, place.y - offsetAllontamento, place.z - 40, place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPick2, -1, ref jointPosApproachPick2);
+            robot.GetInverseKin(0, descPosApproachPick2, -1, ref jointPosApproachPick2);
 
             #endregion
 
@@ -3950,7 +3956,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosPick2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPick2 = new DescPose(place.x, place.y, place.z, place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPick2, -1, ref jointPosPick2);
+            robot.GetInverseKin(0, descPosPick2, -1, ref jointPosPick2);
 
             #endregion
 
@@ -3958,7 +3964,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosPostPick2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPostPick2 = new DescPose(place.x, place.y, place.z + 20, place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPostPick2, -1, ref jointPosPostPick2);
+            robot.GetInverseKin(0, descPosPostPick2, -1, ref jointPosPostPick2);
 
             #endregion
 
@@ -3967,7 +3973,7 @@ namespace RM.src.RM250619
             JointPos jointPosAllontanamentoPick2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosAllontanamentoPick2 = new DescPose(descPosApproachPick2.tran.x, descPosApproachPick2.tran.y,
                 descPosApproachPick2.tran.z + 80, descPosApproachPick2.rpy.rx, descPosApproachPick2.rpy.ry, descPosApproachPick2.rpy.rz);
-            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPick2, -1, ref jointPosAllontanamentoPick2);
+            robot.GetInverseKin(0, descPosAllontanamentoPick2, -1, ref jointPosAllontanamentoPick2);
 
             #endregion
 
@@ -3977,7 +3983,7 @@ namespace RM.src.RM250619
             JointPos jointPosApproachPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPlace2 = new DescPose(pick.x, pick.y - offsetAllontamento, pick.z + 50,
                 pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPlace2, -1, ref jointPosApproachPlace2);
+            robot.GetInverseKin(0, descPosApproachPlace2, -1, ref jointPosApproachPlace2);
 
             #endregion
 
@@ -3985,7 +3991,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPlace2 = new DescPose(pick.x - 10, pick.y, pick.z, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPlace2, -1, ref jointPosPlace2);
+            robot.GetInverseKin(0, descPosPlace2, -1, ref jointPosPlace2);
 
             #endregion
 
@@ -3994,7 +4000,7 @@ namespace RM.src.RM250619
             JointPos jointPosPostPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPostPlace2 = new DescPose(pick.x, pick.y, pick.z,
                 pick.rx - 3, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPostPlace2, -1, ref jointPosPostPlace2);
+            robot.GetInverseKin(0, descPosPostPlace2, -1, ref jointPosPostPlace2);
 
             #endregion
 
@@ -4003,7 +4009,7 @@ namespace RM.src.RM250619
             JointPos jointPosAllontanamentoPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosAllontanamentoPlace2 = new DescPose(pick.x, pick.y - offsetAllontamento, pick.z,
                 pick.rx - 3, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPlace2, -1, ref jointPosAllontanamentoPlace2);
+            robot.GetInverseKin(0, descPosAllontanamentoPlace2, -1, ref jointPosAllontanamentoPlace2);
 
             #endregion
 
@@ -4027,9 +4033,6 @@ namespace RM.src.RM250619
 
             // Reset step routine
             step = 0;
-
-            // Dichiarazione stato della pinza
-            int gripperStatus = -1;
 
             // Segnale di pick
             bool prendidaNastro = true;
@@ -4126,7 +4129,7 @@ namespace RM.src.RM250619
                         case 20:
                             #region Delay per calcolo in position punto di pick
 
-                            Thread.Sleep(500);
+                            await Task.Delay(500);
                             step = 30;
                             formDiagnostics.UpdateRobotStepDescription("STEP 20 -  Delay calcolo in position punto di pick (prima fase)");
                             break;
@@ -4138,7 +4141,7 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
-                                Thread.Sleep(500);
+                                await Task.Delay(500);
                                 // Chiudo la pinza
 
                                 step = 40;
@@ -4154,7 +4157,7 @@ namespace RM.src.RM250619
 
                             // if (gripperStatus == 0)
                             {
-                                Thread.Sleep(1000); // Per evitare "rimbalzo" del Robot
+                                await Task.Delay(1000); // Per evitare "rimbalzo" del Robot
                                 step = 50;
                             }
 
@@ -4215,7 +4218,7 @@ namespace RM.src.RM250619
                         case 70:
                             #region Delay per calcolo in position punto di place
 
-                            Thread.Sleep(500);
+                            await Task.Delay(500);
                             step = 80;
                             formDiagnostics.UpdateRobotStepDescription("STEP 70 -  Delay calcolo in position punto di place (prima fase)");
                             break;
@@ -4227,7 +4230,7 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
-                                Thread.Sleep(500);
+                                await Task.Delay(500);
                                 // Chiudo la pinza
 
                                 step = 90;
@@ -4242,7 +4245,7 @@ namespace RM.src.RM250619
 
                             // if (gripperStatus == 0)
                             {
-                                Thread.Sleep(1000); // Per evitare "rimbalzo" del Robot
+                                await Task.Delay(1000); // Per evitare "rimbalzo" del Robot
                                 step = 100;
                             }
 
@@ -4299,7 +4302,7 @@ namespace RM.src.RM250619
                         case 120:
                             #region Delay per calcolo in position punto di pick
 
-                            Thread.Sleep(500);
+                            await Task.Delay(500);
                             step = 130;
                             formDiagnostics.UpdateRobotStepDescription("STEP 120 -  Delay calcolo in position punto di pick (seconda fase)");
                             break;
@@ -4311,7 +4314,7 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
-                                Thread.Sleep(500);
+                                await Task.Delay(500);
                                 // Chiudo la pinza
 
                                 step = 140;
@@ -4326,7 +4329,7 @@ namespace RM.src.RM250619
 
                             // if (gripperStatus == 0)
                             {
-                                Thread.Sleep(1000); // Per evitare "rimbalzo" del Robot
+                                await Task.Delay(1000); // Per evitare "rimbalzo" del Robot
                                 step = 150;
                             }
 
@@ -4392,7 +4395,7 @@ namespace RM.src.RM250619
                         case 170:
                             #region Delay per calcolo in position punto di place
 
-                            Thread.Sleep(500);
+                            await Task.Delay(500);
                             step = 180;
                             formDiagnostics.UpdateRobotStepDescription("STEP 170 -  Delay calcolo in position punto di place (seconda fase)");
                             break;
@@ -4404,7 +4407,7 @@ namespace RM.src.RM250619
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
-                                Thread.Sleep(500);
+                                await Task.Delay(500);
                                 // Chiudo la pinza
 
                                 step = 190;
@@ -4420,7 +4423,7 @@ namespace RM.src.RM250619
 
                             // if (gripperStatus == 0)
                             {
-                                Thread.Sleep(1000); // Per evitare "rimbalzo" del Robot
+                                await Task.Delay(1000); // Per evitare "rimbalzo" del Robot
                                 step = 200;
                             }
 
@@ -4453,7 +4456,7 @@ namespace RM.src.RM250619
                             #endregion
                     }
 
-                    Thread.Sleep(10); // Delay routine
+                    await Task.Delay(10); // Delay routine
                 }
             });
         }
@@ -4482,7 +4485,7 @@ namespace RM.src.RM250619
             JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
             var pick = ApplicationConfig.applicationsManager.GetPosition("pPick", "RM");
             DescPose descPosPick = new DescPose(pick.x, pick.y, pick.z, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
+            robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
 
             #endregion
 
@@ -4490,7 +4493,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPick = new DescPose(pick.x, pick.y, pick.z + 200, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
+            robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
 
             #endregion
 
@@ -4499,7 +4502,7 @@ namespace RM.src.RM250619
             JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
             var place = ApplicationConfig.applicationsManager.GetPosition("pPlace", "RM");
             DescPose descPosPlace = new DescPose(place.x, place.y, place.z, place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
+            robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
 
             #endregion
 
@@ -4507,7 +4510,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPlace = new DescPose(place.x, place.y, place.z + 200, place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
+            robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
 
             #endregion
 
@@ -4532,9 +4535,6 @@ namespace RM.src.RM250619
 
             // Reset step routine
             step = 0;
-
-            // Dichiarazione stato della pinza
-            int gripperStatus = -1;
 
             // Segnale di pick
             bool prendidaNastro = true;
@@ -4637,7 +4637,7 @@ namespace RM.src.RM250619
                         case 20:
                             #region Delay per calcolo in position punto di pick
 
-                            Thread.Sleep(500);
+                            await Task.Delay(500);
                             step = 30;
                             formDiagnostics.UpdateRobotStepDescription("STEP 20 -  Delay calcolo in position punto di pick");
                             break;
@@ -4664,7 +4664,7 @@ namespace RM.src.RM250619
 
                             // if (gripperStatus == 0)
                             {
-                                Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
+                                await Task.Delay(500); // Per evitare "rimbalzo" del Robot
                                 step = 50;
                             }
 
@@ -4715,7 +4715,7 @@ namespace RM.src.RM250619
                                     originePallet
                                 );
 
-                                RobotManager.robot.GetInverseKin(0, puntoPlaceScatola, -1, ref jointPosPlaceCalculated);
+                                robot.GetInverseKin(0, puntoPlaceScatola, -1, ref jointPosPlaceCalculated);
 
                                 descPosApproachPlace = new DescPose(
                                     puntoPlaceScatola.tran.x,
@@ -4725,7 +4725,7 @@ namespace RM.src.RM250619
                                     puntoPlaceScatola.rpy.ry,
                                     puntoPlaceScatola.rpy.rz);
 
-                                RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
+                                robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
 
                                 movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc,
                                   ovl, blendT, config); // Invio punto di avvicinamento place
@@ -4775,7 +4775,7 @@ namespace RM.src.RM250619
                         case 70:
                             #region Delay per calcolo in position punto di place
 
-                            Thread.Sleep(500);
+                            await Task.Delay(500);
                             step = 80;
                             formDiagnostics.UpdateRobotStepDescription("STEP 70 -  Delay calcolo in position punto di place");
                             break;
@@ -4801,7 +4801,7 @@ namespace RM.src.RM250619
 
                             // if (gripperStatus == 0)
                             {
-                                Thread.Sleep(500); // Per evitare "rimbalzo" del Robot
+                                await Task.Delay(500); // Per evitare "rimbalzo" del Robot
                                 step = 100;
                             }
 
@@ -4836,11 +4836,9 @@ namespace RM.src.RM250619
 
                     }
 
-                    Thread.Sleep(10); // Delay routine
+                    await Task.Delay(10); // Delay routine
                 }
             });
-
-
         }
 
         /// <summary>
@@ -4861,7 +4859,7 @@ namespace RM.src.RM250619
             JointPos jointPosHome = new JointPos(0, 0, 0, 0, 0, 0);
             var home = ApplicationConfig.applicationsManager.GetPosition("pHomeTeglia", "RM");
             DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
-            RobotManager.robot.GetInverseKin(0, descPosHome, -1, ref jointPosHome);
+            robot.GetInverseKin(0, descPosHome, -1, ref jointPosHome);
 
             #endregion
 
@@ -4873,7 +4871,7 @@ namespace RM.src.RM250619
             JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
             var pick = ApplicationConfig.applicationsManager.GetPosition("pPickTeglia", "RM");
             DescPose descPosPick = new DescPose(pick.x, pick.y, pick.z, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
+            robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
 
             #endregion
 
@@ -4882,7 +4880,7 @@ namespace RM.src.RM250619
             // Prima fase del ciclo
             JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPick = new DescPose(pick.x - offsetAvvicinamento, pick.y, pick.z - 40, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
+            robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
 
             #endregion
 
@@ -4890,7 +4888,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosPostPick = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPostPick = new DescPose(pick.x, pick.y, pick.z + 40, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPostPick, -1, ref jointPosPostPick);
+            robot.GetInverseKin(0, descPosPostPick, -1, ref jointPosPostPick);
 
             #endregion
 
@@ -4899,7 +4897,7 @@ namespace RM.src.RM250619
             JointPos jointPosAllontanamentoPick = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosAllontanamentoPick = new DescPose(descPosApproachPick.tran.x, descPosApproachPick.tran.y,
                 descPosApproachPick.tran.z + 80, descPosApproachPick.rpy.rx, descPosApproachPick.rpy.ry, descPosApproachPick.rpy.rz);
-            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPick, -1, ref jointPosAllontanamentoPick);
+            robot.GetInverseKin(0, descPosAllontanamentoPick, -1, ref jointPosAllontanamentoPick);
 
             #endregion
 
@@ -4909,7 +4907,7 @@ namespace RM.src.RM250619
             JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
             var place = ApplicationConfig.applicationsManager.GetPosition("pPlaceTeglia", "RM");
             DescPose descPosPlace = new DescPose(place.x, place.y, place.z, NormalizeAngle((float)place.rx + 3), place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
+            robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
 
             #endregion
 
@@ -4918,7 +4916,7 @@ namespace RM.src.RM250619
             JointPos jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPlace = new DescPose(place.x, place.y - offsetAvvicinamento, place.z + 20,
                 place.rx, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
+            robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
 
             #endregion
 
@@ -4927,7 +4925,7 @@ namespace RM.src.RM250619
             JointPos jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPostPlace = new DescPose(place.x, place.y, place.z,
                 place.rx - 3, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPostPlace, -1, ref jointPosPostPlace);
+            robot.GetInverseKin(0, descPosPostPlace, -1, ref jointPosPostPlace);
 
             #endregion
 
@@ -4936,7 +4934,7 @@ namespace RM.src.RM250619
             JointPos jointPosAllontanamentoPlace = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosAllontanamentoPlace = new DescPose(place.x, place.y - offsetAvvicinamento - 200, place.z,
                 place.rx - 3, place.ry, place.rz);
-            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPlace, -1, ref jointPosAllontanamentoPlace);
+            robot.GetInverseKin(0, descPosAllontanamentoPlace, -1, ref jointPosAllontanamentoPlace);
 
             #endregion
 
@@ -4949,7 +4947,7 @@ namespace RM.src.RM250619
             JointPos jointPosPick2 = new JointPos(0, 0, 0, 0, 0, 0);
             var pick2 = place;
             DescPose descPosPick2 = new DescPose(pick2.x, pick2.y, pick2.z, pick2.rx, pick2.ry, pick2.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPick2, -1, ref jointPosPick2);
+            robot.GetInverseKin(0, descPosPick2, -1, ref jointPosPick2);
 
             #endregion
 
@@ -4958,7 +4956,7 @@ namespace RM.src.RM250619
             // Prima fase del ciclo
             JointPos jointPosApproachPick2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPick2 = new DescPose(pick2.x, pick2.y - offsetAvvicinamento, pick2.z - 40, pick2.rx, pick2.ry, pick2.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPick2, -1, ref jointPosApproachPick2);
+            robot.GetInverseKin(0, descPosApproachPick2, -1, ref jointPosApproachPick2);
 
             #endregion
 
@@ -4966,7 +4964,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosPostPick2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPostPick2 = new DescPose(pick2.x, pick2.y, pick2.z + 40, pick2.rx, pick2.ry, pick2.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPostPick2, -1, ref jointPosPostPick2);
+            robot.GetInverseKin(0, descPosPostPick2, -1, ref jointPosPostPick2);
 
             #endregion
 
@@ -4975,7 +4973,7 @@ namespace RM.src.RM250619
             JointPos jointPosAllontanamentoPick2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosAllontanamentoPick2 = new DescPose(descPosPick2.tran.x, descPosPick2.tran.y - offsetAllontamento,
                 descPosPick2.tran.z + 40, descPosPick2.rpy.rx, descPosPick2.rpy.ry, descPosPick2.rpy.rz);
-            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPick2, -1, ref jointPosAllontanamentoPick2);
+            robot.GetInverseKin(0, descPosAllontanamentoPick2, -1, ref jointPosAllontanamentoPick2);
 
             #endregion
 
@@ -4985,7 +4983,7 @@ namespace RM.src.RM250619
             JointPos jointPosApproachPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosApproachPlace2 = new DescPose(pick.x - offsetAvvicinamento, pick.y, pick.z + 50,
                 pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPlace2, -1, ref jointPosApproachPlace2);
+            robot.GetInverseKin(0, descPosApproachPlace2, -1, ref jointPosApproachPlace2);
 
             #endregion
 
@@ -4993,7 +4991,7 @@ namespace RM.src.RM250619
 
             JointPos jointPosPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPlace2 = new DescPose(pick.x - 10, pick.y, pick.z, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPlace2, -1, ref jointPosPlace2);
+            robot.GetInverseKin(0, descPosPlace2, -1, ref jointPosPlace2);
 
             #endregion
 
@@ -5002,7 +5000,7 @@ namespace RM.src.RM250619
             JointPos jointPosPostPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosPostPlace2 = new DescPose(pick.x, pick.y, pick.z,
                 pick.rx - 3, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPostPlace2, -1, ref jointPosPostPlace2);
+            robot.GetInverseKin(0, descPosPostPlace2, -1, ref jointPosPostPlace2);
 
             #endregion
 
@@ -5011,7 +5009,7 @@ namespace RM.src.RM250619
             JointPos jointPosAllontanamentoPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
             DescPose descPosAllontanamentoPlace2 = new DescPose(pick.x - offsetAvvicinamento, pick.y, pick.z,
                 pick.rx - 3, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosAllontanamentoPlace2, -1, ref jointPosAllontanamentoPlace2);
+            robot.GetInverseKin(0, descPosAllontanamentoPlace2, -1, ref jointPosAllontanamentoPlace2);
 
             #endregion
 
@@ -5030,7 +5028,7 @@ namespace RM.src.RM250619
                                 );
 
             JointPos jointPrePick1 = new JointPos(0, 0, 0, 0, 0, 0);
-            RobotManager.robot.GetInverseKin(0, prePick1Pose, -1, ref jointPrePick1);
+            robot.GetInverseKin(0, prePick1Pose, -1, ref jointPrePick1);
 
             // Posa post pick 1
             DescPose postPick1Pose = new DescPose(
@@ -5043,7 +5041,7 @@ namespace RM.src.RM250619
                               );
 
             JointPos jointPostPick1 = new JointPos(0, 0, 0, 0, 0, 0);
-            RobotManager.robot.GetInverseKin(0, postPick1Pose, -1, ref jointPostPick1);
+            robot.GetInverseKin(0, postPick1Pose, -1, ref jointPostPick1);
 
             // Posa per ruotare il robot dopo il pick 1 e prima di andare al place 1
             DescPose postPick1RotationPose = new DescPose(
@@ -5066,7 +5064,7 @@ namespace RM.src.RM250619
                 );
 
             JointPos jointPostPlace1 = new JointPos(0, 0, 0, 0, 0, 0);
-            RobotManager.robot.GetInverseKin(0, postPlace1Pose, -1, ref jointPostPlace1);
+            robot.GetInverseKin(0, postPlace1Pose, -1, ref jointPostPlace1);
 
             // Posa per ruotare il robot dopo il place 1 e prima di andare al place 2
             DescPose postPlace1RotationPose = new DescPose(
@@ -5079,7 +5077,7 @@ namespace RM.src.RM250619
 
             DescPose place2Pose = descPosPick;
             JointPos jointPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
-            RobotManager.robot.GetInverseKin(0, place2Pose, -1, ref jointPlace2);
+            robot.GetInverseKin(0, place2Pose, -1, ref jointPlace2);
 
             // Posa per ruotare il robot dopo il place 1 e prima di andare al place 2
             DescPose postPlace2Pose = new DescPose(
@@ -5092,7 +5090,7 @@ namespace RM.src.RM250619
                 );
 
             JointPos jointPostPlace2 = new JointPos(0, 0, 0, 0, 0, 0);
-            RobotManager.robot.GetInverseKin(0, postPlace2Pose, -1, ref jointPostPlace2);
+            robot.GetInverseKin(0, postPlace2Pose, -1, ref jointPostPlace2);
 
             #endregion
 
@@ -5113,14 +5111,8 @@ namespace RM.src.RM250619
             // Reset step routine
             step = 0;
 
-            // Dichiarazione stato della pinza
-            int gripperStatus = -1;
-
             // Segnale di pick
             bool prendidaNastro = true;
-
-            // Segnale di place
-            bool appoggiaSuScatola = true;
 
             #endregion
 

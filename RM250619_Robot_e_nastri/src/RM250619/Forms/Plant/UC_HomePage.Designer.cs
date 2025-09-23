@@ -75,6 +75,7 @@
             this.btn_stopRobot = new System.Windows.Forms.Button();
             this.btn_pauseRobot = new System.Windows.Forms.Button();
             this.btn_resumeRobot = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.pnl_status.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -667,6 +668,18 @@
             this.btn_resumeRobot.Visible = false;
             this.btn_resumeRobot.Click += new System.EventHandler(this.btn_resumeRobot_Click);
             // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.Control;
+            this.button1.BackgroundImage = global::RM.Properties.Resources.pausemonitoringRed_32;
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.button1.Location = new System.Drawing.Point(239, 367);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(50, 50);
+            this.button1.TabIndex = 296;
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // UC_HomePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -674,6 +687,7 @@
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = global::RM.Properties.Resources.UC_homePage;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.btn_resumeRobot);
             this.Controls.Add(this.btn_pauseRobot);
             this.Controls.Add(this.btn_stopRobot);
@@ -777,5 +791,6 @@
         private System.Windows.Forms.Button btn_stopRobot;
         private System.Windows.Forms.Button btn_pauseRobot;
         private System.Windows.Forms.Button btn_resumeRobot;
+        private System.Windows.Forms.Button button1;
     }
 }

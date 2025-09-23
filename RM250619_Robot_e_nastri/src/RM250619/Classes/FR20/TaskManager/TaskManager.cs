@@ -312,6 +312,8 @@ namespace RM.src.RM250619.Classes.FR20
             }
         }
 
+        //public async Task RunTemporizedTask()
+
         /// <summary>
         /// Metodo eseguito dal Task interno, controlla lo stato di ogni task gestito ad ogni ciclo. 
         /// Notifica chi interessato tramite un evento.

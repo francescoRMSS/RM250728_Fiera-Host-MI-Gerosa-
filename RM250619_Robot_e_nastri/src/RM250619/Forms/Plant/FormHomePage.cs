@@ -153,8 +153,29 @@ namespace RM.src.RM250619
             Translate();
             InitFont();
 
-            blinkMgr = new BlinkManager(PlcBlinkPanel, RobotBlinkPanel, RobotMovPanel, Resources.plc_connection_ok,
-                Resources.connection_error, Resources.robot_alarm_ok, Resources.robot_alarm_error, Resources.noMov, Resources.inMov);
+            // 1. Prepara le liste di componenti UI
+            var panels = new List<Panel> { Pnl_ROBOT_alarm, Pnl_MOVROBOT_alarm };
+            var idleImages = new List<Image> { Resources.robot_alarm_ok, Resources.noMov };
+            var errorImages = new List<Image> { Resources.robot_alarm_error, Resources.inMov };
+
+            // 2. Prepara la lista delle CONDIZIONI usando le lambda!
+            var conditions = new List<Func<bool>>
+            {
+                () => AlarmManager.isRobotConnected,  // Funzione che controlla lo stato del robot
+                () => !AlarmManager.isRobotMoving     // Funzione che controlla lo stato di movimento
+            };
+
+            // 3. Crea l'istanza del BlinkManager
+            blinkMgr = new BlinkManager(
+                false,
+                Pnl_PLC_alarm,
+                Resources.plc_connection_ok,
+                Resources.connection_error,
+                panels,
+                idleImages,
+                errorImages,
+                conditions
+            );
             blinkMgr.StartBlinking();
 
             // Iscrizione al metodo OnAllarmeGenerato quando generato evento AllarmeGenerato
