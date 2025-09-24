@@ -3446,6 +3446,16 @@
             Memorizza lo stato precedente della variabile on/off barrier status dal PLC
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousRecordPointRequest">
+            <summary>
+            Memorizza lo stato precedente della richiesta di registrazione punto
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.previousAlarmResetRequested">
+            <summary>
+            Memorizza lo stato precedente della richiesta di reset degli allarmi
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.RobotManager.prevFuoriIngombro">
             <summary>
             Stato precedente fuori ingombro
@@ -3479,11 +3489,6 @@
         <member name="F:RM.src.RM250619.RobotManager.step">
             <summary>
             Riferimento allo step delle normal variables corrente
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250619.RobotManager.stopRoutine">
-            <summary>
-            A true quando bisogna fermare il ciclo di routine
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.robotCycleStopRequested">
@@ -3648,6 +3653,13 @@
             <param name="token"></param>
             <returns></returns>
         </member>
+        <member name="M:RM.src.RM250619.RobotManager.SafetyTaskManager(System.Threading.CancellationToken)">
+            <summary>
+            Esegue controlli sui comandi safety: barriere->pause/resume e stop
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.MainCycle(System.Threading.CancellationToken)">
             <summary>
             Esegue metodo che gestisce routine di pick e di place
@@ -3711,7 +3723,7 @@
             Check su comando di reset allarmi derivante da plc
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.AttemptReconnect">
+        <member name="M:RM.src.RM250619.RobotManager.AttemptReconnectToRobot">
             <summary>
             Metodo helper che tenta di ricreare e riconnettere l'oggetto robot.
             Non è in un loop, viene chiamato dal Guardian quando necessario.

@@ -832,11 +832,19 @@ namespace RM.src.RM250619
         /// <summary>
         /// Memorizza lo stato precedente della variabile on/off barrier status dal PLC
         /// </summary>
-        private static bool? previousBarrierPauseStatus = false;
+        private static bool previousBarrierPauseStatus = false;
         /// <summary>
         /// Memorizza lo stato precedente della variabile on/off barrier status dal PLC
         /// </summary>
-        private static bool? previousBarrierResumeStatus = false;
+        private static bool previousBarrierResumeStatus = false;
+        /// <summary>
+        /// Memorizza lo stato precedente della richiesta di registrazione punto
+        /// </summary>
+        private static int previousRecordPointRequest = -1;
+        /// <summary>
+        /// Memorizza lo stato precedente della richiesta di reset degli allarmi
+        /// </summary>
+        private static int previousAlarmResetRequested = -1;
         /// <summary>
         /// Stato precedente fuori ingombro
         /// </summary>
@@ -865,10 +873,6 @@ namespace RM.src.RM250619
         /// Riferimento allo step delle normal variables corrente
         /// </summary>
         public static int step = 0;
-        /// <summary>
-        /// A true quando bisogna fermare il ciclo di routine
-        /// </summary>
-        public static bool stopRoutine = false;
         /// <summary>
         /// A true quando viene richiesto lo stop del ciclo routine del robot
         /// </summary>
@@ -989,6 +993,7 @@ namespace RM.src.RM250619
             RobotIpAddress = robotIpAddress;
             robot = new Robot();
             robot.RPC(RobotIpAddress);
+            robot.SetLoggerLevel(FrLogLevel.ERROR);
             AlarmManager.isRobotConnected = true;
 
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
@@ -1058,8 +1063,8 @@ namespace RM.src.RM250619
                 {
                     if (AlarmManager.isRobotConnected)
                     {
-                        CheckIsRobotEnable();
-                        CheckRobotMode();
+                        await CheckIsRobotEnable();
+                        await CheckRobotMode();
                     }
 
                     await Task.Delay(auxiliaryThreadRefreshPeriod, token);
@@ -1296,7 +1301,7 @@ namespace RM.src.RM250619
                 connectionProxy.Url = $"http://{RobotIpAddress}:20003/RPC2";
                 connectionProxy.Timeout = 500; // Timeout breve per non bloccare troppo a lungo.
 
-                log.Warn("[Guardian] Task di controllo connessione avviato.");
+                log.Warn("[Robot COM] Task di controllo connessione avviato.");
 
                 while (!token.IsCancellationRequested)
                 {
@@ -1322,9 +1327,9 @@ namespace RM.src.RM250619
                         {
                             // Eravamo in stato "disconnesso", ma ora la rete è tornata.
                             // Forziamo comunque una riconnessione per essere sicuri che la libreria sia sana.
-                            log.Warn("[Guardian] Connessione al robot RISTABILITA.");
+                            log.Warn("[Robot COM] Connessione al robot RISTABILITA.");
 
-                            await AttemptReconnect(); // Tentiamo di ripristinare la libreria
+                            await AttemptReconnectToRobot(); // Tentiamo di ripristinare la libreria
                         }
                     }
                     else //Connessione assente
@@ -1332,7 +1337,7 @@ namespace RM.src.RM250619
                         if (AlarmManager.isRobotConnected)
                         {
                             // È la prima volta che rileviamo la disconnessione
-                            log.Error("[Guardian] Connessione al robot PERSA. Avvio tentativi di riconnessione...");
+                            log.Error("[Robot COM] Connessione al robot PERSA. Avvio tentativi di riconnessione...");
                             AlarmManager.isRobotConnected = false;
                             //RefresherTask.AddUpdate(PLCTagName.Emergency, 1, "INT16"); --------------
 
@@ -1402,6 +1407,11 @@ namespace RM.src.RM250619
             }
         }
 
+        /// <summary>
+        /// Esegue controlli sui comandi safety: barriere->pause/resume e stop
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         private async static Task SafetyTaskManager(CancellationToken token)
         {
             try
@@ -2209,6 +2219,7 @@ namespace RM.src.RM250619
                 //int h = 0, i = 0;
                 //robot.GetDO(ref h,ref i);
                 //log.Info($"H: {h}, I: {i}");
+                log.Warn("Comando chiusura ventose completato");
             }
             else if(gripperStatus == 0 && previousGripperStatus) //Apertura
             {
@@ -2219,6 +2230,7 @@ namespace RM.src.RM250619
                 //int h = 0, i = 0;
                 //robot.GetDO(ref h, ref i);
                 //log.Info($"H: {h}, I: {i}");
+                log.Warn("Comando apertura ventose completato");
             }
         }
 
@@ -2255,6 +2267,8 @@ namespace RM.src.RM250619
                 robot.StopMotion(); // Stop Robot con conseguente cancellazione di coda di punti
 
                 previousStopCommandStatus = 1;
+
+                log.Warn("Comando STOP eseguito");
             }
             else if(stopStatus == 0)
             {
@@ -2271,9 +2285,9 @@ namespace RM.src.RM250619
             int velocity = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_OverrideAuto));
 
             // Check su cambio di stato
-            if (velocity != previousVel)
+            if (velocity != previousVel && velocity >= 0 && velocity <= 100)
             {
-                log.Warn("Richiesto comando cambio override speed con : " + velocity);
+                log.Warn("Richiesto comando cambio override speed da: " + previousVel + " a : " + velocity);
 
                 await Task.Run(() => RobotDAO.SetRobotVelocity(ConnectionString, Convert.ToInt16(velocity)));
                 await Task.Run(() => RobotDAO.SetRobotAcceleration(ConnectionString, Convert.ToInt16(velocity)));
@@ -2284,6 +2298,7 @@ namespace RM.src.RM250619
                 // Aggiornamento della velocità precendete
                 previousVel = velocity;
 
+                log.Warn("Comando cambio override speed completato");
             }
         }
 
@@ -2311,16 +2326,12 @@ namespace RM.src.RM250619
                         log.Warn("Tenativo di avvio ciclo con robot non in modalità automatica");
                         return;
                     }
-                    // 1. Lancia la procedura per andare in home
-                    // 2. Quando sono in home
-
-
-                    if (larghezzaPallet == 0 || larghezzaScatola == 0) // aggiungi livello, scatola, rotazione // Controllo che sia stato selezionato il formato di pallet e scatola
+                    // Controllo che sia stato selezionato il formato di pallet e scatola
+                    if (larghezzaPallet == 0 || larghezzaScatola == 0) // aggiungi livello, scatola, rotazione 
                     {
                         log.Error("Nessun formato pallet e/o scatola selezionato");
                         return;
                     }
-
                     // Setto della velocità del Robot dalle sue proprietà memorizzate sul database
                     if (robotProperties.Speed > 1)
                     {
@@ -2328,14 +2339,11 @@ namespace RM.src.RM250619
                         await Task.Run(() => robot.SetSpeed(speed));
                         log.Info($"Velocità Robot: {speed}");
                     }
-
-                    if (!AlarmManager.isRobotMoving) // Se il Robot non è in movimento 
+                    // Se il Robot non è in movimento 
+                    if (!AlarmManager.isRobotMoving) 
                     {
-                        // separa pick, place e routine di home, sono indipendenti
-                        //await MainCycle();
                         taskManager.AddAndStartTask(nameof(MainCycle), MainCycle, TaskType.LongRunning, false);
                         EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
-
                     }
                     else // Se il Robot è in movimento
                     {
@@ -2365,8 +2373,7 @@ namespace RM.src.RM250619
 
             if (homeStatus == 1 && !previousHomeCommandStatus) // Go to home
             {
-                log.Warn("Richiesto comando GO TO HOME")
-                    ;
+                log.Warn("Richiesto comando GO TO HOME");
                 previousHomeCommandStatus = true;
                 taskManager.AddAndStartTask(nameof(HomeRoutine), HomeRoutine, TaskType.Default, false);
             }
@@ -2375,7 +2382,7 @@ namespace RM.src.RM250619
                 previousHomeCommandStatus = false; // reset status
             }
 
-            await Task.Delay(10);
+            await Task.Delay(5);
         }
 
         /// <summary>
@@ -2422,8 +2429,8 @@ namespace RM.src.RM250619
                     {
                         log.Error("ERRORE: Il robot non si è messo in pausa correttamente.");
                     }
+                    log.Warn("Comando PAUSA completato");
                 }
-
 
                 previousBarrierPauseStatus = barrierStatus > 0;
             }
@@ -2485,6 +2492,10 @@ namespace RM.src.RM250619
                     {
                         log.Error("ERRORE: Il robot non ha ripreso il movimento.");
                     }
+                    else
+                    {
+                        log.Warn("Comando RESUME completato");
+                    }
 
                     previousBarrierResumeStatus = barrierStatus > 0;
                 }
@@ -2504,9 +2515,9 @@ namespace RM.src.RM250619
 
             int recordPointCommand = 0;
 
-            if (recordPointCommand > 0) // aggiungere stato precedente
+            if (recordPointCommand > 0 && previousRecordPointRequest != recordPointCommand)
             {
-                log.Warn("Richiesto comando RECORD");
+                log.Warn("Richiesto comando RECORD su punto: " + recordPointCommand);
 
                 // Registrazione punto 
 
@@ -2534,8 +2545,12 @@ namespace RM.src.RM250619
                         break;
                 }
 
-                // Reset valore
-
+                log.Warn("Comando record point completato");
+                previousRecordPointRequest = recordPointCommand;
+            }
+            else if(recordPointCommand == 0)
+            {
+                previousRecordPointRequest = 0;
             }
         }
 
@@ -2546,7 +2561,7 @@ namespace RM.src.RM250619
         {
             int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_ResetAlarms));
 
-            if (resetAlarmsCommand > 0) // Agigungere stato precedente
+            if (resetAlarmsCommand > 0 && resetAlarmsCommand != previousAlarmResetRequested) // Agigungere stato precedente
             {
                 log.Warn("Richiesto comando RESET allarmi");
                 try
@@ -2555,15 +2570,17 @@ namespace RM.src.RM250619
                     RMLib_AlarmsCleared(null, EventArgs.Empty);
                     // Reset valore
                     RefresherTask.AddUpdate(PLCTagName.CMD_ResetAlarms, 0, "INT16");
+                    log.Warn("Comando RESET completato");
                 }
                 catch(Exception)
                 {
                     log.Error("Eccezione generata durante reset allarmi");
                 }
+                previousAlarmResetRequested = resetAlarmsCommand;
             }
             else if(resetAlarmsCommand == 0)
             {
-
+                previousAlarmResetRequested = 0;
             }
         }
 
@@ -2575,7 +2592,7 @@ namespace RM.src.RM250619
         /// Metodo helper che tenta di ricreare e riconnettere l'oggetto robot.
         /// Non è in un loop, viene chiamato dal Guardian quando necessario.
         /// </summary>
-        private static async Task AttemptReconnect()
+        private static async Task AttemptReconnectToRobot()
         {
             try
             {
@@ -2592,10 +2609,13 @@ namespace RM.src.RM250619
                     // Diamo un secondo per stabilizzare
                     await Task.Delay(1000);
 
-                    //await Task.Run(() => robot.ResumeMotion());
                     await Task.Run(() => robot.SetSpeed(speedRobot));
 
                     log.Warn("[Reconnect] Oggetto Robot ricreato.");
+
+                    //Reset stati precedenti
+                    lastMode = -1;
+                    stableMode = -1;
 
                     // La prossima iterazione del Guardian lo confermerà.
                     AlarmManager.isRobotConnected = true;
@@ -2722,7 +2742,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Esegue check su Robot enable
         /// </summary>
-        public static void CheckIsRobotEnable()
+        public static async Task CheckIsRobotEnable()
         {
             // Controllo se il robot è abilitato tramite PLC
             isEnabledNow = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.Enable));
@@ -2730,27 +2750,32 @@ namespace RM.src.RM250619
             if (isEnabledNow && !prevIsEnable)
             {
                 // Abilitazione del robot
-                int err = robot.RobotEnable(1);
+                log.Warn("[ENABLE] Richiesta abilitazione robot");
+                await Task.Run(() => robot.RobotEnable(1));
                 prevIsEnable = true;
                 prevIsNotEnable = false; // Resetta lo stato "non abilitato"
                 AlarmManager.blockingAlarm = false;
                 robotEnableStatus = 1;
                 currentIndex = -1;
+                log.Warn("[ENABLE] Abilitazione robot completata");
             }
             else if (!isEnabledNow && !prevIsNotEnable)
             {
                 // Disabilitazione del robot
+                log.Warn("[ENABLE] Richiesta disabilitazione robot");
+                await Task.Run(() => robot.StopMotion()); // Cancellazione della coda di punti
+                AlarmManager.blockingAlarm = true;
                 JogMovement.StopJogRobotThread(); // Ferma il thread di Jog
-                robot.RobotEnable(0);
+                await Task.Delay(10);
+                await Task.Run(() => robot.RobotEnable(0));
                 prevIsNotEnable = true;
                 prevIsEnable = false; // Resetta lo stato "abilitato"
                 prevIsManual = false;
-                AlarmManager.blockingAlarm = true;
                 pauseCycleRequested = false;
                 currentIndex = -1;
                 robotEnableStatus = 0;
                 UC_FullDragModePage.debugCurrentIndex = -1;
-                robot.StopMotion(); // Cancellazione della coda di punti
+                log.Warn("[ENABLE] Disabilitazione robot completata");
             }
         }
 
@@ -3380,7 +3405,7 @@ namespace RM.src.RM250619
         /// <summary>
         /// Esegue check su modalità Robot
         /// </summary>
-        private static void CheckRobotMode()
+        private static async Task CheckRobotMode()
         {
             // Ottieni la modalità operativa dal PLC
             mode = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Operating_Mode));
@@ -3403,22 +3428,24 @@ namespace RM.src.RM250619
                 // Cambia la modalità del robot in base alla modalità stabile
                 if (stableMode == 1 && !prevIsAuto) // Passaggio alla modalità automatica
                 {
-                    RobotManager.isAutomaticMode = true;
-                    SetRobotMode(0);                  // Imposta il robot in modalità automatica
+                    isAutomaticMode = true;
+                    await Task.Run(() => SetRobotMode(0)); // Imposta il robot in modalità automatica
                     JogMovement.StopJogRobotThread(); // Ferma il thread di movimento manuale
                     prevIsAuto = true;
                     prevIsManual = false;
                     prevIsOff = false;
                     TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
+                    log.Warn("[Mode] Cambio modalità in AUTO");
                 }
                 else if (stableMode == 2 && !prevIsManual) // Passaggio alla modalità manuale
                 {
-                    RobotManager.isAutomaticMode = false;
-                    SetRobotMode(1);                  // Imposta il robot in modalità manuale
+                    isAutomaticMode = false;
+                    await Task.Run(() => SetRobotMode(1)); // Imposta il robot in modalità manuale
                     prevIsManual = true;
                     prevIsAuto = false;
                     prevIsOff = false;
                     TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
+                    log.Warn("[Mode] Cambio modalità in MANUAL");
                 }
                 else if (stableMode == 0 && !prevIsOff) // Passaggio alla modalità Off
                 {
@@ -3426,6 +3453,7 @@ namespace RM.src.RM250619
                     prevIsAuto = false;
                     prevIsManual = false;
                     TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
+                    log.Warn("[Mode] Cambio modalità in OFF");
                 }
             }
 
@@ -3473,6 +3501,7 @@ namespace RM.src.RM250619
         {
             if (!AlarmManager.isPlcConnected) // Se il PLC è disconnesso
             {
+                log.Error("[PLC COM] Rilevata disconnessione PLC");
                 string id = "0";
                 string description = "PLC disconnesso. Il ciclo è stato terminato.";
 
@@ -3496,13 +3525,17 @@ namespace RM.src.RM250619
             {
                 if (!prevIsPlcConnected)
                 {
+                    log.Warn("[PLC COM] Connessione PLC riavviata");
 
-                    RobotManager.stopRoutine = true;
+                    //Reset stati precedenti
+                    lastMode = -1;
+                    stableMode = -1;
+
                     robotCycleStopRequested = false;
 
-                    RobotManager.ClearRobotAlarm();
-                    RobotManager.ClearRobotQueue();
-                    RobotManager.ResetRobotSteps();
+                    ClearRobotAlarm();
+                    ClearRobotQueue();
+                    ResetRobotSteps();
 
                     prevIsPlcConnected = true;
                 }
