@@ -2700,6 +2700,11 @@
             Livello di collisione corrente.
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.RobotManager.connectionCheckMaxTimeout">
+            <summary>
+            Tempo massimo in ms per controllare che il proxy stia comunicando
+            </summary>
+        </member>
         <member name="F:RM.src.RM250619.RobotManager.formAlarmPage">
             <summary>
             Riferimento alla pagina degli allarmi.
@@ -2998,6 +3003,11 @@
         <member name="F:RM.src.RM250619.RobotManager.plcComTaskRefreshPeriod">
             <summary>
             Periodo di refresh per il task che comunica al plc
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.robotComTaskRefreshPeriod">
+            <summary>
+            Periodo di refresh per il task che verifica la connessione al robot
             </summary>
         </member>
         <member name="F:RM.src.RM250619.RobotManager.applicationTaskManagerRefreshPeriod">
@@ -4001,17 +4011,11 @@
             <param name="angle"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.CheckRobotPosition(fairino.JointPos,fairino.JointPos,fairino.JointPos,fairino.JointPos,fairino.JointPos,fairino.JointPos,fairino.JointPos)">
+        <member name="M:RM.src.RM250619.RobotManager.CheckRobotPosition(fairino.JointPos)">
             <summary>
             Invia posizioni al PLC in formato cartesiano e joint
             </summary>
             <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
-            <param name="j1_actual_pos">Posizione del giunto 1</param>
-            <param name="j2_actual_pos">Posizione del giunto 2</param>
-            <param name="j3_actual_pos">Posizione del giunto 3</param>
-            <param name="j4_actual_pos">Posizione del giunto 4</param>
-            <param name="j5_actual_pos">Posizione del giunto 5</param>
-            <param name="j6_actual_pos">Posizione del giunto 6</param>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.RoundPositionDecimals(fairino.DescPose@,System.Int32)">
             <summary>

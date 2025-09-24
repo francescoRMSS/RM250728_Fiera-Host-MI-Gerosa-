@@ -180,6 +180,10 @@ namespace RM.src.RM250619
         /// Livello di collisione corrente.
         /// </summary>
         public static int currentCollisionLevel = 0;
+        /// <summary>
+        /// Tempo massimo in ms per controllare che il proxy stia comunicando
+        /// </summary>
+        private const int connectionCheckMaxTimeout = 500;
 
         #endregion
 
@@ -448,6 +452,10 @@ namespace RM.src.RM250619
         /// Periodo di refresh per il task che comunica al plc
         /// </summary>
         private readonly static int plcComTaskRefreshPeriod = 600;
+        /// <summary>
+        /// Periodo di refresh per il task che verifica la connessione al robot
+        /// </summary>
+        private readonly static int robotComTaskRefreshPeriod = 500;
         /// <summary>
         /// Periodo di refresh all'interno del metodo ApplicationTaskManager
         /// </summary>
@@ -1065,6 +1073,7 @@ namespace RM.src.RM250619
                     {
                         await CheckIsRobotEnable();
                         await CheckRobotMode();
+                        await CheckCurrentToolAndUser();
                     }
 
                     await Task.Delay(auxiliaryThreadRefreshPeriod, token);
@@ -1151,12 +1160,12 @@ namespace RM.src.RM250619
                     {
                         try
                         {
-                            robot.GetActualTCPPose(flag, ref TCPCurrentPosition); // Leggo posizione robot TCP corrente
+                            await Task.Run(() => robot.GetActualTCPPose(flag, ref TCPCurrentPosition)); // Leggo posizione robot TCP corrente
                             CheckIsRobotMoving(updates);
                             CheckIsRobotInObstructionArea(startPoints, updates);
                             CheckIsRobotInSafeZone(pointSafeZone);
                             CheckIsRobotInPos();
-                            CheckStatusRobot();
+                            await CheckStatusRobot();
                         }
                         catch (Exception e)
                         {
@@ -1215,24 +1224,19 @@ namespace RM.src.RM250619
             };
 
             JointPos jPos = new JointPos(0, 0, 0, 0, 0, 0);
-            JointPos j1_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
-            JointPos j2_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
-            JointPos j3_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
-            JointPos j4_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
-            JointPos j5_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
-            JointPos j6_actual_pos = new JointPos(0, 0, 0, 0, 0, 0);
+
             try
             {
                 while (!token.IsCancellationRequested)
                 {
-                    CheckRobotPosition(jPos, j1_actual_pos, j2_actual_pos, j3_actual_pos, j4_actual_pos, j5_actual_pos, j6_actual_pos);
+                    await CheckRobotPosition(jPos);
 
                     GetPLCErrorCode(alarmValues, alarmDescriptions, now, unixTimestamp,
                         dateTime, formattedDate);
 
                     SendUpdatesToPLC();
 
-                    await Task.Delay(600, token);
+                    await Task.Delay(plcComTaskRefreshPeriod, token);
                 }
                 token.ThrowIfCancellationRequested();
             }
@@ -1261,8 +1265,6 @@ namespace RM.src.RM250619
                 while (!token.IsCancellationRequested)
                 {
                     CheckPLCConnection();
-
-                    CheckCurrentToolAndUser();
 
                     await Task.Delay(lowPriorityRefreshPeriod, token);
                 }
@@ -1299,7 +1301,7 @@ namespace RM.src.RM250619
                 //Istanzio il proxy che interfaccia il controllore in maniera diretta
                 ICallSupervisor connectionProxy = XmlRpcProxyGen.Create<ICallSupervisor>();
                 connectionProxy.Url = $"http://{RobotIpAddress}:20003/RPC2";
-                connectionProxy.Timeout = 500; // Timeout breve per non bloccare troppo a lungo.
+                connectionProxy.Timeout = connectionCheckMaxTimeout; // Timeout breve per non bloccare troppo a lungo.
 
                 log.Warn("[Robot COM] Task di controllo connessione avviato.");
 
@@ -1345,7 +1347,7 @@ namespace RM.src.RM250619
                         }
                     }
 
-                    await Task.Delay(500, token);
+                    await Task.Delay(robotComTaskRefreshPeriod, token);
                 }
                 token.ThrowIfCancellationRequested();
             }
@@ -3467,12 +3469,12 @@ namespace RM.src.RM250619
         /// <summary>
         /// Legge lo stato del robot
         /// </summary>
-        private static void CheckStatusRobot()
+        private static async Task CheckStatusRobot()
         {
             ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
             byte mov_robot_state = 0;
 
-            robot.GetRobotRealTimeState(ref robot_state_pkg);
+            await Task.Run(() => robot.GetRobotRealTimeState(ref robot_state_pkg));
             mov_robot_state = robot_state_pkg.robot_state;
             robotStatus = mov_robot_state;
         }
@@ -3488,10 +3490,10 @@ namespace RM.src.RM250619
         /// <summary>
         /// Controlla il tool e user correnti
         /// </summary>
-        private static void CheckCurrentToolAndUser()
+        private static async Task CheckCurrentToolAndUser()
         {
-            robot.GetActualTCPNum(1, ref currentTool);
-            robot.GetActualWObjNum(1, ref currentUser);
+            await Task.Run(() => robot.GetActualTCPNum(1, ref currentTool));
+            await Task.Run(() => robot.GetActualWObjNum(1, ref currentUser));
         }
 
         /// <summary>
@@ -3863,24 +3865,10 @@ namespace RM.src.RM250619
         /// Invia posizioni al PLC in formato cartesiano e joint
         /// </summary>
         /// <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
-        /// <param name="j1_actual_pos">Posizione del giunto 1</param>
-        /// <param name="j2_actual_pos">Posizione del giunto 2</param>
-        /// <param name="j3_actual_pos">Posizione del giunto 3</param>
-        /// <param name="j4_actual_pos">Posizione del giunto 4</param>
-        /// <param name="j5_actual_pos">Posizione del giunto 5</param>
-        /// <param name="j6_actual_pos">Posizione del giunto 6</param>
-        public static void CheckRobotPosition(
-            JointPos jPos,
-            JointPos j1_actual_pos,
-            JointPos j2_actual_pos,
-            JointPos j3_actual_pos,
-            JointPos j4_actual_pos,
-            JointPos j5_actual_pos,
-            JointPos j6_actual_pos
-            )
+        public static async Task CheckRobotPosition(JointPos jPos)
         {
             // Calcolo della posizione in joint eseguendo il calcolo di cinematica inversa
-            robot.GetInverseKin(0, TCPCurrentPosition, -1, ref jPos);
+            await Task.Run(() => robot.GetInverseKin(0, TCPCurrentPosition, -1, ref jPos));
 
             #region TCP
 
