@@ -972,6 +972,61 @@ namespace RM.src.RM250619
 
         #endregion
 
+        #region Nomi tasks
+
+        /// <summary>
+        /// Nome del task high priority
+        /// </summary>
+        public static string TaskHighPriorityName = nameof(CheckHighPriority);
+        /// <summary>
+        /// Nome del task low priority
+        /// </summary>
+        public static string TaskLowPriorityName = nameof(CheckLowPriority);
+        /// <summary>
+        /// Nome del task auxiliary worker
+        /// </summary>
+        public static string TaskAuxiliaryWorkerName = nameof(AuxiliaryWorker);
+        /// <summary>
+        /// Nome del task plc com handler
+        /// </summary>
+        public static string TaskPlcComHandlerName = nameof(PlcComHandler);
+        /// <summary>
+        /// Nome del task check robot com
+        /// </summary>
+        public static string TaskCheckRobotConneciton = nameof(CheckRobotConnection);
+        /// <summary>
+        /// Nome del task application manager
+        /// </summary>
+        public static string TaskApplicationManager = nameof(ApplicationTaskManager);
+        /// <summary>
+        /// Nome del task safety manager
+        /// </summary>
+        public static string TaskSafetyManager = nameof(SafetyTaskManager);
+        /// <summary>
+        /// Nome del task main cycle
+        /// </summary>
+        public static string TaskMainCycle = nameof(MainCycle);
+        /// <summary>
+        /// Nome del task home routine
+        /// </summary>
+        public static string TaskHomeRoutine = nameof(HomeRoutine);
+
+        #endregion
+
+        #region Token per task interni
+
+        /// <summary>
+        /// Token per fermare il ciclo di pick
+        /// </summary>
+        private static CancellationTokenSource pickBox_cts;
+
+        /// <summary>
+        /// Token per fermare il ciclo di place
+        /// </summary>
+        private static CancellationTokenSource placeBox_cts;
+
+        #endregion
+
         #endregion
 
         #region Metodi della classe RobotManager
@@ -1016,21 +1071,21 @@ namespace RM.src.RM250619
             toolManager = new Tools(robot);
             collisionManager = new Collisions(robot);
 
-            taskManager.AddTask(nameof(CheckRobotConnection), CheckRobotConnection, TaskType.LongRunning, true);
-            taskManager.AddTask(nameof(CheckHighPriority), CheckHighPriority, TaskType.LongRunning, true);
-            taskManager.AddTask(nameof(AuxiliaryWorker), AuxiliaryWorker, TaskType.LongRunning, true);
-            taskManager.AddTask(nameof(CheckLowPriority), CheckLowPriority, TaskType.LongRunning, true);
-            taskManager.AddTask(nameof(ApplicationTaskManager), ApplicationTaskManager, TaskType.LongRunning, true);
-            taskManager.AddTask(nameof(PlcComHandler), PlcComHandler, TaskType.LongRunning, true);
-            taskManager.AddTask(nameof(SafetyTaskManager), SafetyTaskManager, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskCheckRobotConneciton, CheckRobotConnection, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskHighPriorityName, CheckHighPriority, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskAuxiliaryWorkerName, AuxiliaryWorker, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskLowPriorityName, CheckLowPriority, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskApplicationManager, ApplicationTaskManager, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskPlcComHandlerName, PlcComHandler, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskSafetyManager, SafetyTaskManager, TaskType.LongRunning, true);
 
-            taskManager.StartTask(nameof(CheckRobotConnection));
-            taskManager.StartTask(nameof(SafetyTaskManager));
-            taskManager.StartTask(nameof(CheckHighPriority));
-            taskManager.StartTask(nameof(AuxiliaryWorker));
-            taskManager.StartTask(nameof(CheckLowPriority));
-            taskManager.StartTask(nameof(ApplicationTaskManager));
-            taskManager.StartTask(nameof(PlcComHandler));
+            taskManager.StartTask(TaskCheckRobotConneciton);
+            taskManager.StartTask(TaskSafetyManager);
+            taskManager.StartTask(TaskHighPriorityName);
+            taskManager.StartTask(TaskAuxiliaryWorkerName);
+            taskManager.StartTask(TaskLowPriorityName);
+            taskManager.StartTask(TaskApplicationManager);
+            taskManager.StartTask(TaskPlcComHandlerName);
 
             log.Info("Task di background del robot avviati tramite TaskManager.");
 
@@ -1087,7 +1142,7 @@ namespace RM.src.RM250619
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {nameof(AuxiliaryWorker)}: {ex}");
+                log.Error($"[TASK] {TaskAuxiliaryWorkerName}: {ex}");
                 throw;
             }
             finally
@@ -1185,7 +1240,7 @@ namespace RM.src.RM250619
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {nameof(CheckHighPriority)}: {ex}");
+                log.Error($"[TASK] {TaskHighPriorityName}: {ex}");
                 throw;
             }
             finally
@@ -1246,7 +1301,7 @@ namespace RM.src.RM250619
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {nameof(PlcComHandler)}: {ex}");
+                log.Error($"[TASK] {TaskPlcComHandlerName}: {ex}");
                 throw;
             }
             finally
@@ -1276,7 +1331,7 @@ namespace RM.src.RM250619
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {nameof(CheckLowPriority)}: {ex}");
+                log.Error($"[TASK] {TaskLowPriorityName}: {ex}");
                 throw;
             }
             finally
@@ -1341,9 +1396,29 @@ namespace RM.src.RM250619
                             // È la prima volta che rileviamo la disconnessione
                             log.Error("[Robot COM] Connessione al robot PERSA. Avvio tentativi di riconnessione...");
                             AlarmManager.isRobotConnected = false;
-                            //RefresherTask.AddUpdate(PLCTagName.Emergency, 1, "INT16"); --------------
+                            //RefresherTask.AddUpdate(PLCTagName.Emergency, 1, "INT16");
 
                             try { robot.CloseRPC(); } catch { } //Chiusura dei thread di libreria
+
+                            // Generazione allarme bloccante
+                            AlarmManager.blockingAlarm = true;
+
+                            string id = "1";
+                            string description = "Robot disconnesso.";
+
+                            DateTime now = DateTime.Now;
+                            long unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
+                            DateTime dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
+                            string formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+                            string device = "Robot";
+                            string state = "ON";
+
+                            if (!IsAlarmAlreadySignaled(id))
+                            {
+                                CreateRobotAlarm(id, description, formattedDate, device, state);
+                                MarkAlarmAsSignaled(id);
+                            }
                         }
                     }
 
@@ -1357,7 +1432,7 @@ namespace RM.src.RM250619
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {nameof(CheckRobotConnection)}: {ex}");
+                log.Error($"[TASK] {TaskCheckRobotConneciton}: {ex}");
                 throw;
             }
             finally
@@ -1400,7 +1475,7 @@ namespace RM.src.RM250619
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {nameof(ApplicationTaskManager)}: {ex}");
+                log.Error($"[TASK] {TaskApplicationManager}: {ex}");
                 throw;
             }
             finally
@@ -1434,7 +1509,7 @@ namespace RM.src.RM250619
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {nameof(SafetyTaskManager)}: {ex}");
+                log.Error($"[TASK] {TaskSafetyManager}: {ex}");
                 throw;
             }
             finally
@@ -1491,8 +1566,8 @@ namespace RM.src.RM250619
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
             try
             {
-                await Task.Run(() => robot.SetAnticollision(0, levelCollision3, 1)); //------------------------ usare collision manager
-                currentCollisionLevel = 3;
+                await Task.Run(() => robot.SetAnticollision(0, levelCollision5, 1)); //------------------------ usare collision manager
+                currentCollisionLevel = 5;
                 // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
                 while (!stopCycleRoutine && !AlarmManager.blockingAlarm && !token.IsCancellationRequested)
                 {
@@ -1564,7 +1639,7 @@ namespace RM.src.RM250619
                             // e controllo prima se il punto è presente nel dizionario e dopo se le coordinate sono valide
                             // verificando che tutte siano diverse da 0
 
-                            int box = (Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000);
+                            int box = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000;
                             if (box > 100 && box < 302) // Controllo non dinamico-------------------
                             {
                                 // Get del punto di pick dal dizionario
@@ -1577,13 +1652,8 @@ namespace RM.src.RM250619
                                     if (pick.x != 0 && pick.y != 0 && pick.z != 0 && pick.rx != 0 && pick.ry != 0 && pick.rz != 0)
                                     {
                                         // Eseguo e attendo sia terminata la routine di pick
-                                        await PickBox(pick);
-                                        /*taskManager.AddAndStartTask(
-                                            nameof(PickBox),
-                                            (token) => PickBox(pick, token),
-                                            TaskType.Short,
-                                            false
-                                            );*/
+                                        pickBox_cts = new CancellationTokenSource();
+                                        await PickBox(pickBox_cts.Token, pick);
                                         step = 10; // Riavvio del ciclo per controllare nuove richieste di pick o place
                                     }
                                 }
@@ -1627,7 +1697,8 @@ namespace RM.src.RM250619
                                     // Check validità del punto
                                     if (place.x != 0 && place.y != 0 && place.z != 0 && place.rx != 0 && place.ry != 0 && place.rz != 0) // Se il punto è valido
                                     {
-                                        await PlaceBox(place); // Eseguo e attendo sia terminata la routine di place
+                                        placeBox_cts = new CancellationTokenSource();
+                                        await PlaceBox(placeBox_cts.Token, place); // Eseguo e attendo sia terminata la routine di place
                                         step = 10; // Riavvio del ciclo per controllare nuove richieste di pick o place
                                     }
                                 }
@@ -1676,12 +1747,19 @@ namespace RM.src.RM250619
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {nameof(MainCycle)}: {ex}");
+                log.Error($"[TASK] {TaskMainCycle}: {ex}");
                 throw;
             }
             finally
             {
-
+                if(pickBox_cts != null)
+                {
+                    pickBox_cts.Cancel();
+                }
+                if(placeBox_cts != null)
+                {
+                    placeBox_cts.Cancel();
+                }
             }
         }
 
@@ -1689,7 +1767,7 @@ namespace RM.src.RM250619
         /// Esegue il pick della scatola
         /// </summary>
         /// <returns></returns>
-        public static async Task PickBox(ApplicationPositions pick)
+        public static async Task PickBox(CancellationToken token, ApplicationPositions pick)
         {
             #region Dichiarazione punti routine
 
@@ -1740,7 +1818,7 @@ namespace RM.src.RM250619
                 // Aspetto che il metodo termini, ma senza bloccare il thread principale
                 // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
                 // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
-                while (!stopPickRoutine && !AlarmManager.blockingAlarm)
+                while (!stopPickRoutine && !AlarmManager.blockingAlarm && !token.IsCancellationRequested)
                 {
                     switch (stepPick)
                     {
@@ -1759,6 +1837,9 @@ namespace RM.src.RM250619
                             // Invio punto di avvicinamento Pick
                             movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc, ovl, blendT, config);
                             GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
+
+                            //movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc, ovl, blendT, config);
+                            //GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
 
                             // Invio punto di pick
                             movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
@@ -1862,6 +1943,7 @@ namespace RM.src.RM250619
 
                     await Task.Delay(200); // Delay routine
                 }
+                token.ThrowIfCancellationRequested();
             }
             catch (Exception ex)
             {
@@ -1870,7 +1952,199 @@ namespace RM.src.RM250619
             }
             finally
             {
+                pickBox_cts.Dispose();
+                pickBox_cts = null;
+            }
+        }
 
+        /// <summary>
+        /// Esegue il place della scatola
+        /// </summary>
+        /// <returns></returns>
+        public static async Task PlaceBox(CancellationToken token, ApplicationPositions place)
+        {
+            stepPlace = 0; // Step ciclo di place
+            int movementResult = 0; // Risultato del movimento del Robot
+            stopPlaceRoutine = false; // Segnale di stop della place routine
+            int numeroRighe = (int)(larghezzaPallet / larghezzaScatola); // Numero di righe di scatole su pallet
+            int numeroColonne = (int)(lunghezzaPallet / lunghezzaScatola); // Numero di colonne di scatole su pallet
+
+            #region Dichiarazione dei punti
+
+            #region Punto home
+
+            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
+            DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
+
+            #endregion
+
+            #region Punto di place
+
+            // int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+            int rotate180 = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Box_Rotate_180));
+
+            int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
+            int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Y));
+            int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
+
+            JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
+            //var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
+            DescPose descPosPlace = new DescPose(place.x + xOffset, place.y + yOffset, place.z + zOffset, place.rx, place.ry, place.rz);
+            robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
+
+            if (rotate180 == 1)
+            {
+                descPosPlace.rpy.rz = NormalizeAngle((float)descPosPlace.rpy.rz + 180);
+            }
+
+            #endregion
+
+            #region Punto avvicinamento place
+
+            JointPos jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
+            DescPose descPosApproachPlace = new DescPose(place.x, place.y, place.z + 200, place.rx, place.ry, place.rz);
+            robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
+
+            #endregion
+
+            DescPose originePallet = descPosPlace;
+            JointPos jointPosPlaceCalculated = new JointPos(0, 0, 0, 0, 0, 0);
+
+            #endregion
+
+            #region Parametri movimento
+
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
+            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
+
+            #endregion
+
+            try
+            {
+                // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
+                while (!stopPlaceRoutine && !AlarmManager.blockingAlarm && !token.IsCancellationRequested)
+                {
+                    switch (stepPlace)
+                    {
+                        case 0:
+                            #region Movimento a punto di place
+
+                            CycleRun_Place = 1;
+
+                            inPosition = false; // Reset inPosition
+
+                            // Invio punto di avvicinamento place
+                            movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc, ovl, blendT, config); // Invio punto di avvicinamento place
+                            GetRobotMovementCode(movementResult);
+
+                            // Invio punto di place
+                            movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+
+                            endingPoint = descPosPlace; // Assegnazione endingPoint
+
+                            stepPlace = 10;
+
+                            break;
+
+                        #endregion
+
+                        case 10:
+                            #region Delay per calcolo in position punto di place
+
+                            await Task.Delay(500);
+                            stepPlace = 20;
+
+                            break;
+
+                        #endregion
+
+                        case 20:
+                            #region Attesa inPosition punto di Place
+
+                            if (inPosition) // Se il Robot è arrivato in posizione di place
+                            {
+                                stepPlace = 30;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 30:
+                            #region Rilascio scatola su pallet
+
+                            await Task.Delay(500); // Per evitare "rimbalzo" del Robot
+                            stepPlace = 40;
+
+                            break;
+
+                        #endregion
+
+                        case 40:
+                            #region Movimento a punto di Home
+
+                            inPosition = false; // Reset inPosition
+
+                            // Invio punto di allontamento place
+                            movementResult = robot.MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+                            GetRobotMovementCode(movementResult);
+
+                            // Invio punto di place
+                            movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc, ovl, blendT, config); // Invio punto di Home
+                            GetRobotMovementCode(movementResult);
+
+                            endingPoint = descPosHome;
+
+                            stepPlace = 50;
+
+                            break;
+
+                        #endregion
+
+                        case 50:
+                            #region Attesa inPosition punto di Home
+
+                            if (inPosition) // Se è arrivato in home termino la routine
+                            {
+                                stepPlace = 99;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 99:
+                            #region Attesa reset comando di place
+
+                            int placeSignal = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place)); // Get segnale di place
+
+                            if (placeSignal == 0) // Se è stato resettato, termino la routine
+                            {
+                                stepPlace = 0;
+                                CycleRun_Place = 0;
+                                stopPlaceRoutine = true;
+                            }
+
+                            #endregion
+
+                            break;
+
+                    }
+
+                    await Task.Delay(200); // Delay routine
+                }
+                token.ThrowIfCancellationRequested();
+            }
+            catch (Exception ex)
+            {
+                log.Error($"[TASK] {nameof(PlaceBox)}: {ex}");
+                throw;
+            }
+            finally
+            {
+                placeBox_cts.Dispose();
+                placeBox_cts = null;
             }
         }
 
@@ -2007,201 +2281,12 @@ namespace RM.src.RM250619
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {nameof(HomeRoutine)}: {ex}");
+                log.Error($"[TASK] {TaskHomeRoutine}: {ex}");
                 throw;
             }
             finally
             {
                 //previousHomeCommandStatus = false;   // viene resettato da plc il comando dopo 20 secondi
-            }
-        }
-
-        /// <summary>
-        /// Esegue il place della scatola
-        /// </summary>
-        /// <returns></returns>
-        public static async Task PlaceBox(ApplicationPositions place)
-        {
-            stepPlace = 0; // Step ciclo di place
-            int movementResult = 0; // Risultato del movimento del Robot
-            stopPlaceRoutine = false; // Segnale di stop della place routine
-            int numeroRighe = (int)(larghezzaPallet / larghezzaScatola); // Numero di righe di scatole su pallet
-            int numeroColonne = (int)(lunghezzaPallet / lunghezzaScatola); // Numero di colonne di scatole su pallet
-
-            #region Dichiarazione dei punti
-
-            #region Punto home
-
-            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
-            DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
-
-            #endregion
-
-            #region Punto di place
-
-            // int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
-            int rotate180 = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Box_Rotate_180));
-
-            int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
-            int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Y));
-            int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
-
-            JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
-            //var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
-            DescPose descPosPlace = new DescPose(place.x + xOffset, place.y + yOffset, place.z + zOffset, place.rx, place.ry, place.rz);
-            robot.GetInverseKin(0, descPosPlace, -1, ref jointPosPlace);
-
-            if (rotate180 == 1)
-            {
-                descPosPlace.rpy.rz = NormalizeAngle((float)descPosPlace.rpy.rz + 180);
-            }
-
-            #endregion
-
-            #region Punto avvicinamento place
-
-            JointPos jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
-            DescPose descPosApproachPlace = new DescPose(place.x, place.y, place.z + 200, place.rx, place.ry, place.rz);
-            robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
-
-            #endregion
-
-            DescPose originePallet = descPosPlace;
-            JointPos jointPosPlaceCalculated = new JointPos(0, 0, 0, 0, 0, 0);
-
-            #endregion
-
-            #region Parametri movimento
-
-            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
-            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
-            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
-
-            #endregion
-
-            try
-            {
-                // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
-                while (!stopPlaceRoutine && !AlarmManager.blockingAlarm)
-                {
-                    switch (stepPlace)
-                    {
-                        case 0:
-                            #region Movimento a punto di place
-
-                            CycleRun_Place = 1;
-
-                            inPosition = false; // Reset inPosition
-
-                            // Invio punto di avvicinamento place
-                            movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc, ovl, blendT, config); // Invio punto di avvicinamento place
-                            GetRobotMovementCode(movementResult);
-
-                            // Invio punto di place
-                            movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
-
-                            endingPoint = descPosPlace; // Assegnazione endingPoint
-
-                            stepPlace = 10;
-
-                            break;
-
-                        #endregion
-
-                        case 10:
-                            #region Delay per calcolo in position punto di place
-
-                            await Task.Delay(500);
-                            stepPlace = 20;
-
-                            break;
-
-                        #endregion
-
-                        case 20:
-                            #region Attesa inPosition punto di Place
-
-                            if (inPosition) // Se il Robot è arrivato in posizione di place
-                            {
-                                stepPlace = 30;
-                            }
-
-                            break;
-
-                        #endregion
-
-                        case 30:
-                            #region Rilascio scatola su pallet
-
-                            await Task.Delay(500); // Per evitare "rimbalzo" del Robot
-                            stepPlace = 40;
-
-                            break;
-
-                        #endregion
-
-                        case 40:
-                            #region Movimento a punto di Home
-
-                            inPosition = false; // Reset inPosition
-
-                            // Invio punto di allontamento place
-                            movementResult = robot.MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
-                            GetRobotMovementCode(movementResult);
-
-                            // Invio punto di place
-                            movementResult = robot.MoveCart(descPosHome, tool, user, vel, acc, ovl, blendT, config); // Invio punto di Home
-                            GetRobotMovementCode(movementResult);
-
-                            endingPoint = descPosHome;
-
-                            stepPlace = 50;
-
-                            break;
-
-                        #endregion
-
-                        case 50:
-                            #region Attesa inPosition punto di Home
-
-                            if (inPosition) // Se è arrivato in home termino la routine
-                            {
-                                stepPlace = 99;
-                            }
-
-                            break;
-
-                        #endregion
-
-                        case 99:
-                            #region Attesa reset comando di place
-
-                            int placeSignal = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place)); // Get segnale di place
-
-                            if (placeSignal == 0) // Se è stato resettato, termino la routine
-                            {
-                                stepPlace = 0;
-                                CycleRun_Place = 0;
-                                stopPlaceRoutine = true;
-                            }
-
-                            #endregion
-
-                            break;
-
-                    }
-
-                    await Task.Delay(200); // Delay routine
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error($"[TASK] {nameof(PlaceBox)}: {ex}");
-                throw;
-            }
-            finally
-            {
-
             }
         }
 
@@ -2344,7 +2429,7 @@ namespace RM.src.RM250619
                     // Se il Robot non è in movimento 
                     if (!AlarmManager.isRobotMoving) 
                     {
-                        taskManager.AddAndStartTask(nameof(MainCycle), MainCycle, TaskType.LongRunning, false);
+                        taskManager.AddAndStartTask(TaskMainCycle, MainCycle, TaskType.LongRunning, false);
                         EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
                     }
                     else // Se il Robot è in movimento
@@ -2377,7 +2462,7 @@ namespace RM.src.RM250619
             {
                 log.Warn("Richiesto comando GO TO HOME");
                 previousHomeCommandStatus = true;
-                taskManager.AddAndStartTask(nameof(HomeRoutine), HomeRoutine, TaskType.Default, false);
+                taskManager.AddAndStartTask(TaskHomeRoutine, HomeRoutine, TaskType.Default, false);
             }
             else if (homeStatus == 0)
             {
@@ -2590,6 +2675,18 @@ namespace RM.src.RM250619
 
         #region Metodi interni
 
+        private static void AbortTasks()
+        {
+            taskManager.StopTask(nameof(CheckHighPriority));
+            taskManager.StopTask(nameof(CheckLowPriority));
+            taskManager.StopTask(TaskHomeRoutine);
+        }
+
+        private static void ReStartTasks()
+        {
+
+        }
+
         /// <summary>
         /// Metodo helper che tenta di ricreare e riconnettere l'oggetto robot.
         /// Non è in un loop, viene chiamato dal Guardian quando necessario.
@@ -2641,7 +2738,7 @@ namespace RM.src.RM250619
         /// </summary>
         private static void SendUpdatesToPLC()
         {
-            RefresherTask.AddUpdate(PLCTagName.Com_robot_attiva, Convert.ToInt16(AlarmManager.isRobotConnected), "INT16"); // Scrittura comunicazione con robot attiva
+            RefresherTask.AddUpdate(PLCTagName.ApplicationComRobot_active, Convert.ToInt16(AlarmManager.isRobotConnected), "INT16"); // Scrittura comunicazione con robot attiva
             RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Home, stepHomeRoutine, "INT16"); // Scrittura fase ciclo home a PLC
             RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, step, "INT16"); // Scrittura fase ciclo main a PLC
             RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, stepPick, "INT16"); // Scrittura fase ciclo pick a PLC

@@ -18,12 +18,17 @@ namespace RM.src.RM250619.Classes.PLC
         /// <summary>
         /// Se il valore è 1, indica che la lista di lavoro del robot contiene almeno un programma
         /// </summary>
-        public const string Com_robot_attiva = "PLC1_" + "Com_robot_attiva";
+        public const string Hw_ready_to_start = "PLC1_" + "Com_robot_attiva";
 
         /// <summary>
         /// A 1 quando quando il robot lavora in modalità automatico
         /// </summary>
         public const string Automatic_Start = "PLC1_" + "Automatic_Start";
+
+        /// <summary>
+        /// A 1 quando il robot sta comunicando con il programma
+        /// </summary>
+        public const string ApplicationComRobot_active = "PLC1_" + "ApplicationComRobot_active";
 
         /// <summary>
         /// A 1 quando quando il robot ha almeno un programma i nmemoria

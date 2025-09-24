@@ -875,7 +875,7 @@
             Clock da scrivere ogni secondo (il clock su PLC gira ogni 2s)
             </summary>
         </member>
-        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Com_robot_attiva">
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Hw_ready_to_start">
             <summary>
             Se il valore è 1, indica che la lista di lavoro del robot contiene almeno un programma
             </summary>
@@ -883,6 +883,11 @@
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Automatic_Start">
             <summary>
             A 1 quando quando il robot lavora in modalità automatico
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.ApplicationComRobot_active">
+            <summary>
+            A 1 quando il robot sta comunicando con il programma
             </summary>
         </member>
         <member name="F:RM.src.RM250619.Classes.PLC.PLCTagName.Program_In_Memory">
@@ -3611,6 +3616,61 @@
             Valore not enable robot
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.RobotManager.TaskHighPriorityName">
+            <summary>
+            Nome del task high priority
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.TaskLowPriorityName">
+            <summary>
+            Nome del task low priority
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.TaskAuxiliaryWorkerName">
+            <summary>
+            Nome del task auxiliary worker
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.TaskPlcComHandlerName">
+            <summary>
+            Nome del task plc com handler
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.TaskCheckRobotConneciton">
+            <summary>
+            Nome del task check robot com
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.TaskApplicationManager">
+            <summary>
+            Nome del task application manager
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.TaskSafetyManager">
+            <summary>
+            Nome del task safety manager
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.TaskMainCycle">
+            <summary>
+            Nome del task main cycle
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.TaskHomeRoutine">
+            <summary>
+            Nome del task home routine
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.pickBox_cts">
+            <summary>
+            Token per fermare il ciclo di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250619.RobotManager.placeBox_cts">
+            <summary>
+            Token per fermare il ciclo di place
+            </summary>
+        </member>
         <member name="M:RM.src.RM250619.RobotManager.#cctor">
             <summary>
             Costruttore statico, chiamato dal programma in automatico all'inizio
@@ -3675,21 +3735,21 @@
             Esegue metodo che gestisce routine di pick e di place
             </summary>
         </member>
-        <member name="M:RM.src.RM250619.RobotManager.PickBox(RM.src.RM250619.ApplicationPositions)">
+        <member name="M:RM.src.RM250619.RobotManager.PickBox(System.Threading.CancellationToken,RM.src.RM250619.ApplicationPositions)">
             <summary>
             Esegue il pick della scatola
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.RobotManager.PlaceBox(System.Threading.CancellationToken,RM.src.RM250619.ApplicationPositions)">
+            <summary>
+            Esegue il place della scatola
             </summary>
             <returns></returns>
         </member>
         <member name="M:RM.src.RM250619.RobotManager.HomeRoutine(System.Threading.CancellationToken)">
             <summary>
             Routine di go to home position
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250619.RobotManager.PlaceBox(RM.src.RM250619.ApplicationPositions)">
-            <summary>
-            Esegue il place della scatola
             </summary>
             <returns></returns>
         </member>
