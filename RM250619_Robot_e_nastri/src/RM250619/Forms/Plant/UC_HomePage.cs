@@ -1083,5 +1083,132 @@ namespace RM.src.RM250619
             }
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int movementResult; // Risultato del movimento del Robot
+
+            #region Punto home
+
+            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
+            DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
+
+            #endregion
+
+            #region Punto di pick
+
+            //int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
+            //int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
+            //int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
+            int xOffset = 0;
+            int yOffset = 0;
+            int zOffset = 0;
+
+            JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
+            var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
+            DescPose descPosPick = new DescPose(pick.x + xOffset, pick.y + yOffset, pick.z + zOffset, pick.rx, pick.ry, pick.rz);
+            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
+
+            #endregion
+
+            #region Punto avvicinamento pick
+
+            JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
+            DescPose descPosApproachPick = new DescPose(pick.x, pick.y, pick.z + 200, pick.rx, pick.ry, pick.rz);
+            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
+
+            #endregion
+
+            #region Parametri movimento
+
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
+            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
+
+
+            // Invio punto di avvicinamento Pick
+            movementResult = RobotManager.robot.MoveCart(descPosApproachPick, RobotManager.tool, RobotManager.user, RobotManager.vel,
+                RobotManager.acc, RobotManager.ovl, RobotManager.blendT, RobotManager.config);
+
+            //movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc, ovl, blendT, config);
+            //GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
+
+            
+
+            #endregion
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int movementResult; // Risultato del movimento del Robot
+            /*
+            #region Punto home
+
+            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
+            DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
+
+            #endregion
+
+            #region Punto di pick
+
+            //int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
+            //int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
+            //int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
+            int xOffset = 0;
+            int yOffset = 0;
+            int zOffset = 0;
+
+            JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
+            var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
+            DescPose descPosPick = new DescPose(pick.x + xOffset, pick.y + yOffset, pick.z + zOffset, pick.rx, pick.ry, pick.rz);
+            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
+
+            #endregion
+
+            #region Punto avvicinamento pick
+
+            JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
+            DescPose descPosApproachPick = new DescPose(pick.x, pick.y, pick.z + 200, pick.rx, pick.ry, pick.rz);
+            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
+
+            #endregion
+
+            #region Parametri movimento
+
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
+            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
+
+            // Invio punto di pick
+            movementResult = RobotManager.robot.MoveL(jointPosPick, descPosPick, RobotManager.tool, RobotManager.user, RobotManager.vel,
+                RobotManager.acc, RobotManager.ovl, RobotManager.blendT, epos, 0, offsetFlag, offset);
+            #endregion
+            */
+
+
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
+            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
+
+            DescPose actualPose = RobotManager.TCPCurrentPosition;
+            DescPose targetPose = actualPose;
+            JointPos jointTargetPose = new JointPos(0, 0, 0, 0, 0, 0);
+
+            targetPose.tran.z += 200;
+
+            RobotManager.robot.GetInverseKin(0, targetPose, -1, ref jointTargetPose);
+
+            // Invio punto di pick
+            movementResult = RobotManager.robot.MoveL(jointTargetPose, targetPose, RobotManager.tool, RobotManager.user, RobotManager.vel,
+                RobotManager.acc, RobotManager.ovl, RobotManager.blendT, epos, 0, offsetFlag, offset);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var restPose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
+            DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
+
+            int result = RobotManager.robot.MoveCart(pHome, RobotManager.tool, RobotManager.user, RobotManager.vel,
+                RobotManager.acc, RobotManager.ovl, RobotManager.blendT, RobotManager.config);
+        }
     } 
 }

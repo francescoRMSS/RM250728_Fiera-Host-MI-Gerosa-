@@ -1055,8 +1055,8 @@ namespace RM.src.RM250619
             // Istanzio il robot
             RobotIpAddress = robotIpAddress;
             robot = new Robot();
+            robot.LoggerInit(FrLogType.DIRECT, FrLogLevel.INFO, "C:\\Users\\WIN10\\source\\repos\\RM250619_Robot_e_nastri\\RM250619_Robot_e_nastri\\bin\\Debug\\Logs", 5, 5);
             robot.RPC(RobotIpAddress);
-            robot.SetLoggerLevel(FrLogLevel.ERROR);
             AlarmManager.isRobotConnected = true;
 
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
@@ -1784,9 +1784,12 @@ namespace RM.src.RM250619
 
             #region Punto di pick
 
-            int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
-            int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
-            int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
+            //int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
+            //int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
+            //int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
+            int xOffset = 0;
+            int yOffset = 0;
+            int zOffset = 0;
 
             JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
             //var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
@@ -1838,12 +1841,12 @@ namespace RM.src.RM250619
                             movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc, ovl, blendT, config);
                             GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
 
-                            //movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc, ovl, blendT, config);
-                            //GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
+                            movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc, ovl, blendT, config);
+                            GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
 
                             // Invio punto di pick
-                            movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
-                            GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
+                            //movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+                            //GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
 
                             endingPoint = descPosPick; // Assegnazione endingPoint
 
@@ -1897,7 +1900,10 @@ namespace RM.src.RM250619
                             inPosition = false; // Reset inPosition
 
                             // Invio punto allontanamento pick
-                            movementResult = robot.MoveL(jointPosApproachPick, descPosApproachPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+                            //movementResult = robot.MoveL(jointPosApproachPick, descPosApproachPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+                            //GetRobotMovementCode(movementResult);
+
+                            movementResult = movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc, ovl, blendT, config); // Invio punto di Home
                             GetRobotMovementCode(movementResult);
 
                             // Invio punto di home
@@ -1983,9 +1989,12 @@ namespace RM.src.RM250619
             // int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
             int rotate180 = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Box_Rotate_180));
 
-            int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
-            int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Y));
-            int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
+            //int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
+            //int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Y));
+            //int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
+            int xOffset = 0;
+            int yOffset = 0;
+            int zOffset = 0;
 
             JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
             //var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
@@ -2039,7 +2048,9 @@ namespace RM.src.RM250619
                             GetRobotMovementCode(movementResult);
 
                             // Invio punto di place
-                            movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+                            //movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+                            movementResult = robot.MoveCart(descPosPlace, tool, user, vel, acc, ovl, blendT, config);
+                            GetRobotMovementCode(movementResult);
 
                             endingPoint = descPosPlace; // Assegnazione endingPoint
 
@@ -2087,7 +2098,8 @@ namespace RM.src.RM250619
                             inPosition = false; // Reset inPosition
 
                             // Invio punto di allontamento place
-                            movementResult = robot.MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+                            //movementResult = robot.MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+                            movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc, ovl, blendT, config);
                             GetRobotMovementCode(movementResult);
 
                             // Invio punto di place
@@ -3806,20 +3818,20 @@ namespace RM.src.RM250619
                 if (code != null) // Se il codice è presente nel dizionario nel database eseguo la get dei dettagli
                 {
                     // Stampo messaggio di errore
-                    CustomMessageBox.Show(
-                        MessageBoxTypeEnum.ERROR,
-                        "Errcode: " + code["Errcode"].ToString() + "\nDescribe: " + code["Describe"].ToString() + "\nProcessing method: " + code["Processing method"].ToString()
-                        );
+                    //CustomMessageBox.Show(
+                    //    MessageBoxTypeEnum.ERROR,
+                    //    "Errcode: " + code["Errcode"].ToString() + "\nDescribe: " + code["Describe"].ToString() + "\nProcessing method: " + code["Processing method"].ToString()
+                    //    );
 
                     // Scrivo messaggio nel log
                     log.Error("Errcode: " + code["Errcode"].ToString() + "\nDescribe: " + code["Describe"].ToString() + "\nProcessing method: " + code["Processing method"].ToString());
                 }
                 else // Se il codice non è presente nel dizionario nel database stampo un errore generico
                 {
-                    CustomMessageBox.Show(
-                       MessageBoxTypeEnum.ERROR,
-                       "Errore generico durante il movimento del robot"
-                       );
+                    //CustomMessageBox.Show(
+                    //   MessageBoxTypeEnum.ERROR,
+                    //   "Errore generico durante il movimento del robot"
+                    //   );
 
                     log.Error("Errore generico durante il movimento del robot");
 

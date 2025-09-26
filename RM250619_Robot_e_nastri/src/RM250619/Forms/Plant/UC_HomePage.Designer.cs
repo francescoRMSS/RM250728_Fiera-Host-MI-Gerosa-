@@ -75,6 +75,9 @@
             this.btn_stopRobot = new System.Windows.Forms.Button();
             this.btn_pauseRobot = new System.Windows.Forms.Button();
             this.btn_resumeRobot = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.pnl_status.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -667,6 +670,48 @@
             this.btn_resumeRobot.Visible = false;
             this.btn_resumeRobot.Click += new System.EventHandler(this.btn_resumeRobot_Click);
             // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.Control;
+            this.button1.BackgroundImage = global::RM.Properties.Resources.play32;
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.button1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.button1.Location = new System.Drawing.Point(198, 368);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(50, 50);
+            this.button1.TabIndex = 296;
+            this.button1.Text = " ";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.SystemColors.Control;
+            this.button2.BackgroundImage = global::RM.Properties.Resources.play32;
+            this.button2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.button2.Cursor = System.Windows.Forms.Cursors.Default;
+            this.button2.Location = new System.Drawing.Point(201, 421);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(50, 50);
+            this.button2.TabIndex = 297;
+            this.button2.Text = " ";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button3
+            // 
+            this.button3.BackColor = System.Drawing.SystemColors.Control;
+            this.button3.BackgroundImage = global::RM.Properties.Resources.play32;
+            this.button3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.button3.Cursor = System.Windows.Forms.Cursors.Default;
+            this.button3.Location = new System.Drawing.Point(86, 368);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(50, 50);
+            this.button3.TabIndex = 298;
+            this.button3.Text = " ";
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // UC_HomePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -674,6 +719,9 @@
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = global::RM.Properties.Resources.UC_homePage;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.btn_resumeRobot);
             this.Controls.Add(this.btn_pauseRobot);
             this.Controls.Add(this.btn_stopRobot);
@@ -777,5 +825,8 @@
         private System.Windows.Forms.Button btn_stopRobot;
         private System.Windows.Forms.Button btn_pauseRobot;
         private System.Windows.Forms.Button btn_resumeRobot;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
     }
 }
