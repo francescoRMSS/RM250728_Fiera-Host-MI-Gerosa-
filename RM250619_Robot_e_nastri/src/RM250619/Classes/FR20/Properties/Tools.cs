@@ -29,8 +29,15 @@ namespace RM.src.RM250619.Classes.FR20
 
         private List<ToolStruct> _tools;
         private Robot _robot;
+        /// <summary>
+        /// Tool corrente
+        /// </summary>
         public int currentTool = -1;
 
+        /// <summary>
+        /// Costruisce il tool manager
+        /// </summary>
+        /// <param name="robot"></param>
         public Tools(Robot robot)
         {
             _robot = robot;
@@ -126,7 +133,7 @@ namespace RM.src.RM250619.Classes.FR20
             if (_data.Value.id == currentTool)
                 return 2;
 
-            _robot.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install);
+            _robot.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install,0,0);
             _robot.GetActualTCPNum(0, ref _checkNewTool);
 
             if (_checkNewTool != toolId)    // ID di risposta diverso da ID settato
@@ -157,7 +164,7 @@ namespace RM.src.RM250619.Classes.FR20
             if (_data.Value.id == currentTool)
                 return 2;
 
-            _robot.SetToolCoord(_data.Value.id, _data.Value.pose, _data.Value.type, _data.Value.install);
+            _robot.SetToolCoord(_data.Value.id, _data.Value.pose, _data.Value.type, _data.Value.install,0,0);
             _robot.GetActualTCPNum(0, ref _checkNewTool);
 
             if (_checkNewTool != _data.Value.id)    // ID di risposta diverso da ID settato
@@ -168,6 +175,11 @@ namespace RM.src.RM250619.Classes.FR20
             return 10;
         }
 
+        /// <summary>
+        /// In base all'errNum stabilisce se l'errore è bloccante o meno
+        /// </summary>
+        /// <param name="errNum"></param>
+        /// <returns></returns>
         public bool IsErrorBlocking(int errNum)
         {
             switch (errNum)
@@ -187,6 +199,11 @@ namespace RM.src.RM250619.Classes.FR20
             }
         }
 
+        /// <summary>
+        /// In base all'errNum restituisce un messaggio di errore
+        /// </summary>
+        /// <param name="errNum"></param>
+        /// <returns></returns>
         public string GetErrorCode(int errNum)
         {
             string errCode = "";

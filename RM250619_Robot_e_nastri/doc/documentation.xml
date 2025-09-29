@@ -308,6 +308,17 @@
             Gestisce i frame del robot
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.Classes.FR20.Frames.currentFrame">
+            <summary>
+            Frame corrente
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Frames.#ctor(fairino.Robot)">
+            <summary>
+            Costruisce il frame manager
+            </summary>
+            <param name="robot"></param>
+        </member>
         <member name="M:RM.src.RM250619.Classes.FR20.Frames.ChangeRobotFrame(System.Int32)">
             <summary>
             Modifica il frame in uso del robot e controlla che sia stato cambiato effettivamente
@@ -320,6 +331,20 @@
             Modifica il frame in uso del robot e controlla che sia stato cambiato effettivamente
             </summary>
             <param name="frameName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Frames.IsErrorBlocking(System.Int32)">
+            <summary>
+            In base all'errNum restituisce se l'errore è bloccante o meno
+            </summary>
+            <param name="errNum"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Frames.GetErrorCode(System.Int32)">
+            <summary>
+            In base all'errNum restituisce il messaggio di errore
+            </summary>
+            <param name="errNum"></param>
             <returns></returns>
         </member>
         <member name="T:RM.src.RM250619.Classes.FR20.Jog.JogMovement">
@@ -640,6 +665,17 @@
             Gstisce i tool del robot
             </summary>
         </member>
+        <member name="F:RM.src.RM250619.Classes.FR20.Tools.currentTool">
+            <summary>
+            Tool corrente
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Tools.#ctor(fairino.Robot)">
+            <summary>
+            Costruisce il tool manager
+            </summary>
+            <param name="robot"></param>
+        </member>
         <member name="M:RM.src.RM250619.Classes.FR20.Tools.ChangeRobotTool(System.Int32)">
             <summary>
             Modifica il tool in uso del robot e controlla che sia stato cambiato effettivamente
@@ -652,6 +688,20 @@
             Modifica il tool in uso del robot e controlla che sia stato cambiato effettivamente
             </summary>
             <param name="toolName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Tools.IsErrorBlocking(System.Int32)">
+            <summary>
+            In base all'errNum stabilisce se l'errore è bloccante o meno
+            </summary>
+            <param name="errNum"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250619.Classes.FR20.Tools.GetErrorCode(System.Int32)">
+            <summary>
+            In base all'errNum restituisce un messaggio di errore
+            </summary>
+            <param name="errNum"></param>
             <returns></returns>
         </member>
         <member name="T:RM.src.RM250619.Classes.FR20.TaskManager">

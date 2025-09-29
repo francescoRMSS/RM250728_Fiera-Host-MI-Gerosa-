@@ -27,8 +27,15 @@ namespace RM.src.RM250619.Classes.FR20
 
         private List<FrameStruct> _frames;
         private Robot _robot;
+        /// <summary>
+        /// Frame corrente
+        /// </summary>
         public int currentFrame = -1;
 
+        /// <summary>
+        /// Costruisce il frame manager
+        /// </summary>
+        /// <param name="robot"></param>
         public Frames(Robot robot)
         {
             _robot = robot;
@@ -122,7 +129,7 @@ namespace RM.src.RM250619.Classes.FR20
             if (_data.Value.id == currentFrame)
                 return 2;
 
-            _robot.SetWObjCoord(frameId, _data.Value.pose);
+            _robot.SetWObjCoord(frameId, _data.Value.pose, 0);
             _robot.GetActualWObjNum(0, ref _checkNewFrame);
 
             if (_checkNewFrame != frameId)    // ID di risposta diverso da ID settato
@@ -153,7 +160,7 @@ namespace RM.src.RM250619.Classes.FR20
             if(_data.Value.id == currentFrame)
                 return 2;
 
-            _robot.SetWObjCoord(_data.Value.id, _data.Value.pose);
+            _robot.SetWObjCoord(_data.Value.id, _data.Value.pose, 0);
             _robot.GetActualWObjNum(0, ref _checkNewFrame);
 
             if (_checkNewFrame != _data.Value.id)    // ID di risposta diverso da ID settato
@@ -163,7 +170,12 @@ namespace RM.src.RM250619.Classes.FR20
             currentFrame = _data.Value.id;
             return 10;
         }
-
+        
+        /// <summary>
+        /// In base all'errNum restituisce se l'errore è bloccante o meno
+        /// </summary>
+        /// <param name="errNum"></param>
+        /// <returns></returns>
         public bool IsErrorBlocking(int errNum)
         {
             switch (errNum)
@@ -183,6 +195,11 @@ namespace RM.src.RM250619.Classes.FR20
             }
         }
 
+        /// <summary>
+        /// In base all'errNum restituisce il messaggio di errore
+        /// </summary>
+        /// <param name="errNum"></param>
+        /// <returns></returns>
         public string GetErrorCode(int errNum)
         {
             string errCode = "";

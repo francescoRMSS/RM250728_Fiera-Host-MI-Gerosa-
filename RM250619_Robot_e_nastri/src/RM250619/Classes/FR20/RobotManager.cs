@@ -1066,11 +1066,12 @@ namespace RM.src.RM250619
             RefresherTask.AddUpdate(PLCTagName.VersionMonth, 8, "INT16");
             RefresherTask.AddUpdate(PLCTagName.VersionDay, 28, "INT16");
 
-            // Faccio partire i task
+            // Faccio partire i manager
             frameManager = new Frames(robot);
             toolManager = new Tools(robot);
             collisionManager = new Collisions(robot);
 
+            // Faccio partire i task
             taskManager.AddTask(TaskCheckRobotConneciton, CheckRobotConnection, TaskType.LongRunning, true);
             taskManager.AddTask(TaskHighPriorityName, CheckHighPriority, TaskType.LongRunning, true);
             taskManager.AddTask(TaskAuxiliaryWorkerName, AuxiliaryWorker, TaskType.LongRunning, true);
@@ -1590,6 +1591,9 @@ namespace RM.src.RM250619
 
                         case 10:
                             #region Check richiesta routine
+
+                            log.Info("[MAIN] attesa richiesta comandi da PLC");
+
                             // In questo step leggo dal plc se è arrivata una richiesta di pick o di place e se ci sono i consensi per procedere
                             // ai relativi step successivi
 
@@ -1784,12 +1788,12 @@ namespace RM.src.RM250619
 
             #region Punto di pick
 
-            //int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
-            //int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
-            //int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
-            int xOffset = 0;
-            int yOffset = 0;
-            int zOffset = 0;
+            int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
+            int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
+            int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
+            //int xOffset = 0;
+            //int yOffset = 0;
+            //int zOffset = 0;
 
             JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
             //var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
@@ -1827,6 +1831,9 @@ namespace RM.src.RM250619
                     {
                         case 0:
                             #region Movimento a punto di Pick
+
+                            log.Info("[PICK] invio punto di pick");
+
                             // In questo step avviso il plc che il ciclo di pick è avviato, eseguo i punti
                             // di avvicinamento pick, pick e imposto come ending point il punto di pick
                             // per il controllo del metodo di inPosition
@@ -1841,12 +1848,12 @@ namespace RM.src.RM250619
                             movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc, ovl, blendT, config);
                             GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
 
-                            movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc, ovl, blendT, config);
-                            GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
+                            //movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc, ovl, blendT, config);
+                            //GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
 
                             // Invio punto di pick
-                            //movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
-                            //GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
+                            movementResult = robot.MoveL(jointPosPick, descPosPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
+                            GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
 
                             endingPoint = descPosPick; // Assegnazione endingPoint
 
@@ -1897,13 +1904,13 @@ namespace RM.src.RM250619
                         case 40:
                             #region Movimento a punto di Home
 
+                            log.Info("[PICK] ritorno a home");
+
                             inPosition = false; // Reset inPosition
 
                             // Invio punto allontanamento pick
-                            //movementResult = robot.MoveL(jointPosApproachPick, descPosApproachPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
-                            //GetRobotMovementCode(movementResult);
-
-                            movementResult = movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc, ovl, blendT, config); // Invio punto di Home
+                            //movementResult = movementResult = robot.MoveCart(descPosApproachPick, tool, user, vel, acc, ovl, blendT, config); // Invio punto di Home
+                            movementResult = robot.MoveL(jointPosApproachPick, descPosApproachPick, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
                             GetRobotMovementCode(movementResult);
 
                             // Invio punto di home
@@ -1989,12 +1996,12 @@ namespace RM.src.RM250619
             // int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
             int rotate180 = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Box_Rotate_180));
 
-            //int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
-            //int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Y));
-            //int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
-            int xOffset = 0;
-            int yOffset = 0;
-            int zOffset = 0;
+            int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
+            int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Y));
+            int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
+            //int xOffset = 0;
+            //int yOffset = 0;
+            //int zOffset = 0;
 
             JointPos jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
             //var place = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
@@ -2039,6 +2046,8 @@ namespace RM.src.RM250619
                         case 0:
                             #region Movimento a punto di place
 
+                            log.Info("[PLACE] invio punto di place");
+
                             CycleRun_Place = 1;
 
                             inPosition = false; // Reset inPosition
@@ -2048,8 +2057,8 @@ namespace RM.src.RM250619
                             GetRobotMovementCode(movementResult);
 
                             // Invio punto di place
-                            //movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
-                            movementResult = robot.MoveCart(descPosPlace, tool, user, vel, acc, ovl, blendT, config);
+                            //movementResult = robot.MoveCart(descPosPlace, tool, user, vel, acc, ovl, blendT, config);
+                            movementResult = robot.MoveL(jointPosPlace, descPosPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
                             GetRobotMovementCode(movementResult);
 
                             endingPoint = descPosPlace; // Assegnazione endingPoint
@@ -2095,11 +2104,13 @@ namespace RM.src.RM250619
                         case 40:
                             #region Movimento a punto di Home
 
+                            log.Info("[PLACE] ritorno in home");
+
                             inPosition = false; // Reset inPosition
 
                             // Invio punto di allontamento place
-                            //movementResult = robot.MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
-                            movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc, ovl, blendT, config);
+                            //movementResult = robot.MoveCart(descPosApproachPlace, tool, user, vel, acc, ovl, blendT, config);
+                            movementResult = robot.MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
                             GetRobotMovementCode(movementResult);
 
                             // Invio punto di place
@@ -2259,7 +2270,10 @@ namespace RM.src.RM250619
                             #region Attesa inPosition home
 
                             if (inPosition)
+                            {
                                 stepHomeRoutine = 99;
+                                log.Info("[HOME] robot arrivato in home position");
+                            }
 
                             break;
 
@@ -2472,7 +2486,7 @@ namespace RM.src.RM250619
 
             if (homeStatus == 1 && !previousHomeCommandStatus) // Go to home
             {
-                log.Warn("Richiesto comando GO TO HOME");
+                log.Warn("[HOME] Richiesto comando GO TO HOME");
                 previousHomeCommandStatus = true;
                 taskManager.AddAndStartTask(TaskHomeRoutine, HomeRoutine, TaskType.Default, false);
             }
@@ -2731,6 +2745,11 @@ namespace RM.src.RM250619
                     // La prossima iterazione del Guardian lo confermerà.
                     AlarmManager.isRobotConnected = true;
                     //RefresherTask.AddUpdate(PLCTagName.Emergency, 0, "INT16");-----------------------
+
+                    // Faccio ripartire i manager
+                    frameManager = new Frames(robot);
+                    toolManager = new Tools(robot);
+                    collisionManager = new Collisions(robot);
 
                     await Task.Run(() => GetRobotInfo());
                 }
