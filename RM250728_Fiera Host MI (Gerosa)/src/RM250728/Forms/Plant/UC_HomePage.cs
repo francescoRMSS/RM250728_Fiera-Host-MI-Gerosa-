@@ -928,34 +928,38 @@ namespace RM.src.RM250728
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ClickEvent_startApp(object sender, EventArgs e)
+        private async void ClickEvent_startApp(object sender, EventArgs e)
         {
             log.Info("Richiesta di avvio ciclo");
 
-            // Se il ciclo di main è già in esecuzione non eseguo il metodo
-            if (RobotManager.CycleRun_Main != 0)
-                return;
+            /*
+             // Se il ciclo di main è già in esecuzione non eseguo il metodo
+             if (RobotManager.CycleRun_Main != 0)
+                 return;
 
-            // Se la home routine è in esecuzione non eseguo il metodo
-            if (RobotManager.CycleRun_Home != 0)
-                return;
+             // Se la home routine è in esecuzione non eseguo il metodo
+             if (RobotManager.CycleRun_Home != 0)
+                 return;
+            */
 
-            // Se l'avvio dell'applicazione parte dal primo punto
-            if (RobotManager.currentIndex < 0)
-            {
-                if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Procedere con l'avvio dell'applicazione?") != DialogResult.OK)
-                    return;
-            }
-            else // Se l'applicazione riprende da un punto precedente
-            {
-                if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Riprendere la riproduzione dell'applicazione?") != DialogResult.OK)
-                    return;
-            }
+             // Se l'avvio dell'applicazione parte dal primo punto
+             if (RobotManager.currentIndex < 0)
+             {
+                 if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Procedere con l'avvio dell'applicazione?") != DialogResult.OK)
+                     return;
+             }
+             else // Se l'applicazione riprende da un punto precedente
+             {
+                 if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Riprendere la riproduzione dell'applicazione?") != DialogResult.OK)
+                     return;
+             }
 
-            //Start ciclo  --> bisogna scrivere su PLC?
-            //await RobotManager.MainCycle();
-            //RobotManager.taskManager.AddAndStartTask(nameof(RobotManager.MainCycle), RobotManager.MainCycle, TaskType.Default, false);
-            RefresherTask.AddUpdate(PLCTagName.Hmi_startCycle, 1, "INT16");
+             //Start ciclo  --> bisogna scrivere su PLC?
+             //await RobotManager.MainCycle();
+             //RobotManager.taskManager.AddAndStartTask(nameof(RobotManager.MainCycle), RobotManager.MainCycle, TaskType.Default, false);
+             RefresherTask.AddUpdate(PLCTagName.Hmi_startCycle, 1, "INT16");
+
+            RobotManager.taskManager.AddAndStartTask(RobotManager.TaskPickAndPlaceTeglia3, RobotManager.PickAndPlaceTeglia3, TaskType.Default, false);
         }
 
         /// <summary>
@@ -965,6 +969,7 @@ namespace RM.src.RM250728
         /// <param name="e"></param>
         private void ClickEvent_GoToHomePosition(object sender, EventArgs e)
         {
+            /*
             // Se il ciclo di main è in esecuzione non eseguo il metodo
             if (RobotManager.CycleRun_Main != 0)
                 return;
@@ -972,6 +977,7 @@ namespace RM.src.RM250728
             // Se la home routine è già in esecuzione non eseguo il metodo
             if (RobotManager.CycleRun_Home != 0)
                 return;
+            */
 
             // Chiedo conferma per avvio della HomeRoutine
             if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Posizionare il Robot in Home position?") != DialogResult.OK)
@@ -979,10 +985,7 @@ namespace RM.src.RM250728
                 return;
             }
 
-            // Start home routine --> bisogna scrivere a plc il comando?
-            //await RobotManager.HomeRoutine();
-            //RobotManager.taskManager.AddAndStartTask(nameof(RobotManager.HomeRoutine), RobotManager.HomeRoutine, TaskType.Short, false);
-            RefresherTask.AddUpdate(PLCTagName.Hmi_homeRoutine, 1, "INT16");
+            RobotManager.taskManager.AddAndStartTask(RobotManager.TaskHomeRoutine, RobotManager.HomeRoutine, TaskType.Default, false);
         }
 
         /// <summary>
@@ -992,8 +995,8 @@ namespace RM.src.RM250728
         /// <param name="e"></param>
         private void ClickEvent_stopApp(object sender, EventArgs e)
         {
-            //RobotManager.stopCycleRequested = true;
-            RefresherTask.AddUpdate(PLCTagName.Hmi_stopCycle, 1, "INT16");
+            RobotManager.stopCycleRequested = true;
+           
         }
 
         /// <summary>
@@ -1209,6 +1212,24 @@ namespace RM.src.RM250728
 
             int result = RobotManager.robot.MoveCart(pHome, RobotManager.tool, RobotManager.user, RobotManager.vel,
                 RobotManager.acc, RobotManager.ovl, RobotManager.blendT, RobotManager.config);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+           RobotManager.robot.SetDO(0, 1, 0, 0);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            RobotManager.robot.SetDO(0, 0, 0, 0); // Apro la pinza
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            byte ris = 0;
+            RobotManager.robot.GetDI(0, 1, ref ris);
+            MessageBox.Show(ris.ToString());
         }
     } 
 }

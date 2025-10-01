@@ -3711,6 +3711,11 @@
             Nome del task home routine
             </summary>
         </member>
+        <member name="F:RM.src.RM250728.RobotManager.TaskPickAndPlaceTeglia3">
+            <summary>
+            Nome del task check robot com
+            </summary>
+        </member>
         <member name="F:RM.src.RM250728.RobotManager.pickBox_cts">
             <summary>
             Token per fermare il ciclo di pick
@@ -4145,6 +4150,11 @@
             </summary>
         </member>
         <member name="M:RM.src.RM250728.RobotManager.PickAndPlaceTegliaGiroCompleto">
+            <summary>
+            Esegue ciclo teglie
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250728.RobotManager.PickAndPlaceTeglia5">
             <summary>
             Esegue ciclo teglie
             </summary>
