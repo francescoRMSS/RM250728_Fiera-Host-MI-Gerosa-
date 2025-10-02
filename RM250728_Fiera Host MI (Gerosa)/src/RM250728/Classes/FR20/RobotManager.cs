@@ -1455,7 +1455,9 @@ namespace RM.src.RM250728
             int offsetApproachPick = 800;
             int offsetSottoTegliaPick = 40;
             int offsetRotPlace = 3;
-            int offsetSopraTegliaPlace = 20;
+            int offsetSopraTegliaPlace = 5;
+            int offsetZPostPick = 20;
+            int offsetRotPostPick = 2;
 
             #region Punto home
 
@@ -1534,9 +1536,9 @@ namespace RM.src.RM250728
             DescPose descPosPostPick = new DescPose(
                  descPosHome.tran.x,
                  descPosHome.tran.y,
-                 descPosPick.tran.z + 20, // Mi alzo di 2 cm per uscire dal carrello senza strisciare
+                 descPosPick.tran.z + offsetZPostPick, // Mi alzo di 2 cm per uscire dal carrello senza strisciare
                  descPosHome.rpy.rx,
-                 NormalizeAngle((float)(descPosPick.rpy.ry + 2)),
+                 NormalizeAngle((float)(descPosPick.rpy.ry - offsetRotPostPick)),
                  descPosHome.rpy.rz
                 );
 
@@ -1559,7 +1561,7 @@ namespace RM.src.RM250728
                 place.y, 
                 place.z,
                 place.rx,
-                NormalizeAngle((float)place.ry - offsetRotPlace),
+                place.ry,
                 place.rz
                 );
 
@@ -1576,7 +1578,7 @@ namespace RM.src.RM250728
                 descPosHome.tran.y, 
                 place.z + offsetSopraTegliaPlace,
                 place.rx, 
-                place.ry, 
+                NormalizeAngle(place.ry - offsetRotPlace), 
                 place.rz);
 
             robot.GetInverseKin(0, descPosApproachPlace, -1, ref jointPosApproachPlace);
@@ -1676,9 +1678,9 @@ namespace RM.src.RM250728
             DescPose descPosPostPick2 = new DescPose(
                  descPosHome.tran.x,
                  descPosHome.tran.y,
-                 descPosPick2.tran.z + 20, // Mi alzo di 2 cm per uscire dal carrello senza strisciare
+                 descPosPick2.tran.z + offsetZPostPick, // Mi alzo di 2 cm per uscire dal carrello senza strisciare
                  descPosHome.rpy.rx,
-                 NormalizeAngle((float)(descPosPick2.rpy.ry + 2)),
+                 NormalizeAngle((float)(descPosPick2.rpy.ry - offsetRotPostPick)),
                  descPosHome.rpy.rz
                 );
 
@@ -1701,7 +1703,7 @@ namespace RM.src.RM250728
                 place2.y,
                 place2.z,
                 place2.rx,
-                NormalizeAngle((float)place2.ry - offsetRotPlace),
+                place2.ry,
                 place2.rz
                 );
 
@@ -1718,7 +1720,7 @@ namespace RM.src.RM250728
                 descPosHome.tran.y,
                 place2.z + offsetSopraTegliaPlace,
                 place2.rx,
-                place2.ry,
+                NormalizeAngle(place2.ry - offsetRotPlace),
                 place2.rz);
 
             robot.GetInverseKin(0, descPosApproachPlace2, -1, ref jointPosApproachPlace2);
@@ -1819,9 +1821,9 @@ namespace RM.src.RM250728
             DescPose descPosPostPick3 = new DescPose(
                  descPosHome.tran.x,
                  descPosHome.tran.y,
-                 descPosPick3.tran.z + 20, // Mi alzo di 2 cm per uscire dal carrello senza strisciare
+                 descPosPick3.tran.z + offsetZPostPick, // Mi alzo di 2 cm per uscire dal carrello senza strisciare
                  descPosHome.rpy.rx,
-                 NormalizeAngle((float)(descPosPick3.rpy.ry + 2)),
+                 NormalizeAngle((float)(descPosPick3.rpy.ry - offsetRotPostPick)),
                  descPosHome.rpy.rz
                 );
 
@@ -1844,7 +1846,7 @@ namespace RM.src.RM250728
                 place3.y,
                 place3.z,
                 place3.rx,
-                NormalizeAngle((float)place3.ry - offsetRotPlace),
+                place3.ry,
                 place3.rz
                 );
 
@@ -1861,7 +1863,7 @@ namespace RM.src.RM250728
                 descPosHome.tran.y,
                 place3.z + offsetSopraTegliaPlace,
                 place3.rx,
-                place3.ry,
+                NormalizeAngle(place3.ry - offsetRotPlace),
                 place3.rz);
 
             robot.GetInverseKin(0, descPosApproachPlace3, -1, ref jointPosApproachPlace3);
@@ -1962,9 +1964,9 @@ namespace RM.src.RM250728
             DescPose descPosPostPick4 = new DescPose(
                  descPosHome.tran.x,
                  descPosHome.tran.y,
-                 descPosPick4.tran.z + 20, // Mi alzo di 2 cm per uscire dal carrello senza strisciare
+                 descPosPick4.tran.z + offsetZPostPick, // Mi alzo di 2 cm per uscire dal carrello senza strisciare
                  descPosHome.rpy.rx,
-                 NormalizeAngle((float)(descPosPick4.rpy.ry + 2)),
+                 NormalizeAngle((float)(descPosPick4.rpy.ry - offsetRotPostPick)),
                  descPosHome.rpy.rz
                 );
 
@@ -1987,7 +1989,7 @@ namespace RM.src.RM250728
                 place4.y,
                 place4.z,
                 place4.rx,
-                NormalizeAngle((float)place4.ry - offsetRotPlace),
+                place4.ry,
                 place4.rz
                 );
 
@@ -2004,7 +2006,7 @@ namespace RM.src.RM250728
                 descPosHome.tran.y,
                 place4.z + offsetSopraTegliaPlace,
                 place4.rx,
-                place4.ry,
+                NormalizeAngle(place4.ry - offsetRotPlace),
                 place4.rz);
 
             robot.GetInverseKin(0, descPosApproachPlace4, -1, ref jointPosApproachPlace4);
@@ -2081,7 +2083,7 @@ namespace RM.src.RM250728
             double[] levelCollision7 = new double[] { 7, 7, 7, 7, 7, 7 };
             double[] levelCollision8 = new double[] { 8, 8, 8, 8, 8, 8 };
 
-            robot.SetAnticollision(0, levelCollision6, 1);
+            robot.SetAnticollision(0, levelCollision8, 1);
 
             byte ris = 0;
             try
