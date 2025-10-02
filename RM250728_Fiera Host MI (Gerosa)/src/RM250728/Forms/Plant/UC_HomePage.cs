@@ -140,7 +140,7 @@ namespace RM.src.RM250728
             RobotManager.GripperStatusOFF += GripperStatusOFFEvent;
             RobotManager.GripperStatusON += GripperStatusONEvent;
 
-            RobotManager.EnableButtonCycleEvent += RobotManager_EnableButtonCycleEvent;
+            
             RobotManager.EnableButtonHome += RobotManager_EnableButtonHome;
 
             // Traduce e inizializza i font
@@ -960,6 +960,7 @@ namespace RM.src.RM250728
              RefresherTask.AddUpdate(PLCTagName.Hmi_startCycle, 1, "INT16");
 
             RobotManager.taskManager.AddAndStartTask(RobotManager.TaskPickAndPlaceTeglia3, RobotManager.PickAndPlaceTeglia3, TaskType.Default, false);
+            RobotManager_EnableButtonCycleEvent(0,EventArgs.Empty);
         }
 
         /// <summary>
@@ -996,6 +997,10 @@ namespace RM.src.RM250728
         private void ClickEvent_stopApp(object sender, EventArgs e)
         {
             RobotManager.stopCycleRequested = true;
+
+            RobotManager.robot.PauseMotion();
+            Thread.Sleep(100);
+            RobotManager.robot.StopMotion();
            
         }
 
