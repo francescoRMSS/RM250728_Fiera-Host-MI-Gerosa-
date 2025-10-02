@@ -996,12 +996,8 @@ namespace RM.src.RM250728
         /// <param name="e"></param>
         private void ClickEvent_stopApp(object sender, EventArgs e)
         {
+            // Alzo richiesta di stop ciclo
             RobotManager.stopCycleRequested = true;
-
-            RobotManager.robot.PauseMotion();
-            Thread.Sleep(100);
-            RobotManager.robot.StopMotion();
-           
         }
 
         /// <summary>
