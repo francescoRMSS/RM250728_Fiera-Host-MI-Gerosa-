@@ -932,18 +932,17 @@ namespace RM.src.RM250728
         {
             log.Info("Richiesta di avvio ciclo");
 
-            /*
-             // Se il ciclo di main è già in esecuzione non eseguo il metodo
-             if (RobotManager.CycleRun_Main != 0)
-                 return;
+            byte ris = 0;
+            RobotManager.robot.GetDI(0, 1, ref ris);
 
-             // Se la home routine è in esecuzione non eseguo il metodo
-             if (RobotManager.CycleRun_Home != 0)
-                 return;
-            */
+            if (ris == 0)
+            {
+                CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Pinza chiusa. Impossibile avviare il ciclo.");
+                return;
+            }
 
-             // Se l'avvio dell'applicazione parte dal primo punto
-             if (RobotManager.currentIndex < 0)
+            // Se l'avvio dell'applicazione parte dal primo punto
+            if (RobotManager.currentIndex < 0)
              {
                  if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Procedere con l'avvio dell'applicazione?") != DialogResult.OK)
                      return;

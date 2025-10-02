@@ -1080,17 +1080,17 @@ namespace RM.src.RM250728
             taskManager.AddTask(TaskHighPriorityName, CheckHighPriority, TaskType.LongRunning, true);
             taskManager.AddTask(TaskAuxiliaryWorkerName, AuxiliaryWorker, TaskType.LongRunning, true);
             taskManager.AddTask(TaskLowPriorityName, CheckLowPriority, TaskType.LongRunning, true);
-            taskManager.AddTask(TaskApplicationManager, ApplicationTaskManager, TaskType.LongRunning, true);
-          //  taskManager.AddTask(TaskPlcComHandlerName, PlcComHandler, TaskType.LongRunning, true);
-            taskManager.AddTask(TaskSafetyManager, SafetyTaskManager, TaskType.LongRunning, true);
+            //taskManager.AddTask(TaskApplicationManager, ApplicationTaskManager, TaskType.LongRunning, true);
+            // taskManager.AddTask(TaskPlcComHandlerName, PlcComHandler, TaskType.LongRunning, true);
+            //taskManager.AddTask(TaskSafetyManager, SafetyTaskManager, TaskType.LongRunning, true);
 
             taskManager.StartTask(TaskCheckRobotConneciton);
-            taskManager.StartTask(TaskSafetyManager);
             taskManager.StartTask(TaskHighPriorityName);
             taskManager.StartTask(TaskAuxiliaryWorkerName);
             taskManager.StartTask(TaskLowPriorityName);
-            taskManager.StartTask(TaskApplicationManager);
-           // taskManager.StartTask(TaskPlcComHandlerName);
+            //taskManager.StartTask(TaskApplicationManager);
+            // taskManager.StartTask(TaskPlcComHandlerName);
+            //taskManager.StartTask(TaskSafetyManager);
 
             log.Info("Task di background del robot avviati tramite TaskManager.");
 
@@ -1133,7 +1133,7 @@ namespace RM.src.RM250728
                     {
                         await CheckIsRobotEnable();
                         await CheckRobotMode();
-                       // await CheckCurrentToolAndUser();
+                        await CheckCurrentToolAndUser();
                     }
 
                     await Task.Delay(auxiliaryThreadRefreshPeriod, token);

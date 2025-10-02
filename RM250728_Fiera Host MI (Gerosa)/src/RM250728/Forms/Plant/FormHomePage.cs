@@ -402,6 +402,7 @@ namespace RM.src.RM250728
                 pnl_comRobotTask.Visible = false;
                 pnl_appTask.Visible = false;
                 pnl_safetyTask.Visible = false;
+                pnl_plcTask.Visible = false;
             });
 
             List<TaskModel> taskStructs = RobotManager.taskManager.GetTaskList();
