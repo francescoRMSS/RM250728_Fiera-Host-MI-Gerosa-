@@ -59,8 +59,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.lbl_velocity = new System.Windows.Forms.Label();
             this.btn_homePosition = new System.Windows.Forms.Button();
-            this.btn_pauseApp = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
             this.btn_openGripper = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.btn_restoreSCreenSaverManager = new System.Windows.Forms.Button();
@@ -70,12 +68,6 @@
             this.pnl_pinzeStatus = new System.Windows.Forms.Panel();
             this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.btn_stopRobot = new System.Windows.Forms.Button();
-            this.btn_pauseRobot = new System.Windows.Forms.Button();
-            this.btn_resumeRobot = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
             this.pnl_status.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -480,32 +472,6 @@
             this.btn_homePosition.UseVisualStyleBackColor = false;
             this.btn_homePosition.Click += new System.EventHandler(this.ClickEvent_GoToHomePosition);
             // 
-            // btn_pauseApp
-            // 
-            this.btn_pauseApp.BackColor = System.Drawing.SystemColors.Control;
-            this.btn_pauseApp.BackgroundImage = global::RM.Properties.Resources.pausemonitoringRed_32;
-            this.btn_pauseApp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btn_pauseApp.Location = new System.Drawing.Point(677, 396);
-            this.btn_pauseApp.Name = "btn_pauseApp";
-            this.btn_pauseApp.Size = new System.Drawing.Size(50, 50);
-            this.btn_pauseApp.TabIndex = 286;
-            this.btn_pauseApp.UseVisualStyleBackColor = false;
-            this.btn_pauseApp.Visible = false;
-            this.btn_pauseApp.Click += new System.EventHandler(this.ClickEvent_pauseApp);
-            // 
-            // label4
-            // 
-            this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.SystemColors.Control;
-            this.label4.Location = new System.Drawing.Point(666, 457);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(70, 15);
-            this.label4.TabIndex = 285;
-            this.label4.Text = "Pausa";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label4.Visible = false;
-            // 
             // btn_openGripper
             // 
             this.btn_openGripper.BackColor = System.Drawing.SystemColors.Control;
@@ -605,85 +571,6 @@
             this.label11.TabIndex = 0;
             this.label11.Text = "Pinze";
             // 
-            // btn_stopRobot
-            // 
-            this.btn_stopRobot.Location = new System.Drawing.Point(921, 332);
-            this.btn_stopRobot.Name = "btn_stopRobot";
-            this.btn_stopRobot.Size = new System.Drawing.Size(96, 48);
-            this.btn_stopRobot.TabIndex = 292;
-            this.btn_stopRobot.Text = "Stop Robot";
-            this.btn_stopRobot.UseVisualStyleBackColor = true;
-            this.btn_stopRobot.Visible = false;
-            this.btn_stopRobot.Click += new System.EventHandler(this.ClickEvent_stopRobot);
-            // 
-            // btn_pauseRobot
-            // 
-            this.btn_pauseRobot.BackColor = System.Drawing.Color.Red;
-            this.btn_pauseRobot.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.btn_pauseRobot.Location = new System.Drawing.Point(921, 386);
-            this.btn_pauseRobot.Name = "btn_pauseRobot";
-            this.btn_pauseRobot.Size = new System.Drawing.Size(96, 48);
-            this.btn_pauseRobot.TabIndex = 294;
-            this.btn_pauseRobot.Text = "Barriera attivata";
-            this.btn_pauseRobot.UseVisualStyleBackColor = false;
-            this.btn_pauseRobot.Visible = false;
-            this.btn_pauseRobot.Click += new System.EventHandler(this.btn_pauseRobot_Click);
-            // 
-            // btn_resumeRobot
-            // 
-            this.btn_resumeRobot.BackColor = System.Drawing.Color.Lime;
-            this.btn_resumeRobot.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.btn_resumeRobot.Location = new System.Drawing.Point(921, 440);
-            this.btn_resumeRobot.Name = "btn_resumeRobot";
-            this.btn_resumeRobot.Size = new System.Drawing.Size(96, 48);
-            this.btn_resumeRobot.TabIndex = 295;
-            this.btn_resumeRobot.Text = "Barriera disattivata";
-            this.btn_resumeRobot.UseVisualStyleBackColor = false;
-            this.btn_resumeRobot.Visible = false;
-            this.btn_resumeRobot.Click += new System.EventHandler(this.btn_resumeRobot_Click);
-            // 
-            // button4
-            // 
-            this.button4.BackColor = System.Drawing.SystemColors.Control;
-            this.button4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.button4.Cursor = System.Windows.Forms.Cursors.Default;
-            this.button4.Location = new System.Drawing.Point(14, 57);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(50, 50);
-            this.button4.TabIndex = 299;
-            this.button4.Text = " Chiudi pinza";
-            this.button4.UseVisualStyleBackColor = false;
-            this.button4.Visible = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button5
-            // 
-            this.button5.BackColor = System.Drawing.SystemColors.Control;
-            this.button5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.button5.Cursor = System.Windows.Forms.Cursors.Default;
-            this.button5.Location = new System.Drawing.Point(14, 112);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(50, 50);
-            this.button5.TabIndex = 300;
-            this.button5.Text = "Apri pinza";
-            this.button5.UseVisualStyleBackColor = false;
-            this.button5.Visible = false;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button6
-            // 
-            this.button6.BackColor = System.Drawing.SystemColors.Control;
-            this.button6.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.button6.Cursor = System.Windows.Forms.Cursors.Default;
-            this.button6.Location = new System.Drawing.Point(14, 168);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(50, 50);
-            this.button6.TabIndex = 301;
-            this.button6.Text = " Stato pinza";
-            this.button6.UseVisualStyleBackColor = false;
-            this.button6.Visible = false;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
-            // 
             // UC_HomePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -691,19 +578,11 @@
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = global::RM.Properties.Resources.UC_homePage;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.Controls.Add(this.button6);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.btn_resumeRobot);
-            this.Controls.Add(this.btn_pauseRobot);
-            this.Controls.Add(this.btn_stopRobot);
             this.Controls.Add(this.pnl_status);
             this.Controls.Add(this.btn_restoreSCreenSaverManager);
             this.Controls.Add(this.lbl_restoreScreenSaverManager);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.btn_openGripper);
-            this.Controls.Add(this.btn_pauseApp);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.btn_VAT);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label1);
@@ -779,8 +658,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lb_applicationToExecute;
-        private System.Windows.Forms.Button btn_pauseApp;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btn_openGripper;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button btn_restoreSCreenSaverManager;
@@ -790,11 +667,5 @@
         private System.Windows.Forms.Panel pnl_pinzeStatus;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button btn_stopRobot;
-        private System.Windows.Forms.Button btn_pauseRobot;
-        private System.Windows.Forms.Button btn_resumeRobot;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
     }
 }
