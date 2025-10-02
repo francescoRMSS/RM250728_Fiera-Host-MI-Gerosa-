@@ -37,11 +37,9 @@
             this.btn_exit = new System.Windows.Forms.Button();
             this.btn_alarms = new System.Windows.Forms.Button();
             this.btn_security = new System.Windows.Forms.Button();
-            this.btn_weldingParameters = new System.Windows.Forms.Button();
             this.btn_parameters = new System.Windows.Forms.Button();
             this.btn_positions = new System.Windows.Forms.Button();
             this.lbl_buttonPositions = new System.Windows.Forms.Label();
-            this.lbl_buttonWeldingParams = new System.Windows.Forms.Label();
             this.lbl_buttonParameters = new System.Windows.Forms.Label();
             this.lbl_buttonVAT = new System.Windows.Forms.Label();
             this.lbl_buttonSecurity = new System.Windows.Forms.Label();
@@ -138,7 +136,7 @@
             this.lb_applicationToExecute.Name = "lb_applicationToExecute";
             this.lb_applicationToExecute.Size = new System.Drawing.Size(1024, 32);
             this.lb_applicationToExecute.TabIndex = 265;
-            this.lb_applicationToExecute.Text = "Palletizzatore automatico";
+            this.lb_applicationToExecute.Text = "RoboTeglie";
             this.lb_applicationToExecute.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btn_VAT
@@ -161,7 +159,7 @@
             this.btn_exit.BackgroundImage = global::RM.Properties.Resources.exit_filled;
             this.btn_exit.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btn_exit.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_exit.Location = new System.Drawing.Point(513, 576);
+            this.btn_exit.Location = new System.Drawing.Point(412, 576);
             this.btn_exit.Name = "btn_exit";
             this.btn_exit.Size = new System.Drawing.Size(55, 55);
             this.btn_exit.TabIndex = 279;
@@ -175,7 +173,7 @@
             this.btn_alarms.BackgroundImage = global::RM.Properties.Resources.alarms_outlined;
             this.btn_alarms.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btn_alarms.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_alarms.Location = new System.Drawing.Point(417, 576);
+            this.btn_alarms.Location = new System.Drawing.Point(316, 576);
             this.btn_alarms.Name = "btn_alarms";
             this.btn_alarms.Size = new System.Drawing.Size(55, 55);
             this.btn_alarms.TabIndex = 278;
@@ -189,27 +187,13 @@
             this.btn_security.BackgroundImage = global::RM.Properties.Resources.security_filled;
             this.btn_security.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.btn_security.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_security.Location = new System.Drawing.Point(320, 576);
+            this.btn_security.Location = new System.Drawing.Point(220, 576);
             this.btn_security.Name = "btn_security";
             this.btn_security.Size = new System.Drawing.Size(55, 55);
             this.btn_security.TabIndex = 277;
             this.btn_security.Text = " ";
             this.btn_security.UseVisualStyleBackColor = false;
             this.btn_security.Click += new System.EventHandler(this.ClickEvent_openSecurityManager);
-            // 
-            // btn_weldingParameters
-            // 
-            this.btn_weldingParameters.BackColor = System.Drawing.SystemColors.Control;
-            this.btn_weldingParameters.BackgroundImage = global::RM.Properties.Resources.welding1;
-            this.btn_weldingParameters.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btn_weldingParameters.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_weldingParameters.Location = new System.Drawing.Point(224, 576);
-            this.btn_weldingParameters.Name = "btn_weldingParameters";
-            this.btn_weldingParameters.Size = new System.Drawing.Size(55, 55);
-            this.btn_weldingParameters.TabIndex = 276;
-            this.btn_weldingParameters.Text = " ";
-            this.btn_weldingParameters.UseVisualStyleBackColor = false;
-            this.btn_weldingParameters.Click += new System.EventHandler(this.ClickEvent_openWeldingParameters);
             // 
             // btn_parameters
             // 
@@ -251,18 +235,6 @@
             this.lbl_buttonPositions.Text = "Posizioni";
             this.lbl_buttonPositions.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // lbl_buttonWeldingParams
-            // 
-            this.lbl_buttonWeldingParams.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_buttonWeldingParams.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_buttonWeldingParams.ForeColor = System.Drawing.Color.White;
-            this.lbl_buttonWeldingParams.Location = new System.Drawing.Point(211, 639);
-            this.lbl_buttonWeldingParams.Name = "lbl_buttonWeldingParams";
-            this.lbl_buttonWeldingParams.Size = new System.Drawing.Size(72, 21);
-            this.lbl_buttonWeldingParams.TabIndex = 270;
-            this.lbl_buttonWeldingParams.Text = "Saldatura";
-            this.lbl_buttonWeldingParams.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
             // lbl_buttonParameters
             // 
             this.lbl_buttonParameters.BackColor = System.Drawing.Color.Transparent;
@@ -292,7 +264,7 @@
             this.lbl_buttonSecurity.BackColor = System.Drawing.Color.Transparent;
             this.lbl_buttonSecurity.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_buttonSecurity.ForeColor = System.Drawing.Color.White;
-            this.lbl_buttonSecurity.Location = new System.Drawing.Point(311, 638);
+            this.lbl_buttonSecurity.Location = new System.Drawing.Point(210, 638);
             this.lbl_buttonSecurity.Name = "lbl_buttonSecurity";
             this.lbl_buttonSecurity.Size = new System.Drawing.Size(72, 27);
             this.lbl_buttonSecurity.TabIndex = 1;
@@ -304,7 +276,7 @@
             this.lbl_buttonAlarms.BackColor = System.Drawing.Color.Transparent;
             this.lbl_buttonAlarms.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_buttonAlarms.ForeColor = System.Drawing.Color.White;
-            this.lbl_buttonAlarms.Location = new System.Drawing.Point(416, 638);
+            this.lbl_buttonAlarms.Location = new System.Drawing.Point(313, 638);
             this.lbl_buttonAlarms.Name = "lbl_buttonAlarms";
             this.lbl_buttonAlarms.Size = new System.Drawing.Size(60, 22);
             this.lbl_buttonAlarms.TabIndex = 1;
@@ -316,7 +288,7 @@
             this.lbl_buttonExit.BackColor = System.Drawing.Color.Transparent;
             this.lbl_buttonExit.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_buttonExit.ForeColor = System.Drawing.Color.White;
-            this.lbl_buttonExit.Location = new System.Drawing.Point(510, 638);
+            this.lbl_buttonExit.Location = new System.Drawing.Point(407, 638);
             this.lbl_buttonExit.Name = "lbl_buttonExit";
             this.lbl_buttonExit.Size = new System.Drawing.Size(60, 23);
             this.lbl_buttonExit.TabIndex = 1;
@@ -565,7 +537,7 @@
             this.btn_restoreSCreenSaverManager.BackColor = System.Drawing.SystemColors.Control;
             this.btn_restoreSCreenSaverManager.BackgroundImage = global::RM.Properties.Resources.resumeMonitoringBlue_32;
             this.btn_restoreSCreenSaverManager.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btn_restoreSCreenSaverManager.Location = new System.Drawing.Point(603, 578);
+            this.btn_restoreSCreenSaverManager.Location = new System.Drawing.Point(508, 578);
             this.btn_restoreSCreenSaverManager.Name = "btn_restoreSCreenSaverManager";
             this.btn_restoreSCreenSaverManager.Size = new System.Drawing.Size(50, 50);
             this.btn_restoreSCreenSaverManager.TabIndex = 290;
@@ -578,7 +550,7 @@
             this.lbl_restoreScreenSaverManager.BackColor = System.Drawing.Color.Transparent;
             this.lbl_restoreScreenSaverManager.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_restoreScreenSaverManager.ForeColor = System.Drawing.SystemColors.Control;
-            this.lbl_restoreScreenSaverManager.Location = new System.Drawing.Point(592, 637);
+            this.lbl_restoreScreenSaverManager.Location = new System.Drawing.Point(497, 638);
             this.lbl_restoreScreenSaverManager.Name = "lbl_restoreScreenSaverManager";
             this.lbl_restoreScreenSaverManager.Size = new System.Drawing.Size(70, 15);
             this.lbl_restoreScreenSaverManager.TabIndex = 289;
@@ -681,6 +653,7 @@
             this.button4.TabIndex = 299;
             this.button4.Text = " Chiudi pinza";
             this.button4.UseVisualStyleBackColor = false;
+            this.button4.Visible = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button5
@@ -694,6 +667,7 @@
             this.button5.TabIndex = 300;
             this.button5.Text = "Apri pinza";
             this.button5.UseVisualStyleBackColor = false;
+            this.button5.Visible = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button6
@@ -707,6 +681,7 @@
             this.button6.TabIndex = 301;
             this.button6.Text = " Stato pinza";
             this.button6.UseVisualStyleBackColor = false;
+            this.button6.Visible = false;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // UC_HomePage
@@ -748,7 +723,6 @@
             this.Controls.Add(this.label18);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.btn_security);
-            this.Controls.Add(this.btn_weldingParameters);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btn_positions);
             this.Controls.Add(this.btn_autoMode);
@@ -758,7 +732,6 @@
             this.Controls.Add(this.lbl_buttonPositions);
             this.Controls.Add(this.btn_manualMode);
             this.Controls.Add(this.lbl_buttonSecurity);
-            this.Controls.Add(this.lbl_buttonWeldingParams);
             this.Controls.Add(this.lbl_buttonAuto);
             this.Controls.Add(this.lbl_buttonParameters);
             this.Controls.Add(this.lbl_buttonManual);
@@ -780,7 +753,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lbl_buttonPositions;
-        private System.Windows.Forms.Label lbl_buttonWeldingParams;
         private System.Windows.Forms.Label lbl_buttonParameters;
         private System.Windows.Forms.Label lbl_buttonVAT;
         private System.Windows.Forms.Label lbl_buttonSecurity;
@@ -791,7 +763,6 @@
         private System.Windows.Forms.Button btn_exit;
         private System.Windows.Forms.Button btn_alarms;
         private System.Windows.Forms.Button btn_security;
-        private System.Windows.Forms.Button btn_weldingParameters;
         private System.Windows.Forms.Button btn_positions;
         private System.Windows.Forms.Button btn_startApp;
         private System.Windows.Forms.Button btn_stopApp;
