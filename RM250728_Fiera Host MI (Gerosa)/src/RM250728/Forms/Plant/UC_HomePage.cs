@@ -1034,7 +1034,7 @@ namespace RM.src.RM250728
         private void ClickEvent_openGripper(object sender, EventArgs e)
         {
             // scrittura su uscite digitali robot
-            RobotManager.robot.SetDO(0, 1, 0, 0); //-----------------
+            RobotManager.robot.SetDO(0, 0, 0, 0);
         }
 
         private void ClickEvent_restoreScreenSaverManager(object sender, EventArgs e)
