@@ -2163,6 +2163,7 @@ namespace RM.src.RM250728
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
                             {
                                 // Chiudo la pinza
+                                await Task.Delay(200);
                                 robot.SetDO(0, 1, 0, 0);
 
                                 step = 40; // Passaggio a step 40
@@ -2181,6 +2182,7 @@ namespace RM.src.RM250728
 
                             if (ris == 0)
                             {
+                                await Task.Delay(200);
                                 step = 50;
                             }
 
@@ -2231,15 +2233,31 @@ namespace RM.src.RM250728
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
-                                await Task.Delay(100);
+                                await Task.Delay(200);
                                 robot.SetDO(0, 0, 0, 0); // Apro la pinza
-                                step = 100; // Passaggio a step 100
+                                step = 85; // Passaggio a step 100
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 80 - Attesa inPosition punto di place 1 e apertura pinza");
 
                             break;
 
+                        #endregion
+
+                        case 85:
+                            #region Check apertura pinza
+
+                            robot.GetDI(0, 1, ref ris);
+
+                            if (ris == 1)
+                            {
+                                await Task.Delay(200);
+                                step = 100;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 85 - Check apertura pinza");
+
+                            break;
                         #endregion
 
                         case 100:
@@ -2296,6 +2314,7 @@ namespace RM.src.RM250728
 
                             if (inPosition) // Se il Robot è arrivato in posizione di pick 2
                             {
+                                await Task.Delay(200);
                                 robot.SetDO(0, 1, 0, 0); // Chiudo la pinza
 
                                 step = 140; // Passaggio a step 140
@@ -2314,6 +2333,7 @@ namespace RM.src.RM250728
 
                             if (ris == 0)
                             {
+                                await Task.Delay(200);
                                 step = 150; // Passaggio a step 150
                             }
 
@@ -2362,15 +2382,31 @@ namespace RM.src.RM250728
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
-                                await Task.Delay(100);
+                                await Task.Delay(200);
                                 robot.SetDO(0, 0, 0, 0); // Apro la pinza
 
-                                step = 190;
+                                step = 185;
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 180 - Attesa inPosition punto di place 2 e apertura pinza");
                             break;
 
+                        #endregion
+
+                        case 185:
+                            #region Check apertura pinza
+
+                            robot.GetDI(0, 1, ref ris);
+
+                            if (ris == 1)
+                            {
+                                await Task.Delay(200);
+                                step = 190;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 85 - Check apertura pinza");
+
+                            break;
                         #endregion
 
                         case 190:
@@ -2424,6 +2460,7 @@ namespace RM.src.RM250728
 
                             if (inPosition) // Se il Robot è arrivato in posizione di pick 2
                             {
+                                await Task.Delay(200);
                                 robot.SetDO(0, 1, 0, 0); // Chiudo la pinza
 
                                 step = 220; // Passaggio a step 140
@@ -2442,6 +2479,7 @@ namespace RM.src.RM250728
 
                             if (ris == 0)
                             {
+                                await Task.Delay(200);
                                 step = 230; // Passaggio a step 150
                             }
 
@@ -2490,15 +2528,31 @@ namespace RM.src.RM250728
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
-                                await Task.Delay(100);
+                                await Task.Delay(200);
                                 robot.SetDO(0, 0, 0, 0); // Apro la pinza
 
-                                step = 260;
+                                step = 255;
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 250 - Attesa inPosition punto di place 3 e apertura pinza");
                             break;
 
+                        #endregion
+
+                        case 255:
+                            #region Check apertura pinza
+
+                            robot.GetDI(0, 1, ref ris);
+
+                            if (ris == 1)
+                            {
+                                await Task.Delay(200);
+                                step = 260;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 260 - Check apertura pinza");
+
+                            break;
                         #endregion
 
                         case 260:
@@ -2552,6 +2606,7 @@ namespace RM.src.RM250728
 
                             if (inPosition) // Se il Robot è arrivato in posizione di pick 2
                             {
+                                await Task.Delay(200);
                                 robot.SetDO(0, 1, 0, 0); // Chiudo la pinza
 
                                 step = 290; // Passaggio a step 140
@@ -2570,6 +2625,7 @@ namespace RM.src.RM250728
 
                             if (ris == 0)
                             {
+                                await Task.Delay(200);
                                 step = 300; // Passaggio a step 150
                             }
 
@@ -2618,15 +2674,31 @@ namespace RM.src.RM250728
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick
                             {
-                                await Task.Delay(100);
+                                await Task.Delay(200);
                                 robot.SetDO(0, 0, 0, 0); // Apro la pinza
 
-                                step = 330;
+                                step = 325;
                             }
 
                             formDiagnostics.UpdateRobotStepDescription("STEP 320 - Attesa inPosition punto di place 4 e apertura pinza");
                             break;
 
+                        #endregion
+
+                        case 325:
+                            #region Check apertura pinza
+
+                            robot.GetDI(0, 1, ref ris);
+
+                            if (ris == 1)
+                            {
+                                await Task.Delay(200);
+                                step = 330;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 325 - Check apertura pinza");
+
+                            break;
                         #endregion
 
                         case 330:
