@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Threading;
 using System.Timers;
-using System.Threading.Tasks;
 using RMLib.DataAccess;
 using RMLib.Logger;
 using RMLib.Alarms;
@@ -14,12 +12,9 @@ using RM.src.RM250728.Forms.Plant;
 using RM.Properties;
 using System.Drawing;
 using RMLib.VATView;
-using fairino;
 using RM.src.RM250728.Classes.PLC;
-using RM.src.RM250728.Forms.Plant.DragMode;
 using RM.src.RM250728.Forms.ScreenSaver;
 using RM.src.RM250728.Classes.FR20;
-using System.Drawing.Drawing2D;
 
 namespace RM.src.RM250728
 {
@@ -108,8 +103,7 @@ namespace RM.src.RM250728
         }
 
         #endregion
-
-        #region Metodi di UC_HomePage
+        
         /// <summary>
         /// Inizializza lo user control della homepage
         /// </summary>
@@ -121,37 +115,22 @@ namespace RM.src.RM250728
             // Imposta l'intestazione della homepage
             FormHomePage.Instance.LabelHeader = "HOME PAGE";
 
-            // Collegamento evento ValueChanged del dizionario al metodo HandleDictionaryChange
-            //PLCConfig.appVariables.ValueChanged += RefreshVariables;
+            #region Collegamenti a eventi
 
-            // Collegamento evento Login e Logout per mostrare/nascondere la VAT
             SecurityManager.SecMgrLoginRM += OnRMLogin;
             SecurityManager.SecMgrLogout += OnRMLogout;
-
-            // Collegamento evento cambio velocità Robot al metodo che cambia valore della label velocità Robot
             RobotManager.RobotVelocityChanged += ChangeLblVelocity;
             RobotManager.RobotModeChanged += SelectRobotModeButton;
-
             RobotManager.EnableButtonCycleEvent += RobotManager_EnableButtonCycleEvent;
-
             RobotManager.RobotInHomePosition += RobotInHomePositionEvent;
             RobotManager.RobotNotInHomePosition += RobotNotInHomePositionEvent;
 
-            RobotManager.GripperStatusOFF += GripperStatusOFFEvent;
-            RobotManager.GripperStatusON += GripperStatusONEvent;
-
-            
-            RobotManager.EnableButtonHome += RobotManager_EnableButtonHome;
+            #endregion
 
             // Traduce e inizializza i font
             Translate();
             InitFont();
-
-            //if (AlarmManager.isPlcConnected)
-            {
-                InitLbl_velocity();
-            }
-
+            InitLbl_velocity();
             InitVelocitySaverTimer();
 
             // Inizializza il timer
@@ -163,33 +142,18 @@ namespace RM.src.RM250728
             continuousRemoveSpeedTimer.Interval = 250; // intervallo in millisecondi
             continuousRemoveSpeedTimer.Tick += ContinuousRemoveVelocityTimer_Tick;
 
-            //Controllo per vedere in che modalità è il robot in base a una nuova variabile nel robot manager
-            // SynchronizeMode();
-
-            // Avvia il thread per l'applicazione della trasparenza
-            //Task.Run(() => ApplyPanelTransparency());
-
             InitRobotModeButtons();
 
             ScreenSaverManager.AutoAddClickEvents(this);
         }
 
-        private void GripperStatusOFFEvent(object sender, EventArgs e)
-        {
-            Invoke((MethodInvoker)delegate
-            {
-                pnl_pinzeStatus.BackColor = Color.SeaGreen;
-            });
-        }
+        #region Metodi di UC_HomePage
 
-        private void GripperStatusONEvent(object sender, EventArgs e) 
-        {
-            Invoke((MethodInvoker)delegate
-            {
-                pnl_pinzeStatus.BackColor = Color.Firebrick;
-            });
-        }
-
+        /// <summary>
+        /// Colora di verde il panel che notifica il robot in HomePosition
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RobotInHomePositionEvent(object sender, EventArgs e)
         {
             Invoke((MethodInvoker)delegate
@@ -198,6 +162,11 @@ namespace RM.src.RM250728
             });
         }
 
+        /// <summary>
+        /// Colora di scurso il panel che notifica il robot non è in HomePosition
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RobotNotInHomePositionEvent(object sender, EventArgs e)
         {
             Invoke((MethodInvoker)delegate
@@ -237,10 +206,6 @@ namespace RM.src.RM250728
                     btn_stopApp.BackColor = SystemColors.ControlDark;
                     btn_stopApp.BackgroundImage = null;
 
-                    btn_pauseApp.Enabled = false;
-                    btn_pauseApp.BackColor = SystemColors.ControlDark;
-                    btn_pauseApp.BackgroundImage = null;
-
                     break;
 
                 #endregion
@@ -267,10 +232,6 @@ namespace RM.src.RM250728
                     btn_stopApp.BackColor = SystemColors.ControlDark;
                     btn_stopApp.BackgroundImage = null;
 
-                    btn_pauseApp.Enabled = false;
-                    btn_pauseApp.BackColor = SystemColors.ControlDark;
-                    btn_pauseApp.BackgroundImage = null;
-
                     break;
 
                 #endregion
@@ -296,10 +257,6 @@ namespace RM.src.RM250728
                     btn_stopApp.Enabled = false;
                     btn_stopApp.BackColor = SystemColors.ControlDark;
                     btn_stopApp.BackgroundImage = null;
-
-                    btn_pauseApp.Enabled = false;
-                    btn_pauseApp.BackColor = SystemColors.ControlDark;
-                    btn_pauseApp.BackgroundImage = null;
 
                     break;
 
@@ -343,10 +300,6 @@ namespace RM.src.RM250728
                         btn_stopApp.BackColor = SystemColors.ControlDark;
                         btn_stopApp.BackgroundImage = null;
 
-                        btn_pauseApp.Enabled = false;
-                        btn_pauseApp.BackColor = SystemColors.ControlDark;
-                        btn_pauseApp.BackgroundImage = null;
-
                         break;
 
                     #endregion
@@ -372,10 +325,6 @@ namespace RM.src.RM250728
                         btn_stopApp.Enabled = false;
                         btn_stopApp.BackColor = SystemColors.ControlDark;
                         btn_stopApp.BackgroundImage = null;
-
-                        btn_pauseApp.Enabled = false;
-                        btn_pauseApp.BackColor = SystemColors.ControlDark;
-                        btn_pauseApp.BackgroundImage = null;
 
                         break;
 
@@ -403,10 +352,6 @@ namespace RM.src.RM250728
                         btn_stopApp.BackColor = SystemColors.ControlDark;
                         btn_stopApp.BackgroundImage = null;
 
-                        btn_pauseApp.Enabled = false;
-                        btn_pauseApp.BackColor = SystemColors.ControlDark;
-                        btn_pauseApp.BackgroundImage = null;
-
                         break;
 
                         #endregion
@@ -414,30 +359,16 @@ namespace RM.src.RM250728
             });
         }
 
+        /// <summary>
+        /// Cambia valora della label velocity
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ChangeLblVelocity(object sender, EventArgs e)
         {
             Invoke((MethodInvoker)delegate
             {
                 lbl_velocity.Text = sender.ToString();
-            });
-        }
-
-        private void RobotManager_EnableButtonHome(object sender, EventArgs e)
-        {
-            Invoke((MethodInvoker)delegate
-            {
-                if (Convert.ToInt16(sender) == 1)
-                {
-                    btn_homePosition.Enabled = true;
-                    btn_homePosition.BackColor = SystemColors.Control;
-                    btn_homePosition.BackgroundImage = Resources.home;
-                }
-                else if (Convert.ToInt16(sender) == 0)
-                {
-                    btn_homePosition.Enabled = false;
-                    btn_homePosition.BackColor = SystemColors.ControlDark;
-                    btn_homePosition.BackgroundImage = null;
-                }
             });
         }
 
@@ -456,10 +387,6 @@ namespace RM.src.RM250728
                     btn_stopApp.BackColor = SystemColors.ControlDark;
                     btn_stopApp.BackgroundImage = null;
 
-                    btn_pauseApp.Enabled = false;
-                    btn_pauseApp.BackColor = SystemColors.ControlDark;
-                    btn_pauseApp.BackgroundImage = null;
-
                     btn_startApp.Enabled = true;
                     btn_startApp.BackColor = SystemColors.Control;
                     btn_startApp.BackgroundImage = Resources.play32;
@@ -470,10 +397,6 @@ namespace RM.src.RM250728
                     btn_stopApp.Enabled = true;
                     btn_stopApp.BackColor = SystemColors.Control;
                     btn_stopApp.BackgroundImage = Resources.stop;
-
-                    btn_pauseApp.Enabled = true;
-                    btn_pauseApp.BackColor = SystemColors.Control;
-                    btn_pauseApp.BackgroundImage = Resources.pausemonitoringRed_32;
 
                     btn_startApp.Enabled = false;
                     btn_startApp.BackColor = SystemColors.ControlDark;
@@ -494,10 +417,6 @@ namespace RM.src.RM250728
                 btn_stopApp.BackColor = SystemColors.ControlDark;
                 btn_stopApp.BackgroundImage = null;
 
-                btn_pauseApp.Enabled = false;
-                btn_pauseApp.BackColor = SystemColors.ControlDark;
-                btn_pauseApp.BackgroundImage = null;
-
                 btn_startApp.Enabled = true;
                 btn_startApp.BackColor = SystemColors.Control;
                 btn_startApp.BackgroundImage = Resources.play32;
@@ -511,54 +430,8 @@ namespace RM.src.RM250728
                 btn_stopApp.Enabled = true;
                 btn_stopApp.BackColor = SystemColors.Control;
                 btn_stopApp.BackgroundImage = Resources.stop;
-
-                btn_pauseApp.Enabled = true;
-                btn_pauseApp.BackColor = SystemColors.Control;
-                btn_pauseApp.BackgroundImage = Resources.pausemonitoringRed_32;
             }
 
-        }
-
-        /// <summary>
-        /// Applica la trasparenza ai pannelli.
-        /// </summary>
-        private void ApplyPanelTransparency()
-        {
-          /*  Color opacity200 = Color.FromArgb(200, pnl_navigation.BackColor.R, pnl_navigation.BackColor.G, pnl_navigation.BackColor.B);
-            Color opacity170 = Color.FromArgb(170, pnl_navigation.BackColor.R, pnl_navigation.BackColor.G, pnl_navigation.BackColor.B);
-            Color opacity0 = Color.FromArgb(0, pnl_navigation.BackColor.R, pnl_navigation.BackColor.G, pnl_navigation.BackColor.B);
-
-            // Sospendi temporaneamente il layout dei controlli
-            this.Invoke(new Action(() => this.SuspendLayout()));
-
-            ApplyTransparency(pnl_navigation, opacity200);
-            ApplyTransparency(pnl_buttonVAT, opacity170);
-            ApplyTransparency(pnl_modeContainer, opacity170);
-            ApplyTransparency(pnl_robotContainer, opacity170);
-            ApplyTransparency(pnl_appContainer, opacity170);
-            ApplyTransparency(pnl_program, opacity170);
-            ApplyTransparency(pnl_monitoring, opacity170);
-            ApplyTransparency(pnl_buttonVAT, opacity0);*/
-
-            // Riprendi il layout dei controlli
-            //Invoke(new Action(() => ResumeLayout()));
-        }
-
-        /// <summary>
-        /// Applica la trasparenza a un pannello specificato.
-        /// </summary>
-        /// <param name="panel">Il pannello a cui applicare la trasparenza.</param>
-        /// <param name="color">Il colore con il livello di opacità da applicare.</param>
-        private void ApplyTransparency(Panel panel, Color color)
-        {
-            if (panel.InvokeRequired)
-            {
-                panel.Invoke(new Action(() => panel.BackColor = color));
-            }
-            else
-            {
-                panel.BackColor = color;
-            }
         }
 
         /// <summary>
@@ -658,6 +531,7 @@ namespace RM.src.RM250728
         #endregion
 
         #region Eventi di UC_HomePage
+
         /// <summary>
         /// Aumenta la velocità tenendo premuto il tasto +
         /// </summary>
@@ -928,14 +802,15 @@ namespace RM.src.RM250728
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ClickEvent_startApp(object sender, EventArgs e)
+        private void ClickEvent_startApp(object sender, EventArgs e)
         {
             log.Info("Richiesta di avvio ciclo");
 
+            // Get input digitale (pinza)
             byte ris = 0;
             RobotManager.robot.GetDI(0, 1, ref ris);
 
-            if (ris == 0)
+            if (ris == 0) // Se la pinza è chiusa
             {
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Pinza chiusa. Impossibile avviare il ciclo.");
                 return;
@@ -943,21 +818,17 @@ namespace RM.src.RM250728
 
             // Se l'avvio dell'applicazione parte dal primo punto
             if (RobotManager.currentIndex < 0)
-             {
+            {
                  if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Procedere con l'avvio dell'applicazione?") != DialogResult.OK)
                      return;
-             }
-             else // Se l'applicazione riprende da un punto precedente
-             {
+            }
+            else // Se l'applicazione riprende da un punto precedente
+            {
                  if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Riprendere la riproduzione dell'applicazione?") != DialogResult.OK)
                      return;
-             }
+            }
 
-             //Start ciclo  --> bisogna scrivere su PLC?
-             //await RobotManager.MainCycle();
-             //RobotManager.taskManager.AddAndStartTask(nameof(RobotManager.MainCycle), RobotManager.MainCycle, TaskType.Default, false);
-             RefresherTask.AddUpdate(PLCTagName.Hmi_startCycle, 1, "INT16");
-
+            // Avvio ciclo di teglie
             RobotManager.taskManager.AddAndStartTask(RobotManager.TaskPickAndPlaceTeglia3, RobotManager.PickAndPlaceTeglia3, TaskType.Default, false);
             RobotManager_EnableButtonCycleEvent(0,EventArgs.Empty);
         }
@@ -969,16 +840,6 @@ namespace RM.src.RM250728
         /// <param name="e"></param>
         private void ClickEvent_GoToHomePosition(object sender, EventArgs e)
         {
-            /*
-            // Se il ciclo di main è in esecuzione non eseguo il metodo
-            if (RobotManager.CycleRun_Main != 0)
-                return;
-
-            // Se la home routine è già in esecuzione non eseguo il metodo
-            if (RobotManager.CycleRun_Home != 0)
-                return;
-            */
-
             // Chiedo conferma per avvio della HomeRoutine
             if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Posizionare il Robot in Home position?") != DialogResult.OK)
             {
@@ -1000,236 +861,27 @@ namespace RM.src.RM250728
         }
 
         /// <summary>
-        ///  Alza richiesta per mettere in pausa il ciclo del Robot
+        /// Apertura pinza
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ClickEvent_pauseApp(object sender, EventArgs e)
-        {
-            //RobotManager.pauseCycleRequested = true; // Alzo richiesta di pausa ciclo
-            //RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16"); // Reset della variabile che fa partire contatore catena
-            RefresherTask.AddUpdate(PLCTagName.MovePause, 1, "INT16");
-        }
-
-        #endregion
-
-        private void ClickEvent_openWeldingParameters(object sender, EventArgs e)
-        {
-            UC_weldingParameters uc;
-            if (!FormHomePage.Instance.PnlContainer.Controls.ContainsKey("UC_weldingParameters"))
-            {
-                uc = new UC_weldingParameters()
-                {
-                    Dock = DockStyle.Fill
-                };
-                FormHomePage.Instance.PnlContainer.Controls.Add(uc);
-            }
-            FormHomePage.Instance.PnlContainer.Controls["UC_weldingParameters"].BringToFront();
-
-            uc = (UC_weldingParameters)FormHomePage.Instance.PnlContainer.Controls["UC_weldingParameters"];
-            //uc.ShowLoadingScreen();
-        }
-
         private void ClickEvent_openGripper(object sender, EventArgs e)
         {
             // scrittura su uscite digitali robot
             RobotManager.robot.SetDO(0, 0, 0, 0);
         }
 
+        /// <summary>
+        /// Restore dello screen saver
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickEvent_restoreScreenSaverManager(object sender, EventArgs e)
         {
             //FormHomePage.Instance.ScreenSaverManagerForm.RestoreLocation();
         }
 
-        private void ClickEvent_stopRobot(object sender, EventArgs e)
-        {
-            RobotManager.stopCycleRoutine = true; // Alzo richiesta per fermare thread di riproduzione ciclo
-                                                  // Imposto a 0 (false) Automatic_Start che resetta anche il contatore dello spostamento della catena
-           // RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+        #endregion
 
-            // Imposto a 1 (true) Auto_Cycle_End che segnala che il ciclo automatico è terminato
-        //RefresherTask.AddUpdate(PLCTagName.Auto_Cycle_End, 1, "INT16");
-
-            EnableCycleButton(0);
-
-            RobotManager.currentIndex = -1; // Reset dell'indice corrente della posizione che riproduce il Robot
-
-            RobotManager.robot.PauseMotion(); // Invio comando di pausa al robot
-            Thread.Sleep(200); // Leggero ritardo per stabilizzare il robot
-            RobotManager.robot.StopMotion(); // Stop Robot con conseguente cancellazione di coda di punti
-        }
-
-        private void btn_pauseRobot_Click(object sender, EventArgs e)
-        {
-            
-            ROBOT_STATE_PKG robotState = new ROBOT_STATE_PKG();
-
-            RobotManager.robot.GetRobotRealTimeState(ref robotState);
-            MessageBox.Show(robotState.robot_state.ToString());
-
-            return;
-            
-
-            if (!RobotManager.robotIsPaused) // Se il robot non è già in pausa
-            {
-                RobotManager.robot.PauseMotion(); // Metto in pausa il robot
-                RobotManager.robotIsPaused = true; // Imposto a true il booleano che segnala che il robot è in pausa
-            }
-        }
-
-        private void btn_resumeRobot_Click(object sender, EventArgs e)
-        {
-            if (RobotManager.robotIsPaused) // Se il robot era in pausa
-            {
-                RobotManager.robot.ResumeMotion();
-                RobotManager.robotIsPaused = false; // Imposto a false il booleano che segnala che il robot è in pausa
-            }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            int movementResult; // Risultato del movimento del Robot
-
-            #region Punto home
-
-            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
-            DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
-
-            #endregion
-
-            #region Punto di pick
-
-            //int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
-            //int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
-            //int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
-            int xOffset = 0;
-            int yOffset = 0;
-            int zOffset = 0;
-
-            JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
-            var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
-            DescPose descPosPick = new DescPose(pick.x + xOffset, pick.y + yOffset, pick.z + zOffset, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
-
-            #endregion
-
-            #region Punto avvicinamento pick
-
-            JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
-            DescPose descPosApproachPick = new DescPose(pick.x, pick.y, pick.z + 200, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
-
-            #endregion
-
-            #region Parametri movimento
-
-            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
-            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
-            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
-
-
-            // Invio punto di avvicinamento Pick
-            movementResult = RobotManager.robot.MoveCart(descPosApproachPick, RobotManager.tool, RobotManager.user, RobotManager.vel,
-                RobotManager.acc, RobotManager.ovl, RobotManager.blendT, RobotManager.config);
-
-            //movementResult = robot.MoveCart(descPosPick, tool, user, vel, acc, ovl, blendT, config);
-            //GetRobotMovementCode(movementResult); // Get del risultato del movimento del robot
-
-            
-
-            #endregion
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            int movementResult; // Risultato del movimento del Robot
-            /*
-            #region Punto home
-
-            var home = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
-            DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
-
-            #endregion
-
-            #region Punto di pick
-
-            //int xOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
-            //int yOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
-            //int zOffset = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
-            int xOffset = 0;
-            int yOffset = 0;
-            int zOffset = 0;
-
-            JointPos jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
-            var pick = ApplicationConfig.applicationsManager.GetPosition((Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) % 1000).ToString(), "RM");
-            DescPose descPosPick = new DescPose(pick.x + xOffset, pick.y + yOffset, pick.z + zOffset, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosPick, -1, ref jointPosPick);
-
-            #endregion
-
-            #region Punto avvicinamento pick
-
-            JointPos jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
-            DescPose descPosApproachPick = new DescPose(pick.x, pick.y, pick.z + 200, pick.rx, pick.ry, pick.rz);
-            RobotManager.robot.GetInverseKin(0, descPosApproachPick, -1, ref jointPosApproachPick);
-
-            #endregion
-
-            #region Parametri movimento
-
-            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
-            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
-            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
-
-            // Invio punto di pick
-            movementResult = RobotManager.robot.MoveL(jointPosPick, descPosPick, RobotManager.tool, RobotManager.user, RobotManager.vel,
-                RobotManager.acc, RobotManager.ovl, RobotManager.blendT, epos, 0, offsetFlag, offset);
-            #endregion
-            */
-
-
-            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
-            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
-            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
-
-            DescPose actualPose = RobotManager.TCPCurrentPosition;
-            DescPose targetPose = actualPose;
-            JointPos jointTargetPose = new JointPos(0, 0, 0, 0, 0, 0);
-
-            targetPose.tran.z += 200;
-
-            RobotManager.robot.GetInverseKin(0, targetPose, -1, ref jointTargetPose);
-
-            // Invio punto di pick
-            movementResult = RobotManager.robot.MoveL(jointTargetPose, targetPose, RobotManager.tool, RobotManager.user, RobotManager.vel,
-                RobotManager.acc, RobotManager.ovl, RobotManager.blendT, epos, 0, offsetFlag, offset);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            var restPose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
-            DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
-
-            int result = RobotManager.robot.MoveCart(pHome, RobotManager.tool, RobotManager.user, RobotManager.vel,
-                RobotManager.acc, RobotManager.ovl, RobotManager.blendT, RobotManager.config);
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-           RobotManager.robot.SetDO(0, 1, 0, 0);
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            RobotManager.robot.SetDO(0, 0, 0, 0); // Apro la pinza
-
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            byte ris = 0;
-            RobotManager.robot.GetDI(0, 1, ref ris);
-            MessageBox.Show(ris.ToString());
-        }
     } 
 }

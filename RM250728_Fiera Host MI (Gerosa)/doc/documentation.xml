@@ -6467,6 +6467,20 @@
             Inizializza lo user control della homepage
             </summary>
         </member>
+        <member name="M:RM.src.RM250728.UC_HomePage.RobotInHomePositionEvent(System.Object,System.EventArgs)">
+            <summary>
+            Colora di verde il panel che notifica il robot in HomePosition
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:RM.src.RM250728.UC_HomePage.RobotNotInHomePositionEvent(System.Object,System.EventArgs)">
+            <summary>
+            Colora di scurso il panel che notifica il robot non è in HomePosition
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
         <member name="M:RM.src.RM250728.UC_HomePage.InitRobotModeButtons">
             <summary>
             Imposta i button relativi alla modalità del Robot quando viene avviata l'applicazione
@@ -6478,6 +6492,13 @@
             viene cambiata la modalità di lavoro del Robot
             </summary>
             <param name="sender">1 --> Auto / 0 --> Man</param>
+            <param name="e"></param>
+        </member>
+        <member name="M:RM.src.RM250728.UC_HomePage.ChangeLblVelocity(System.Object,System.EventArgs)">
+            <summary>
+            Cambia valora della label velocity
+            </summary>
+            <param name="sender"></param>
             <param name="e"></param>
         </member>
         <member name="M:RM.src.RM250728.UC_HomePage.RobotManager_EnableButtonCycleEvent(System.Object,System.EventArgs)">
@@ -6492,18 +6513,6 @@
             Abilita e disabilita i tasti di start, stop e pausa
             </summary>
             <param name="status">//0: Disattiva stop, disattiva pause, attiva start - 1: Attiva stop, attiva pause, disattiva start</param>
-        </member>
-        <member name="M:RM.src.RM250728.UC_HomePage.ApplyPanelTransparency">
-            <summary>
-            Applica la trasparenza ai pannelli.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250728.UC_HomePage.ApplyTransparency(System.Windows.Forms.Panel,System.Drawing.Color)">
-            <summary>
-            Applica la trasparenza a un pannello specificato.
-            </summary>
-            <param name="panel">Il pannello a cui applicare la trasparenza.</param>
-            <param name="color">Il colore con il livello di opacità da applicare.</param>
         </member>
         <member name="M:RM.src.RM250728.UC_HomePage.InitVelocitySaverTimer">
             <summary>
@@ -6679,9 +6688,16 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:RM.src.RM250728.UC_HomePage.ClickEvent_pauseApp(System.Object,System.EventArgs)">
+        <member name="M:RM.src.RM250728.UC_HomePage.ClickEvent_openGripper(System.Object,System.EventArgs)">
             <summary>
-             Alza richiesta per mettere in pausa il ciclo del Robot
+            Apertura pinza
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:RM.src.RM250728.UC_HomePage.ClickEvent_restoreScreenSaverManager(System.Object,System.EventArgs)">
+            <summary>
+            Restore dello screen saver
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
