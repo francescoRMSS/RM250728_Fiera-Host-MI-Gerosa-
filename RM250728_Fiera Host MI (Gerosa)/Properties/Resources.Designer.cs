@@ -743,6 +743,16 @@ namespace RM.Properties {
         /// <summary>
         ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap pane_cotto_al_forno_e_focacce_tenuti_scaffale {
+            get {
+                object obj = ResourceManager.GetObject("pane-cotto-al-forno-e-focacce-tenuti-scaffale", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap parameters {
             get {
                 object obj = ResourceManager.GetObject("parameters", resourceCulture);

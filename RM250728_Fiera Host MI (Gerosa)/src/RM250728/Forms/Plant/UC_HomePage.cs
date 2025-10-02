@@ -615,7 +615,7 @@ namespace RM.src.RM250728
         {
             if (!SecurityManager.ActionRequestCheck("exit")) return;
 
-            if(CustomMessageBox.ShowTranslated(MessageBoxTypeEnum.WARNING, "MSG_CLOSING_APP", Resources.exit_filled) == DialogResult.OK)
+            if (CustomMessageBox.ShowTranslated(MessageBoxTypeEnum.WARNING, "MSG_CLOSING_APP", Resources.exit_filled) == DialogResult.OK)
             {
                 Environment.Exit(0);
             }
@@ -829,7 +829,7 @@ namespace RM.src.RM250728
             }
 
             // Avvio ciclo di teglie
-            RobotManager.taskManager.AddAndStartTask(RobotManager.TaskPickAndPlaceTeglia3, RobotManager.PickAndPlaceTeglia3, TaskType.Default, false);
+            RobotManager.taskManager.AddAndStartTask(RobotManager.TaskPickAndPlaceTeglia3, RobotManager.PickAndPlaceTegliaFiera, TaskType.Default, false);
             RobotManager_EnableButtonCycleEvent(0,EventArgs.Empty);
         }
 
@@ -878,7 +878,7 @@ namespace RM.src.RM250728
         /// <param name="e"></param>
         private void ClickEvent_restoreScreenSaverManager(object sender, EventArgs e)
         {
-            //FormHomePage.Instance.ScreenSaverManagerForm.RestoreLocation();
+            FormHomePage.Instance.ScreenSaverManagerForm.RestoreLocation();
         }
 
         #endregion

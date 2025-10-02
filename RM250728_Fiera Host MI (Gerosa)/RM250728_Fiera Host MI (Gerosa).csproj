@@ -351,6 +351,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="logoRM.ico" />
+    <None Include="Resources\pane-cotto-al-forno-e-focacce-tenuti-scaffale.jpg" />
     <None Include="Resources\gripper_white.png" />
     <None Include="Resources\gripper.png" />
     <None Include="Resources\bg_weld.png" />

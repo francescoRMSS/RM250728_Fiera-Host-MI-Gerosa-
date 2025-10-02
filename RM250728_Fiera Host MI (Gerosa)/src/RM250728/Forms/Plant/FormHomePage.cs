@@ -42,14 +42,14 @@ namespace RM.src.RM250728
                 return _obj;
             }
         }
-        /*
+        
         /// <summary>
         /// Restituisce il riferimento alla form screen saver
         /// </summary>
         public ScreenSaverManager ScreenSaverManagerForm
         {
             get { return screenSaverManager; }
-        }*/
+        }
 
         /// <summary>
         /// Definisce una variabile per settare e ottenere la pagina corrente della form
@@ -132,7 +132,7 @@ namespace RM.src.RM250728
         /// </summary>
         private bool emergencyOK = false;
 
-        //private ScreenSaverManager screenSaverManager;
+        private ScreenSaverManager screenSaverManager;
 
         #endregion
 
@@ -282,7 +282,7 @@ namespace RM.src.RM250728
             AlarmManager.isFormReady = true;
 
             //Configurazione screen saver manager - 5m
-            //screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4", false);
+            screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4", true);
 
             ChangeTaskStatus(this, EventArgs.Empty); // Chiamo il metodo per aggiornare l'interfaccia la prima volta
         }

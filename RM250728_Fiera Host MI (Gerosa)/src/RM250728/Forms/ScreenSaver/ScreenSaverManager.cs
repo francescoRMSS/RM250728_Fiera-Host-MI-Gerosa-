@@ -88,7 +88,7 @@ namespace RM.src.RM250728.Forms.ScreenSaver
         /// <summary>
         /// Specifica se usare o meno lo screen saver per l'app
         /// </summary>
-        public static bool useScreenSaver = false;
+        public static bool useScreenSaver = true;
 
         #endregion
 

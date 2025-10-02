@@ -5766,6 +5766,11 @@
             Definisce una istanza statica per la classe
             </summary>
         </member>
+        <member name="P:RM.src.RM250728.FormHomePage.ScreenSaverManagerForm">
+            <summary>
+            Restituisce il riferimento alla form screen saver
+            </summary>
+        </member>
         <member name="P:RM.src.RM250728.FormHomePage.PnlContainer">
             <summary>
             Definisce una variabile per settare e ottenere la pagina corrente della form
@@ -7346,6 +7351,11 @@
             </summary>
         </member>
         <member name="P:RM.Properties.Resources.overwriteBluew_32">
+            <summary>
+              Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:RM.Properties.Resources.pane_cotto_al_forno_e_focacce_tenuti_scaffale">
             <summary>
               Cerca una risorsa localizzata di tipo System.Drawing.Bitmap.
             </summary>

@@ -1013,7 +1013,7 @@ namespace RM.src.RM250728
         /// <summary>
         /// Nome del task check robot com
         /// </summary>
-        public static string TaskPickAndPlaceTeglia3 = nameof(PickAndPlaceTeglia3);
+        public static string TaskPickAndPlaceTeglia3 = nameof(PickAndPlaceTegliaFiera);
 
         #endregion
 
@@ -1059,16 +1059,11 @@ namespace RM.src.RM250728
             // Istanzio il robot
             RobotIpAddress = robotIpAddress;
             robot = new Robot();
-            robot.LoggerInit(FrLogType.DIRECT, FrLogLevel.INFO, "C:\\Users\\WIN10\\source\\repos\\RM250728_Fiera Host MI (Gerosa)\\RM250728_Fiera Host MI (Gerosa)\\bin\\Debug\\Logs", 5, 5);
+            robot.LoggerInit(FrLogType.DIRECT, FrLogLevel.INFO, 
+                "C:\\Users\\WIN10\\source\\repos\\RM250728_Fiera Host MI (Gerosa)\\RM250728_Fiera Host MI (Gerosa)\\bin\\Debug\\Logs", 5, 5);
+
             robot.RPC(RobotIpAddress);
             AlarmManager.isRobotConnected = true;
-
-            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
-            // vel = Convert.ToInt16(PLCConfig.appVariables.getValue("PLC1_" + "speedRobot"));
-
-            RefresherTask.AddUpdate(PLCTagName.VersionYear, 2025, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.VersionMonth, 8, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.VersionDay, 28, "INT16");
 
             // Faccio partire i manager
             frameManager = new Frames(robot);
@@ -1107,8 +1102,6 @@ namespace RM.src.RM250728
                 return false;
 
             robot.SetSpeed(robotProperties.Speed);
-
-            //ResetPLCVariables();
 
             return true;
         }
@@ -1446,7 +1439,7 @@ namespace RM.src.RM250728
             }
         }
 
-        public async static Task PickAndPlaceTeglia3(CancellationToken token)
+        public async static Task PickAndPlaceTegliaFiera(CancellationToken token)
         {
             // Parametro necessario al comando MoveL
             DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
