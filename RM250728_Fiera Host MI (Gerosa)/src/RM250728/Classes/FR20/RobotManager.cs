@@ -1216,7 +1216,7 @@ namespace RM.src.RM250728
                             await Task.Run(() => robot.GetActualTCPPose(flag, ref TCPCurrentPosition)); // Leggo posizione robot TCP corrente
                             CheckIsRobotMoving(updates);
                            // CheckIsRobotInObstructionArea(startPoints, updates);
-                           // CheckIsRobotInSafeZone(pointSafeZone);
+                            CheckIsRobotInSafeZone(pointSafeZone);
                             CheckIsRobotInPos();
                             await CheckStatusRobot();
                         }

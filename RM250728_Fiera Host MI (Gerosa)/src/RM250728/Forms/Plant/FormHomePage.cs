@@ -143,7 +143,7 @@ namespace RM.src.RM250728
         {
             InitializeComponent();
 
-            EnterFullScreenMode();
+            //EnterFullScreenMode();
             CheckForIllegalCrossThreadCalls = false;
 
             // Avvio timer per la data

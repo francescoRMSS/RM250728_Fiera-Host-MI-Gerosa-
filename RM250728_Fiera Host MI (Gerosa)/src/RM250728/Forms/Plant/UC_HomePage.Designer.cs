@@ -100,7 +100,7 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(456, 456);
+            this.label3.Location = new System.Drawing.Point(457, 456);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(70, 15);
             this.label3.TabIndex = 252;
@@ -112,7 +112,7 @@
             this.label5.BackColor = System.Drawing.Color.Transparent;
             this.label5.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(354, 456);
+            this.label5.Location = new System.Drawing.Point(355, 456);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(63, 15);
             this.label5.TabIndex = 250;
@@ -137,7 +137,7 @@
             this.btn_startApp.BackgroundImage = global::RM.Properties.Resources.play32;
             this.btn_startApp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btn_startApp.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_startApp.Location = new System.Drawing.Point(363, 396);
+            this.btn_startApp.Location = new System.Drawing.Point(364, 396);
             this.btn_startApp.Name = "btn_startApp";
             this.btn_startApp.Size = new System.Drawing.Size(50, 50);
             this.btn_startApp.TabIndex = 276;
@@ -151,7 +151,7 @@
             this.btn_stopApp.BackgroundImage = global::RM.Properties.Resources.stop;
             this.btn_stopApp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btn_stopApp.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_stopApp.Location = new System.Drawing.Point(464, 396);
+            this.btn_stopApp.Location = new System.Drawing.Point(465, 396);
             this.btn_stopApp.Name = "btn_stopApp";
             this.btn_stopApp.Size = new System.Drawing.Size(50, 50);
             this.btn_stopApp.TabIndex = 277;
@@ -189,11 +189,12 @@
             // 
             // label2
             // 
-            this.label2.BackColor = System.Drawing.Color.Transparent;
+            this.label2.BackColor = System.Drawing.Color.DimGray;
             this.label2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.label2.Font = new System.Drawing.Font("Georgia", 27.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label2.Location = new System.Drawing.Point(193, 225);
+            this.label2.Image = global::RM.Properties.Resources.minus32;
+            this.label2.Location = new System.Drawing.Point(227, 225);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(25, 25);
             this.label2.TabIndex = 281;
@@ -204,11 +205,12 @@
             // 
             // label6
             // 
-            this.label6.BackColor = System.Drawing.Color.Transparent;
+            this.label6.BackColor = System.Drawing.Color.DimGray;
             this.label6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.label6.Font = new System.Drawing.Font("Georgia", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label6.Location = new System.Drawing.Point(264, 225);
+            this.label6.Image = global::RM.Properties.Resources.add32;
+            this.label6.Location = new System.Drawing.Point(298, 225);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(25, 25);
             this.label6.TabIndex = 282;
@@ -224,7 +226,7 @@
             this.label10.ForeColor = System.Drawing.Color.White;
             this.label10.Location = new System.Drawing.Point(353, 346);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(269, 40);
+            this.label10.Size = new System.Drawing.Size(279, 32);
             this.label10.TabIndex = 252;
             this.label10.Text = "Ciclo";
             this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -236,7 +238,7 @@
             this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.Location = new System.Drawing.Point(152, 122);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(265, 40);
+            this.label1.Size = new System.Drawing.Size(265, 30);
             this.label1.TabIndex = 252;
             this.label1.Text = "Robot";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -246,7 +248,7 @@
             this.label8.BackColor = System.Drawing.Color.Transparent;
             this.label8.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.ForeColor = System.Drawing.Color.White;
-            this.label8.Location = new System.Drawing.Point(356, 239);
+            this.label8.Location = new System.Drawing.Point(345, 239);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(60, 15);
             this.label8.TabIndex = 250;
@@ -258,9 +260,9 @@
             this.label18.BackColor = System.Drawing.Color.Transparent;
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.label18.ForeColor = System.Drawing.Color.White;
-            this.label18.Location = new System.Drawing.Point(550, 126);
+            this.label18.Location = new System.Drawing.Point(551, 126);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(272, 40);
+            this.label18.Size = new System.Drawing.Size(271, 26);
             this.label18.TabIndex = 252;
             this.label18.Text = "Modalità";
             this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -281,7 +283,7 @@
             this.label15.BackColor = System.Drawing.Color.Transparent;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label15.ForeColor = System.Drawing.Color.White;
-            this.label15.Location = new System.Drawing.Point(308, 189);
+            this.label15.Location = new System.Drawing.Point(304, 189);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(26, 24);
             this.label15.TabIndex = 169;
@@ -289,10 +291,10 @@
             // 
             // lbl_velocity
             // 
-            this.lbl_velocity.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_velocity.BackColor = System.Drawing.Color.WhiteSmoke;
             this.lbl_velocity.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_velocity.ForeColor = System.Drawing.Color.White;
-            this.lbl_velocity.Location = new System.Drawing.Point(254, 185);
+            this.lbl_velocity.ForeColor = System.Drawing.Color.Black;
+            this.lbl_velocity.Location = new System.Drawing.Point(251, 185);
             this.lbl_velocity.Name = "lbl_velocity";
             this.lbl_velocity.Size = new System.Drawing.Size(50, 28);
             this.lbl_velocity.TabIndex = 3;
@@ -306,7 +308,7 @@
             this.btn_homePosition.BackgroundImage = global::RM.Properties.Resources.home;
             this.btn_homePosition.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btn_homePosition.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_homePosition.Location = new System.Drawing.Point(361, 179);
+            this.btn_homePosition.Location = new System.Drawing.Point(350, 179);
             this.btn_homePosition.Name = "btn_homePosition";
             this.btn_homePosition.Size = new System.Drawing.Size(50, 50);
             this.btn_homePosition.TabIndex = 275;
@@ -320,7 +322,7 @@
             this.btn_openGripper.BackgroundImage = global::RM.Properties.Resources.gripper;
             this.btn_openGripper.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btn_openGripper.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_openGripper.Location = new System.Drawing.Point(565, 396);
+            this.btn_openGripper.Location = new System.Drawing.Point(566, 396);
             this.btn_openGripper.Name = "btn_openGripper";
             this.btn_openGripper.Size = new System.Drawing.Size(50, 50);
             this.btn_openGripper.TabIndex = 287;
@@ -333,7 +335,7 @@
             this.label7.BackColor = System.Drawing.Color.Transparent;
             this.label7.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(547, 456);
+            this.label7.Location = new System.Drawing.Point(548, 456);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(84, 15);
             this.label7.TabIndex = 288;
