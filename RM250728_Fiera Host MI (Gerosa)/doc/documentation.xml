@@ -4009,22 +4009,10 @@
             </summary>
             <param name="alarmKey"></param>
         </member>
-        <member name="M:RM.src.RM250728.RobotManager.GetRobotErrorCode(System.Collections.Generic.List{System.ValueTuple{System.String,System.Boolean,System.String}},System.Boolean,System.Data.DataRow,System.DateTime,System.String,System.String,System.String,System.String,System.String,System.Int64,System.DateTime,System.String)">
+        <member name="M:RM.src.RM250728.RobotManager.GetRobotErrorCode">
             <summary>
             Legge allarmi derivanti dal Robot
             </summary>
-            <param name="updates"></param>
-            <param name="allarmeSegnalato"></param>
-            <param name="robotAlarm"></param>
-            <param name="now"></param>
-            <param name="id"></param>
-            <param name="description"></param>
-            <param name="timestamp"></param>
-            <param name="device"></param>
-            <param name="state"></param>
-            <param name="unixTimestamp"></param>
-            <param name="dateTime"></param>
-            <param name="formattedDate"></param>
         </member>
         <member name="M:RM.src.RM250728.RobotManager.ResetPLCVariables">
             <summary>

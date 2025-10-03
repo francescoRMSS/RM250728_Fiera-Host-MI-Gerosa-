@@ -1318,6 +1318,7 @@ namespace RM.src.RM250728
                 while (!token.IsCancellationRequested)
                 {
                     CheckPLCConnection();
+                    GetRobotErrorCode();
 
                     await Task.Delay(lowPriorityRefreshPeriod, token);
                 }
@@ -2076,7 +2077,9 @@ namespace RM.src.RM250728
             double[] levelCollision7 = new double[] { 7, 7, 7, 7, 7, 7 };
             double[] levelCollision8 = new double[] { 8, 8, 8, 8, 8, 8 };
 
-            robot.SetAnticollision(0, levelCollision8, 1);
+            double[] workCollision = new double[] { 3, 3, 3, 8, 3, 3 };
+
+            robot.SetAnticollision(0, workCollision, 1);
 
             byte ris = 0;
             try
@@ -4657,33 +4660,19 @@ namespace RM.src.RM250728
         /// <summary>
         /// Legge allarmi derivanti dal Robot
         /// </summary>
-        /// <param name="updates"></param>
-        /// <param name="allarmeSegnalato"></param>
-        /// <param name="robotAlarm"></param>
-        /// <param name="now"></param>
-        /// <param name="id"></param>
-        /// <param name="description"></param>
-        /// <param name="timestamp"></param>
-        /// <param name="device"></param>
-        /// <param name="state"></param>
-        /// <param name="unixTimestamp"></param>
-        /// <param name="dateTime"></param>
-        /// <param name="formattedDate"></param>
-        private static void GetRobotErrorCode(
-            List<(string key, bool value, string type)> updates,
-            bool allarmeSegnalato,
-            DataRow robotAlarm,
-            DateTime now,
-            string id,
-            string description,
-            string timestamp,
-            string device,
-            string state,
-            long unixTimestamp,
-            DateTime dateTime,
-            string formattedDate
-            )
+        private static void GetRobotErrorCode()
         {
+            DataRow robotAlarm;
+            DateTime now;
+            string id;
+            string description;
+            string timestamp;
+            string device;
+            string state;
+            long unixTimestamp;
+            DateTime dateTime;
+            string formattedDate;
+
             if (AlarmManager.isRobotConnected)
             {
                 err = robot.GetRobotErrorCode(ref maincode, ref subcode);
@@ -4722,9 +4711,6 @@ namespace RM.src.RM250728
                         CreateRobotAlarm(id, description, timestamp, device, state);
                         MarkAlarmAsSignaled(maincode.ToString() + subcode.ToString());
                         log.Warn(robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString());
-
-                        // Imposta la variabile di stato dell'allarme
-                        allarmeSegnalato = true;
                     }
                     else
                     {
@@ -4744,9 +4730,8 @@ namespace RM.src.RM250728
                         state = "ON";
 
                         CreateRobotAlarm(id, description, timestamp, device, state);
-
-                        // Imposta la variabile di stato dell'allarme
-                        allarmeSegnalato = true;
+                        MarkAlarmAsSignaled(maincode.ToString() + subcode.ToString());
+                        log.Warn($"Allarme generato: Generic/Not found MainCode: {maincode}, SubCode: {subcode}");
                     }
 
                     // Segnalo che è presente un allarme bloccante (allarme robot)
@@ -4755,13 +4740,10 @@ namespace RM.src.RM250728
                 }
                 else if (maincode == 0)
                 {
-                    // Reimposta la variabile di stato se l'allarme è risolto
-                    allarmeSegnalato = false;
                     robotError = 0;
                 }
             }
         }
-
         /// <summary>
         /// Reset iniziali delle variabili PLC
         /// </summary>
