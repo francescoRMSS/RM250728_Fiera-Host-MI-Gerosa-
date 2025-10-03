@@ -352,7 +352,6 @@
             this.pnl_status.Name = "pnl_status";
             this.pnl_status.Size = new System.Drawing.Size(64, 45);
             this.pnl_status.TabIndex = 291;
-            this.pnl_status.Visible = false;
             // 
             // pnl_homeStatus
             // 

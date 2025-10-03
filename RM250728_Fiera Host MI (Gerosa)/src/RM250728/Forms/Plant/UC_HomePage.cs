@@ -124,6 +124,8 @@ namespace RM.src.RM250728
             RobotManager.EnableButtonCycleEvent += RobotManager_EnableButtonCycleEvent;
             RobotManager.RobotInHomePosition += RobotInHomePositionEvent;
             RobotManager.RobotNotInHomePosition += RobotNotInHomePositionEvent;
+            RobotManager.GripperStatusOFF += GripperStatusOFFEvent;
+            RobotManager.GripperStatusON += GripperStatusONEvent;
 
             #endregion
 
@@ -173,6 +175,16 @@ namespace RM.src.RM250728
             {
                 pnl_homeStatus.BackColor = Color.Firebrick;
             });
+        }
+
+        private void GripperStatusOFFEvent(object sender, EventArgs e)
+        {
+            pnl_pinzeStatus.BackColor = Color.SeaGreen;
+        }
+
+        private void GripperStatusONEvent(object sender, EventArgs e)
+        {
+            pnl_pinzeStatus.BackColor = Color.Firebrick;
         }
 
         /// <summary>
@@ -809,6 +821,12 @@ namespace RM.src.RM250728
             // Get input digitale (pinza)
             byte ris = 0;
             RobotManager.robot.GetDI(0, 1, ref ris);
+
+            if (!RobotManager.isInSafeZone) // Se il robot non si trova in safeZone
+            {
+                CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Robot fuori dalla safe zone. Impossibile avviare il ciclo.");
+                return;
+            }
 
             if (ris == 0) // Se la pinza è chiusa
             {

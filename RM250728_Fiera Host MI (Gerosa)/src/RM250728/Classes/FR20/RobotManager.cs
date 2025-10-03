@@ -1127,6 +1127,7 @@ namespace RM.src.RM250728
                         await CheckIsRobotEnable();
                         await CheckRobotMode();
                         await CheckCurrentToolAndUser();
+                        await CheckGripperStatus();
                     }
 
                     await Task.Delay(auxiliaryThreadRefreshPeriod, token);
@@ -1197,6 +1198,11 @@ namespace RM.src.RM250728
 
             DescPose pointSafeZone = new DescPose(pSafeZone.x, pSafeZone.y, pSafeZone.z, pSafeZone.rx, pSafeZone.ry, pSafeZone.rz);
 
+            // Dichiarazione del punto di home
+            var pHome = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+
+            DescPose pointHome = new DescPose(pHome.x, pHome.y, pHome.z, pHome.rx, pHome.ry, pHome.rz);
+
             // Oggetto che rileva safe zone
             double delta_safeZone = 300.0; // soglia
             checker_safeZone = new PositionChecker(delta_safeZone);
@@ -1217,6 +1223,7 @@ namespace RM.src.RM250728
                             CheckIsRobotMoving(updates);
                            // CheckIsRobotInObstructionArea(startPoints, updates);
                             CheckIsRobotInSafeZone(pointSafeZone);
+                            CheckIsRobotInHomePosition(pointHome);
                             CheckIsRobotInPos();
                             await CheckStatusRobot();
                         }
@@ -1438,6 +1445,31 @@ namespace RM.src.RM250728
             {
 
             }
+        }
+
+        private static async Task CheckGripperStatus()
+        {
+
+            // Get input digitale (pinza)
+            byte gripperStatus = 0;
+            RobotManager.robot.GetDI(0, 1, ref gripperStatus);
+
+            if (Convert.ToBoolean(gripperStatus) != previousGripperStatus)
+            {
+
+                if (gripperStatus == 0) // Se la pinza è chiusa
+                {
+                    GripperStatusON?.Invoke(null, EventArgs.Empty);
+                }
+                else
+                {
+                    GripperStatusOFF?.Invoke(null, EventArgs.Empty);
+                }
+
+                previousGripperStatus = gripperStatus > 0;
+            }
+
+          
         }
 
         public async static Task PickAndPlaceTegliaFiera(CancellationToken token)
@@ -2077,7 +2109,7 @@ namespace RM.src.RM250728
             double[] levelCollision7 = new double[] { 7, 7, 7, 7, 7, 7 };
             double[] levelCollision8 = new double[] { 8, 8, 8, 8, 8, 8 };
 
-            double[] workCollision = new double[] { 3, 3, 3, 8, 3, 3 };
+            double[] workCollision = new double[] { 1, 3, 3, 8, 3, 3 };
 
             robot.SetAnticollision(0, workCollision, 1);
 
@@ -3524,13 +3556,14 @@ namespace RM.src.RM250728
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
 
-            // Get del punto di pick 1
-            var pick1Pose = ApplicationConfig.applicationsManager.GetPosition("pPickTeglia1", "RM");
-            DescPose pPickTeglia1 = new DescPose(pick1Pose.x, pick1Pose.y, pick1Pose.z, pick1Pose.rx, pick1Pose.ry, pick1Pose.rz);
+            // Get del punto di home
+            var safeZone = ApplicationConfig.applicationsManager.GetPosition("pSafeZone", "RM");
+            DescPose pSafeZone = new DescPose(safeZone.x, safeZone.y, safeZone.z, safeZone.rx, safeZone.ry, safeZone.rz);
 
+            int offsetDangerousPose = 300;
             bool robotDangerousPose = false;
 
-            if (TCPCurrentPosition.tran.y >= pPickTeglia1.tran.y - 200)
+            if (TCPCurrentPosition.tran.y >= pSafeZone.tran.y)
             {
                 robotDangerousPose = true;
             }
@@ -3564,8 +3597,8 @@ namespace RM.src.RM250728
                                 if (robotDangerousPose)
                                 {
                                     DescPose pApproach = new DescPose(
-                                        TCPCurrentPosition.tran.x, 
-                                        TCPCurrentPosition.tran.y - 300,
+                                        TCPCurrentPosition.tran.x,
+                                        pSafeZone.tran.y,
                                         TCPCurrentPosition.tran.z,
                                         TCPCurrentPosition.rpy.rx, 
                                         TCPCurrentPosition.rpy.ry, 
@@ -4421,7 +4454,13 @@ namespace RM.src.RM250728
         /// <exception cref="Exception"></exception>
         private static void GoToApproachHomePosition(DescPose target)
         {
-            int result = robot.MoveCart(target, tool, user, vel, acc, ovl, blendT, config);
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
+            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
+
+            JointPos jointTarget = new JointPos(0, 0, 0, 0, 0, 0);
+            robot.GetInverseKin(0, target, -1, ref jointTarget);
+
+            int result = robot.MoveL(jointTarget, target, tool, user, vel, acc, ovl, blendT, epos, 0, offsetFlag, offset);
 
             GetRobotMovementCode(result);
 
@@ -4855,9 +4894,6 @@ namespace RM.src.RM250728
                         RobotNotInHomePosition?.Invoke(null, EventArgs.Empty);
                     }
                 }
-
-                // Aggiorna solo se c'è stato un cambiamento
-                RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, isInHomePosition ? 1 : 0, "INT16");
 
                 // Aggiorna lo stato precedente
                 previousIsInHomePosition = isInHomePosition;

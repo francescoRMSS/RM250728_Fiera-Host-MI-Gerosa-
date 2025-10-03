@@ -239,7 +239,6 @@
             this.pnl_safeZone.Name = "pnl_safeZone";
             this.pnl_safeZone.Size = new System.Drawing.Size(40, 40);
             this.pnl_safeZone.TabIndex = 28;
-            this.pnl_safeZone.Visible = false;
             // 
             // pnl_comRobotTask
             // 
