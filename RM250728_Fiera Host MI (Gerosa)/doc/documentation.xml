@@ -1480,11 +1480,6 @@
             Enable robot from PLC
             </summary>
         </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.MovePause">
-             <summary>
-            
-             </summary>
-        </member>
         <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.Operating_Mode">
             <summary>
             0=Off, 1=auto, 2=man
@@ -1548,206 +1543,6 @@
         <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.JogRZ_neg">
             <summary>
             0...1(bool)
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_StartCicloAuto">
-            <summary>
-            A 1 per far girare il main
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_StopCicloAuto">
-            <summary>
-            A 1 per fermare il main
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.Alarm_Presence">
-            <summary>
-            0...1(bool)
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_GoHome">
-            <summary>
-            A 1 per avvia routine per tornare in home
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.Manual_Mode">
-            <summary>
-            A 1 quando il robot è in manuale
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.Automatic_Mode">
-            <summary>
-            A 1 quando il robot è in automatico
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_SelectedFormat">
-            <summary>
-            Formato selezionato
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_ResetAlarms">
-            <summary>
-            A 1 per resettare gli allarmi
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_Resume">
-            <summary>
-            A 1 per far riprendere il movimento al robot
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_3_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_4_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_Box_Rotate_180">
-            <summary>
-            Scatola ruotata/non ruotata
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.SET_LimitMaxProdotto">
-            <summary>
-            Limite massimo prodotto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_1_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.Enable_To_Pick">
-            <summary>
-            A 1 per consenso di pick
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.Enable_To_Place">
-            <summary>
-            A 1 per consenso di place
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_5_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_6_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_Pick">
-            <summary>
-            A 1 per eseguire pick
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_Place">
-            <summary>
-            A 1 per eseguire place
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_7_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_8_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_9_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_10_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_11_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_12_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_13_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_MAN_openGrippers">
-            <summary>
-            apertura manuale pinze
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_MAN_closeGrippers">
-            <summary>
-            chiusura manuale pinze
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_64_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.CMD_RegisterPoint">
-            <summary>
-            Registra punto robot
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_62_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.spare_63_to_read">
-            <summary>
-            spare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.MobilePanel_CommError">
-            <summary>
-            Errore comunicazione pulsantiera
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.OFFSET_Pick_X">
-            <summary>
-            xOffset punto di pick
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.OFFSET_Pick_Y">
-            <summary>
-            yOffset punto di pick
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.OFFSET_Pick_Z">
-            <summary>
-            zOffset punto di pick
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.OFFSET_Place_X">
-            <summary>
-            xOffset punto di place
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.OFFSET_Place_Y">
-            <summary>
-            yOffset punto di place
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250728.Classes.PLC.PLCTagName.OFFSET_Place_Z">
-            <summary>
-            zOffset punto di place
             </summary>
         </member>
         <member name="T:RM.src.RM250728.RobotApplication">
@@ -3701,11 +3496,6 @@
             Nome del task safety manager
             </summary>
         </member>
-        <member name="F:RM.src.RM250728.RobotManager.TaskMainCycle">
-            <summary>
-            Nome del task main cycle
-            </summary>
-        </member>
         <member name="F:RM.src.RM250728.RobotManager.TaskHomeRoutine">
             <summary>
             Nome del task home routine
@@ -3785,67 +3575,20 @@
             <param name="token"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250728.RobotManager.MainCycle(System.Threading.CancellationToken)">
-            <summary>
-            Esegue metodo che gestisce routine di pick e di place
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250728.RobotManager.PickBox(System.Threading.CancellationToken,RM.src.RM250728.ApplicationPositions)">
-            <summary>
-            Esegue il pick della scatola
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250728.RobotManager.PlaceBox(System.Threading.CancellationToken,RM.src.RM250728.ApplicationPositions)">
-            <summary>
-            Esegue il place della scatola
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RM.src.RM250728.RobotManager.HomeRoutine(System.Threading.CancellationToken)">
             <summary>
             Routine di go to home position
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250728.RobotManager.CheckCommandStop">
-            <summary>
-            Gestione comando di stop derivante da plc
-            </summary>
-        </member>
         <member name="M:RM.src.RM250728.RobotManager.CheckVelCommand">
             <summary>
             Esegue check su cambio velocità derivante dal plc
             </summary>
         </member>
-        <member name="M:RM.src.RM250728.RobotManager.CheckCommandStart">
-            <summary>
-            Check su comando di start derivante da plc
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250728.RobotManager.CheckCommandGoToHome">
-            <summary>
-            Check su comando di stop derivante da plc
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250728.RobotManager.CheckPauseStatus">
-            <summary>
-            Check su accesso barriere
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250728.RobotManager.CheckResumeStatus">
-            <summary>
-            Check su uscita barriere
-            </summary>
-        </member>
         <member name="M:RM.src.RM250728.RobotManager.CheckCommandRecordPoint">
             <summary>
             Check su comando di registrazione punto derivante da plc
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250728.RobotManager.CheckCommandResetAlarms">
-            <summary>
-            Check su comando di reset allarmi derivante da plc
             </summary>
         </member>
         <member name="M:RM.src.RM250728.RobotManager.AttemptReconnectToRobot">
